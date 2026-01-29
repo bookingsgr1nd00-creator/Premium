@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Premium Supply</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<main>
+  <!-- HERO: garder le globe qui tourne -->
+  <section class="hero" aria-label="Premium Supply hero">
+    <div class="hero-inner">
+      <div class="planet-wrap">
+
+        <!-- Text curve -->
+        <svg class="arc-text" viewBox="0 0 600 600" role="img" aria-label="Premium Supply">
+          <defs>
+            <path id="arc" d="M 80 350 A 220 220 0 0 1 520 350" />
+          </defs>
+          <text font-size="54" font-weight="900" fill="rgba(245,239,255,0.95)" letter-spacing="8">
+            <textPath href="#arc" xlink:href="#arc" startOffset="50%" text-anchor="middle">PREMIUM SUPPLY</textPath>
+          </text>
+        </svg>
+
+        <div class="planet" aria-hidden="true"></div>
+        <div class="ring" aria-hidden="true"></div>
+
+        <!-- Paper plane -->
+        <svg class="paper-plane" viewBox="0 0 200 120" aria-hidden="true">
+          <path d="M10 60 L190 10 L120 60 L190 110 Z" fill="rgba(245,239,255,0.95)"/>
+          <path d="M120 60 L190 10 L150 70 Z" fill="rgba(183,110,255,0.35)"/>
+        </svg>
+      </div>
+
+      <div class="scroll-hint">SCROLL</div>
+      <div class="badge" style="margin-top:14px" id="tagline"></div>
+    </div>
+  </section>
+
+  <div class="container"><hr class="sep"></div>
+
+  <!-- Categories (6) -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <div>
+          <h2>Catégories</h2>
+          <p class="lead">Tu as 6 catégories (éditables dans <b>data/site.json</b>).</p>
+        </div>
+        <div class="section-actions">
+          <a class="btn small" href="shop.html">Voir le shop</a>
+        </div>
+      </div>
+      <div class="categories" id="categories-grid"></div>
+    </div>
+  </section>
+
+  <!-- Promo very present -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <div>
+          <h2>Sale / Promo</h2>
+          <p class="lead">Très présent: bannière sticky + page dédiée + badges SALE sur les cartes.</p>
+        </div>
+        <div class="section-actions">
+          <a class="btn primary" href="promo.html">Voir toutes les promos</a>
+        </div>
+      </div>
+      <div class="grid" id="promo-grid" aria-label="Produits en promo"></div>
+    </div>
+  </section>
+
+  <!-- Hot drops -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <div>
+          <h2>Hot drops</h2>
+          <p class="lead">Placeholders prêts — remplace par tes vrais produits + photos.</p>
+        </div>
+        <div class="section-actions">
+          <a class="btn small" href="shop.html?cat=hot-drops">Tout voir</a>
+        </div>
+      </div>
+      <div class="grid" id="hot-drops-grid" aria-label="Hot drops"></div>
+    </div>
+  </section>
+
+</main>
+
+<div id="site-footer"></div>
+
+<script type="module" src="assets/js/pages/home.js"></script>
+</body>
+</html>
