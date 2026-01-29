@@ -1,0 +1,78 @@
+{
+  "storeName": "Premium Supply",
+  "tagline": "Premium quality • Future market",
+  "currency": "CAD",
+  "currencySymbol": "$",
+  "maxQtyPerItemDefault": 20,
+  "promoBanner": {
+    "enabled": true,
+    "text": "SALE 🚀 Promos très limitées — clique ici",
+    "link": "promo.html"
+  },
+  "categories": [
+    {
+      "id": "promo",
+      "label": "Sale / Promo",
+      "emoji": "🏷️",
+      "description": "Offres et réductions en avant-première"
+    },
+    {
+      "id": "hot-drops",
+      "label": "Hot drops",
+      "emoji": "🔥",
+      "description": "Les sorties qui partent vite"
+    },
+    {
+      "id": "new",
+      "label": "Nouveautés",
+      "emoji": "✨",
+      "description": "Derniers ajouts"
+    },
+    {
+      "id": "essentials",
+      "label": "Essentiels",
+      "emoji": "🧩",
+      "description": "Les indispensables"
+    },
+    {
+      "id": "packs",
+      "label": "Packs",
+      "emoji": "📦",
+      "description": "Bundles et lots"
+    },
+    {
+      "id": "accessories",
+      "label": "Accessoires",
+      "emoji": "🛰️",
+      "description": "Extras & accessoires"
+    }
+  ],
+  "home": {
+    "hotDropsCategoryId": "hot-drops",
+    "hotDropsLimit": 8,
+    "promoLimit": 8,
+    "showCategories": true
+  },
+  "checkout": {
+    "directivesTitle": "Directives avant achat",
+    "directives": [
+      "Je confirme être majeur(e) dans ma juridiction (âge légal).",
+      "Je comprends que toutes les ventes peuvent être finales selon la politique affichée.",
+      "Je vérifie que mes informations (email, adresse) sont exactes avant de confirmer.",
+      "Je comprends que les délais de livraison peuvent varier."
+    ],
+    "paymentTitle": "Paiement",
+    "paymentInstructions": [
+      "Après confirmation, vous recevrez un récapitulatif de commande.",
+      "Ajoutez ensuite votre méthode de paiement (carte, virement, etc.) selon votre configuration.",
+      "Si vous utilisez une méthode manuelle, précisez vos instructions dans le fichier data/site.json."
+    ],
+    "successMessage": "Commande confirmée ✅"
+  },
+  "links": {
+    "terms": "terms.html",
+    "privacy": "privacy.html",
+    "supportEmail": "support@example.com"
+  },
+  "locale": "fr-CA"
+}
