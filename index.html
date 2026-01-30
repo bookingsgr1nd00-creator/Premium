@@ -1,33 +1,46 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-CA">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Premium Supply — Storefront</title>
+  <title>Premium Supply — Proudly Canadian Storefront</title>
 
+  <!-- Icons (CSS only) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
   <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
-  <!-- Top bar -->
+  <!-- Topbar -->
   <div class="topbar">
     <div class="container topbar__inner">
-      <span class="topbar__badge">Premium Supply</span>
-      <p class="topbar__text">Verified inventory • Simple ordering • Email-transfer payment</p>
-      <a class="topbar__link" href="#support">Support</a>
+      <span class="topbar__badge"><i class="fa-solid fa-maple-leaf"></i> Proudly Canadian</span>
+      <p class="topbar__text">Ships across Canada • Simple ordering • Pay via Interac e‑Transfer</p>
+      <a class="topbar__link" href="#contact">Contact</a>
     </div>
   </div>
 
   <!-- Header -->
   <header class="header" role="banner">
     <div class="container header__inner">
-      <button class="icon-btn" aria-label="Open menu">
-        <i class="fa-solid fa-bars"></i>
-      </button>
+      <!-- No-JS mobile menu using <details> -->
+      <details class="nav">
+        <summary class="icon-btn" aria-label="Open menu">
+          <i class="fa-solid fa-bars"></i>
+        </summary>
+        <div class="nav__panel" role="navigation" aria-label="Site navigation">
+          <a href="index.html" class="nav__link is-active">Home</a>
+          <a href="products.html" class="nav__link">Products</a>
+          <a href="#how" class="nav__link">How to Order</a>
+          <a href="#contact" class="nav__link">Contact</a>
+        </div>
+      </details>
 
-      <a class="brand" href="#" aria-label="Premium Supply home">
-        <!-- Replace this SVG with your real logo -->
+      <a class="brand" href="index.html" aria-label="Premium Supply home">
+        <!-- Replace with your real logo (PNG/SVG). Example:
+             <img class="brand__logo-img" src="assets/logo.png" alt="Premium Supply">
+        -->
         <svg class="brand__logo" viewBox="0 0 64 64" aria-hidden="true">
           <defs>
             <radialGradient id="g" cx="30%" cy="30%" r="70%">
@@ -42,14 +55,21 @@
 
         <span class="brand__text">
           <span class="brand__name">Premium Supply</span>
-          <span class="brand__tag">Products Store</span>
+          <span class="brand__tag">Canada-first storefront</span>
         </span>
       </a>
 
-      <button id="openCartBtn" class="icon-btn cart-btn" aria-label="Open cart">
-        <i class="fa-solid fa-cart-shopping"></i>
-        <span id="cartCount" class="cart-badge" aria-label="0 items in cart">0</span>
-      </button>
+      <a class="icon-btn" href="products.html" aria-label="Browse products">
+        <i class="fa-solid fa-store"></i>
+      </a>
+    </div>
+
+    <!-- Desktop nav -->
+    <div class="container header__nav-desktop" aria-label="Primary navigation">
+      <a href="index.html" class="header__link is-active">Home</a>
+      <a href="products.html" class="header__link">Products</a>
+      <a href="#how" class="header__link">How to Order</a>
+      <a href="#contact" class="header__link">Contact</a>
     </div>
   </header>
 
@@ -58,169 +78,158 @@
     <section class="hero">
       <div class="hero__bg" aria-hidden="true"></div>
       <div class="container hero__inner">
-        <h1 class="hero__title">Premium-grade goods, built for fast ordering.</h1>
+        <p class="hero__eyebrow"><i class="fa-solid fa-maple-leaf"></i> 100% Canadian and proud</p>
+        <h1 class="hero__title">Premium Supply — built for fast, simple ordering.</h1>
         <p class="hero__sub">
-          Browse products, build your cart, then complete payment via email transfer and email your order request.
+          Browse products, email your order request, then pay via Interac e‑Transfer.
+          No payment processor, no friction — just clear steps and quick confirmations.
         </p>
 
         <div class="hero__cta">
-          <a class="btn btn--solid" href="#new">Browse products</a>
+          <a class="btn btn--solid" href="products.html">Browse products</a>
           <a class="btn btn--outline" href="#how">How it works</a>
         </div>
+
+        <div class="hero__ticker" aria-label="Highlights">
+          <span>Verified inventory</span><span class="dot">•</span>
+          <span>Canada-wide shipping</span><span class="dot">•</span>
+          <span>Interac e‑Transfer</span><span class="dot">•</span>
+          <span>Fast support</span>
+        </div>
       </div>
     </section>
 
-    <!-- How it works -->
-    <section class="section" id="how">
+    <!-- Trust / Features -->
+    <section class="section">
       <div class="container">
-        <div class="how">
-          <div class="how__item">
-            <div class="how__icon"><i class="fa-solid fa-bag-shopping"></i></div>
+        <div class="feature-list">
+          <div class="feature">
+            <div class="feature__icon"><i class="fa-solid fa-shield-halved"></i></div>
             <div>
-              <h3>Add items</h3>
-              <p>Build your cart from our current catalog.</p>
+              <h3>Secure ordering</h3>
+              <p>Clear instructions and confirmed fulfillment.</p>
             </div>
           </div>
-          <div class="how__item">
-            <div class="how__icon"><i class="fa-solid fa-envelope"></i></div>
+
+          <div class="feature">
+            <div class="feature__icon"><i class="fa-solid fa-truck-fast"></i></div>
             <div>
-              <h3>Email your order</h3>
-              <p>Checkout creates an email with your items and totals.</p>
+              <h3>Canada-wide shipping</h3>
+              <p>Fast dispatch with reliable tracking.</p>
             </div>
           </div>
-          <div class="how__item">
-            <div class="how__icon"><i class="fa-solid fa-money-bill-transfer"></i></div>
+
+          <div class="feature">
+            <div class="feature__icon"><i class="fa-solid fa-maple-leaf"></i></div>
             <div>
-              <h3>Email transfer</h3>
-              <p>Send payment to our email and include the Order ID.</p>
+              <h3>Canadian-first</h3>
+              <p>Built for Canadian customers and workflows.</p>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Product grid -->
-    <section class="section" id="new">
+    <!-- How to order -->
+    <section class="section" id="how">
       <div class="container">
         <div class="section-head">
           <div>
-            <h2 class="section-title">Latest products</h2>
-            <p class="section-sub">Managed via spreadsheet — always up to date.</p>
+            <h2 class="section-title">How ordering works</h2>
+            <p class="section-sub">No processor — payment is handled by Interac e‑Transfer.</p>
           </div>
-          <button id="reloadBtn" class="more-btn" aria-label="Reload products">
-            <i class="fa-solid fa-rotate"></i>
-          </button>
         </div>
 
-        <div id="productGrid" class="product-grid" aria-live="polite"></div>
+        <div class="steps">
+          <article class="step">
+            <div class="step__icon"><i class="fa-solid fa-bag-shopping"></i></div>
+            <h3>1) Choose products</h3>
+            <p>Open the catalog and click “Order by Email” on the item(s) you want.</p>
+          </article>
 
-        <div id="emptyState" class="empty" hidden>
-          <h3>No products found</h3>
-          <p>Check your Google Sheets CSV link and confirm “active” is TRUE.</p>
+          <article class="step">
+            <div class="step__icon"><i class="fa-solid fa-envelope"></i></div>
+            <h3>2) Email your request</h3>
+            <p>Your email app opens with a pre-filled message. Add quantity + shipping city/province.</p>
+          </article>
+
+          <article class="step">
+            <div class="step__icon"><i class="fa-solid fa-money-bill-transfer"></i></div>
+            <h3>3) Pay by Interac e‑Transfer</h3>
+            <p>We reply with confirmation details and the exact reference to include with your transfer.</p>
+          </article>
+        </div>
+
+        <div class="notice">
+          <strong>Tip:</strong> For larger orders, you can email one message listing multiple SKUs and quantities.
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section">
+      <div class="container">
+        <div class="cta">
+          <div>
+            <h2>Ready to browse?</h2>
+            <p>Visit the full catalog and delegate product updates easily.</p>
+          </div>
+          <a class="btn btn--solid" href="products.html">
+            View products <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="section" id="contact">
+      <div class="container">
+        <div class="contact">
+          <div>
+            <h2 class="section-title">Contact</h2>
+            <p class="section-sub">Update these emails to your real addresses.</p>
+          </div>
+
+          <div class="contact__grid">
+            <div class="contact__card">
+              <h3>Order requests</h3>
+              <p><a class="mono" href="mailto:orders@premiumsupply.ca">orders@premiumsupply.ca</a></p>
+              <p class="muted">Customers email order details here.</p>
+            </div>
+
+            <div class="contact__card">
+              <h3>Interac e‑Transfer</h3>
+              <p><a class="mono" href="mailto:payments@premiumsupply.ca">payments@premiumsupply.ca</a></p>
+              <p class="muted">Payment destination address (email transfer).</p>
+            </div>
+
+            <div class="contact__card">
+              <h3>Support</h3>
+              <p><a class="mono" href="mailto:support@premiumsupply.ca">support@premiumsupply.ca</a></p>
+              <p class="muted">Questions, shipping updates, and help.</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- Footer -->
-    <footer class="footer" id="support">
+    <footer class="footer">
       <div class="container footer__inner">
         <div>
           <h3>Premium Supply</h3>
-          <p>
-            Need help with an order? Email our team and include your Order ID.
-          </p>
+          <p>Canada-first. Simple ordering. Interac e‑Transfer payments.</p>
         </div>
 
         <div class="footer__links">
-          <a href="#">Shipping</a>
-          <a href="#">Ordering</a>
-          <a href="#">Returns</a>
-          <a href="#">Contact</a>
+          <a href="products.html">Products</a>
+          <a href="#how">How to Order</a>
+          <a href="#contact">Contact</a>
         </div>
 
-        <p class="footer__fineprint">© <span id="year"></span> Premium Supply. All rights reserved.</p>
+        <p class="footer__fineprint">© 2026 Premium Supply. All rights reserved.</p>
       </div>
     </footer>
   </main>
-
-  <!-- Cart Drawer -->
-  <div id="backdrop" class="backdrop" hidden></div>
-
-  <aside id="cartDrawer" class="cart-drawer" aria-label="Shopping cart" aria-hidden="true">
-    <div class="cart-drawer__head">
-      <h2>Your Cart</h2>
-      <button id="closeCartBtn" class="icon-btn" aria-label="Close cart">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    </div>
-
-    <div id="cartItems" class="cart-items"></div>
-
-    <div class="cart-drawer__foot">
-      <div class="cart-total">
-        <span>Total</span>
-        <strong id="cartTotal">$0.00</strong>
-      </div>
-
-      <button id="checkoutBtn" class="btn btn--solid btn--full">
-        Checkout (Email transfer) <i class="fa-solid fa-arrow-right"></i>
-      </button>
-
-      <p class="cart-note">
-        You’ll receive instructions and an “Email order request” button on the next step.
-      </p>
-    </div>
-  </aside>
-
-  <!-- Checkout Modal -->
-  <div id="modal" class="modal" hidden>
-    <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <div class="modal__head">
-        <h2 id="modalTitle">Complete your order</h2>
-        <button id="closeModalBtn" class="icon-btn" aria-label="Close modal">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-
-      <div class="modal__body">
-        <p class="muted">Order ID</p>
-        <div class="copy-row">
-          <strong id="orderId"></strong>
-          <button id="copyOrderIdBtn" class="mini-btn" type="button">Copy</button>
-        </div>
-
-        <div class="divider"></div>
-
-        <h3>Email transfer instructions</h3>
-        <ol class="steps">
-          <li>Send an email transfer to: <span class="mono" id="payEmail"></span></li>
-          <li>Include your Order ID in the message/notes.</li>
-          <li>Then email us your order request so we can confirm.</li>
-        </ol>
-
-        <div class="actions">
-          <button id="copyPayEmailBtn" class="btn btn--outline" type="button">
-            Copy payment email
-          </button>
-
-          <a id="emailOrderLink" class="btn btn--solid" href="#">
-            Email order request <i class="fa-solid fa-paper-plane"></i>
-          </a>
-        </div>
-
-        <p class="fineprint">
-          Tip: If “Email order request” doesn’t open, the customer may not have a mail app set up on their device.
-          In that case, show the order summary and let them copy/paste it.
-        </p>
-
-        <details class="summary">
-          <summary>View order summary</summary>
-          <pre id="orderSummary" class="summary__box"></pre>
-        </details>
-      </div>
-    </div>
-  </div>
-
-  <script src="app.js"></script>
 </body>
 </html>
