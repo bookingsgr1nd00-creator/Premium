@@ -5,76 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Premium Supply — Storefront</title>
 
-  <!-- Font Awesome (icons) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
   <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
-  <a id="top" class="sr-only" href="#main">Skip to content</a>
-
-  <!-- =========================
-       AGE GATE (CSS-only demo)
-       Toggle hides when "I'm of age" is clicked.
-  ========================== -->
-  <input class="gate-radio" type="radio" name="ageGate" id="age-yes" />
-
-  <div class="age-gate" role="dialog" aria-modal="true" aria-labelledby="gate-title">
-    <div class="age-gate__panel">
-      <div class="age-gate__mark" aria-hidden="true">
-        <!-- Hex-cluster style mark (inspired by screenshot, not copied) -->
-        <svg viewBox="0 0 120 120" class="hex-mark" role="img" aria-label="Premium Supply mark">
-          <g fill="none" stroke="currentColor" stroke-width="6" stroke-linejoin="round">
-            <path d="M60 14 78 24v20L60 54 42 44V24z"/>
-            <path d="M26 34 44 44v20L26 74 8 64V44z"/>
-            <path d="M94 34 112 44v20L94 74 76 64V44z"/>
-            <path d="M43 66 61 76v20L43 106 25 96V76z"/>
-            <path d="M77 66 95 76v20L77 106 59 96V76z"/>
-          </g>
-        </svg>
-      </div>
-
-      <h1 id="gate-title" class="age-gate__title">Before you enter</h1>
-      <p class="age-gate__text">
-        Premium Supply is a regulated marketplace. Please confirm you meet the legal access
-        requirements for your region and agree to browse responsibly.
-      </p>
-
-      <p class="age-gate__question">Are you of legal age in your location?</p>
-
-      <div class="age-gate__actions">
-        <a class="btn btn--outline" href="#" aria-label="Exit site">Not yet</a>
-        <label class="btn btn--solid" for="age-yes">I’m of age</label>
-      </div>
-
-      <label class="age-gate__remember">
-        <input type="checkbox" checked />
-        <span>Remember my choice</span>
-      </label>
-
-      <p class="age-gate__fineprint">
-        Access rules vary by jurisdiction. Always follow local requirements.
-      </p>
-    </div>
-  </div>
-
-  <!-- =========================
-       TOP ANNOUNCEMENT BAR
-  ========================== -->
+  <!-- Top bar -->
   <div class="topbar">
     <div class="container topbar__inner">
-      <span class="topbar__badge">Licensed Store</span>
-      <p class="topbar__text">
-        Verified inventory • Secure checkout • Free express shipping on qualifying orders
-      </p>
-      <a class="topbar__link" href="#">Support</a>
+      <span class="topbar__badge">Premium Supply</span>
+      <p class="topbar__text">Verified inventory • Simple ordering • Email-transfer payment</p>
+      <a class="topbar__link" href="#support">Support</a>
     </div>
   </div>
 
-  <!-- =========================
-       HEADER (mobile-first)
-  ========================== -->
+  <!-- Header -->
   <header class="header" role="banner">
     <div class="container header__inner">
       <button class="icon-btn" aria-label="Open menu">
@@ -82,7 +27,7 @@
       </button>
 
       <a class="brand" href="#" aria-label="Premium Supply home">
-        <!-- Small globe-ish mark (placeholder) -->
+        <!-- Replace this SVG with your real logo -->
         <svg class="brand__logo" viewBox="0 0 64 64" aria-hidden="true">
           <defs>
             <radialGradient id="g" cx="30%" cy="30%" r="70%">
@@ -97,496 +42,185 @@
 
         <span class="brand__text">
           <span class="brand__name">Premium Supply</span>
-          <span class="brand__tag">Storefront</span>
+          <span class="brand__tag">Products Store</span>
         </span>
       </a>
 
-      <button class="icon-btn cart-btn" aria-label="Open cart">
+      <button id="openCartBtn" class="icon-btn cart-btn" aria-label="Open cart">
         <i class="fa-solid fa-cart-shopping"></i>
-        <span class="cart-badge" aria-label="0 items in cart">0</span>
+        <span id="cartCount" class="cart-badge" aria-label="0 items in cart">0</span>
       </button>
     </div>
   </header>
 
   <main id="main">
-    <!-- =========================
-         COSMIC HERO (inspired by your globe screen)
-    ========================== -->
+    <!-- Hero -->
     <section class="hero">
       <div class="hero__bg" aria-hidden="true"></div>
-
       <div class="container hero__inner">
-        <div class="hero__orbit">
-          <!-- Arc text using SVG path (responsive) -->
-          <svg class="hero__arc" viewBox="0 0 600 260" aria-hidden="true">
-            <defs>
-              <path id="arcPath" d="M70,210 C170,40 430,40 530,210" />
-              <filter id="glow">
-                <feGaussianBlur stdDeviation="3.5" result="coloredBlur"/>
-                <feMerge>
-                  <feMergeNode in="coloredBlur"/>
-                  <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-              </filter>
-            </defs>
-            <text class="hero__arcText" filter="url(#glow)">
-              <textPath href="#arcPath" startOffset="50%" text-anchor="middle">
-                PREMIUM SUPPLY
-              </textPath>
-            </text>
-          </svg>
-
-          <div class="hero__sphere" aria-hidden="true"></div>
-
-          <!-- paper-plane style accent -->
-          <svg class="hero__plane" viewBox="0 0 64 64" aria-hidden="true">
-            <path d="M6 30 58 8 36 56 28 36 6 30Z" fill="currentColor" opacity=".95"/>
-            <path d="M28 36 58 8 32 32" fill="none" stroke="currentColor" stroke-width="2" opacity=".35"/>
-          </svg>
-        </div>
-
+        <h1 class="hero__title">Premium-grade goods, built for fast ordering.</h1>
         <p class="hero__sub">
-          Premium-grade goods, verified sourcing, and a storefront built for fast mobile shopping.
+          Browse products, build your cart, then complete payment via email transfer and email your order request.
         </p>
 
         <div class="hero__cta">
-          <a class="btn btn--solid" href="#new">Browse catalog</a>
-          <a class="btn btn--outline" href="#sell">Sell to us</a>
-        </div>
-
-        <div class="hero__scroll">
-          <span>Scroll</span>
-          <i class="fa-solid fa-arrow-down"></i>
-        </div>
-      </div>
-
-      <div class="ticker" aria-label="Brand highlights">
-        <div class="ticker__track">
-          <span>Premium quality</span><span class="dot">•</span>
-          <span>Verified suppliers</span><span class="dot">•</span>
-          <span>Fast dispatch</span><span class="dot">•</span>
-          <span>Compliance-ready</span><span class="dot">•</span>
-          <span>Member pricing</span><span class="dot">•</span>
-          <span>Premium quality</span><span class="dot">•</span>
-          <span>Verified suppliers</span><span class="dot">•</span>
-          <span>Fast dispatch</span><span class="dot">•</span>
+          <a class="btn btn--solid" href="#new">Browse products</a>
+          <a class="btn btn--outline" href="#how">How it works</a>
         </div>
       </div>
     </section>
 
-    <!-- =========================
-         PROMO / FEATURED OFFER CARD
-    ========================== -->
-    <section class="section">
+    <!-- How it works -->
+    <section class="section" id="how">
       <div class="container">
-        <article class="promo">
-          <div class="promo__content">
-            <span class="pill">Build a bundle</span>
-            <h2 class="promo__title">Save more when you stock up</h2>
-            <ul class="promo__list">
-              <li>10% off 2+ items</li>
-              <li>15% off 4+ items</li>
-              <li>25% off 8+ items</li>
-              <li>Free express shipping on qualifying totals</li>
-            </ul>
-
-            <a class="btn btn--solid promo__btn" href="#new">
-              Shop bundles <i class="fa-solid fa-arrow-right"></i>
-            </a>
-
-            <p class="promo__note">Discounts apply to eligible collections. Terms may vary.</p>
-          </div>
-
-          <div class="promo__media" aria-hidden="true">
-            <div class="promo__art"></div>
-            <div class="promo__dots" aria-hidden="true">
-              <span class="dot is-active"></span>
-              <span class="dot"></span>
-              <span class="dot"></span>
-              <span class="dot"></span>
-            </div>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <!-- =========================
-         TRUST / FEATURES LIST
-    ========================== -->
-    <section class="section">
-      <div class="container">
-        <div class="feature-list">
-          <div class="feature">
-            <div class="feature__icon"><i class="fa-solid fa-shield-halved"></i></div>
+        <div class="how">
+          <div class="how__item">
+            <div class="how__icon"><i class="fa-solid fa-bag-shopping"></i></div>
             <div>
-              <h3>Secure checkout</h3>
-              <p>Modern encryption and fraud checks built in.</p>
+              <h3>Add items</h3>
+              <p>Build your cart from our current catalog.</p>
             </div>
           </div>
-
-          <div class="feature">
-            <div class="feature__icon"><i class="fa-solid fa-tags"></i></div>
+          <div class="how__item">
+            <div class="how__icon"><i class="fa-solid fa-envelope"></i></div>
             <div>
-              <h3>Member pricing</h3>
-              <p>Automatic savings when you build larger orders.</p>
+              <h3>Email your order</h3>
+              <p>Checkout creates an email with your items and totals.</p>
             </div>
           </div>
-
-          <div class="feature">
-            <div class="feature__icon"><i class="fa-solid fa-truck-fast"></i></div>
+          <div class="how__item">
+            <div class="how__icon"><i class="fa-solid fa-money-bill-transfer"></i></div>
             <div>
-              <h3>Fast dispatch</h3>
-              <p>Quick pick &amp; pack with tracking updates.</p>
+              <h3>Email transfer</h3>
+              <p>Send payment to our email and include the Order ID.</p>
             </div>
           </div>
-        </div>
-
-        <article class="wide-card" id="sell">
-          <div class="wide-card__content">
-            <span class="pill pill--soft">Best value</span>
-            <h2>Sell inventory to Premium Supply</h2>
-            <p>
-              Have eligible goods to move? Submit your list and get a fast quote.
-              We focus on quality, traceability, and fair pricing.
-            </p>
-            <a class="btn btn--outline" href="#">
-              Get a quote <i class="fa-solid fa-arrow-right"></i>
-            </a>
-          </div>
-
-          <div class="wide-card__media" aria-hidden="true">
-            <div class="wide-card__art"></div>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <!-- =========================
-         CATEGORY CARDS (stacked like screenshots)
-    ========================== -->
-    <section class="section">
-      <div class="container">
-        <div class="stack">
-          <article class="category-card">
-            <div class="category-card__content">
-              <span class="kicker">Premium selection</span>
-              <h2>Signature Collections</h2>
-              <p>Curated drops built around quality, consistency, and clean presentation.</p>
-              <a class="btn btn--outline" href="#">
-                Shop collections <i class="fa-solid fa-arrow-right"></i>
-              </a>
-            </div>
-            <div class="category-card__media" aria-hidden="true">
-              <div class="cat-art cat-art--one"></div>
-            </div>
-          </article>
-
-          <article class="category-card">
-            <div class="category-card__content">
-              <span class="kicker">Fresh arrivals</span>
-              <h2>Edible-Ready Goods</h2>
-              <p>Small-batch items designed for reliable dosing and clean labels.</p>
-              <a class="btn btn--outline" href="#">
-                Browse new <i class="fa-solid fa-arrow-right"></i>
-              </a>
-            </div>
-            <div class="category-card__media" aria-hidden="true">
-              <div class="cat-art cat-art--two"></div>
-            </div>
-          </article>
-
-          <article class="category-card">
-            <div class="category-card__content">
-              <span class="kicker">Top shelf</span>
-              <h2>Craft Essentials</h2>
-              <p>High-grade essentials with premium packaging and verified sourcing.</p>
-              <a class="btn btn--outline" href="#">
-                Shop craft <i class="fa-solid fa-arrow-right"></i>
-              </a>
-            </div>
-            <div class="category-card__media" aria-hidden="true">
-              <div class="cat-art cat-art--three"></div>
-            </div>
-          </article>
         </div>
       </div>
     </section>
 
-    <!-- =========================
-         PRODUCT GRID SECTION (New Arrivals)
-    ========================== -->
+    <!-- Product grid -->
     <section class="section" id="new">
       <div class="container">
         <div class="section-head">
           <div>
-            <h2 class="section-title">New arrivals</h2>
-            <p class="section-sub">Fresh inventory — updated regularly.</p>
+            <h2 class="section-title">Latest products</h2>
+            <p class="section-sub">Managed via spreadsheet — always up to date.</p>
           </div>
-          <button class="more-btn" aria-label="More options">
-            <i class="fa-solid fa-ellipsis"></i>
+          <button id="reloadBtn" class="more-btn" aria-label="Reload products">
+            <i class="fa-solid fa-rotate"></i>
           </button>
         </div>
 
-        <div class="product-grid">
-          <!-- Product Card -->
-          <article class="product">
-            <div class="product__top">
-              <button class="mini-icon" aria-label="Save item"><i class="fa-regular fa-heart"></i></button>
-              <button class="mini-icon" aria-label="Quick view"><i class="fa-regular fa-eye"></i></button>
-            </div>
+        <div id="productGrid" class="product-grid" aria-live="polite"></div>
 
-            <div class="product__img" aria-hidden="true">
-              <div class="prod-art prod-art--a"></div>
-            </div>
-
-            <span class="tag tag--amber">Limited</span>
-            <h3 class="product__name">Orbit Pack — Starter Bundle</h3>
-
-            <div class="product__meta">
-              <div class="stars" aria-label="4.8 stars">
-                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
-                <span class="count">92</span>
-              </div>
-            </div>
-
-            <div class="product__bottom">
-              <p class="price">$24.00 – $189.00</p>
-              <button class="add" aria-label="Add to cart"><i class="fa-solid fa-cart-plus"></i></button>
-            </div>
-          </article>
-
-          <article class="product">
-            <div class="product__top">
-              <button class="mini-icon" aria-label="Save item"><i class="fa-regular fa-heart"></i></button>
-              <button class="mini-icon" aria-label="Quick view"><i class="fa-regular fa-eye"></i></button>
-            </div>
-
-            <div class="product__img" aria-hidden="true">
-              <div class="prod-art prod-art--b"></div>
-            </div>
-
-            <span class="tag tag--mint">Best seller</span>
-            <h3 class="product__name">Nova Series — Premium Pack</h3>
-
-            <div class="product__meta">
-              <div class="stars" aria-label="4.6 stars">
-                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i>
-                <span class="count">43</span>
-              </div>
-            </div>
-
-            <div class="product__bottom">
-              <p class="price">$16.00 – $299.00</p>
-              <button class="add" aria-label="Add to cart"><i class="fa-solid fa-cart-plus"></i></button>
-            </div>
-          </article>
-
-          <article class="product">
-            <div class="product__top">
-              <button class="mini-icon" aria-label="Save item"><i class="fa-regular fa-heart"></i></button>
-              <button class="mini-icon" aria-label="Quick view"><i class="fa-regular fa-eye"></i></button>
-            </div>
-
-            <div class="product__img" aria-hidden="true">
-              <div class="prod-art prod-art--c"></div>
-            </div>
-
-            <span class="tag tag--gray">New</span>
-            <h3 class="product__name">Clean Label — Essentials</h3>
-
-            <div class="product__meta">
-              <div class="stars" aria-label="4.9 stars">
-                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                <span class="count">18</span>
-              </div>
-            </div>
-
-            <div class="product__bottom">
-              <p class="price">$12.00 – $140.00</p>
-              <button class="add" aria-label="Add to cart"><i class="fa-solid fa-cart-plus"></i></button>
-            </div>
-          </article>
-
-          <article class="product">
-            <div class="product__top">
-              <button class="mini-icon" aria-label="Save item"><i class="fa-regular fa-heart"></i></button>
-              <button class="mini-icon" aria-label="Quick view"><i class="fa-regular fa-eye"></i></button>
-            </div>
-
-            <div class="product__img" aria-hidden="true">
-              <div class="prod-art prod-art--d"></div>
-            </div>
-
-            <span class="tag tag--amber">Deal</span>
-            <h3 class="product__name">Transit Kit — Travel Ready</h3>
-
-            <div class="product__meta">
-              <div class="stars" aria-label="4.4 stars">
-                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i><i class="fa-regular fa-star"></i>
-                <span class="count">30</span>
-              </div>
-            </div>
-
-            <div class="product__bottom">
-              <p class="price">$18.00 – $210.00</p>
-              <button class="add" aria-label="Add to cart"><i class="fa-solid fa-cart-plus"></i></button>
-            </div>
-          </article>
+        <div id="emptyState" class="empty" hidden>
+          <h3>No products found</h3>
+          <p>Check your Google Sheets CSV link and confirm “active” is TRUE.</p>
         </div>
       </div>
     </section>
 
-    <!-- =========================
-         REWARDS + REVIEWS CARDS (like screenshots)
-    ========================== -->
-    <section class="section">
-      <div class="container">
-        <div class="two-cards">
-          <article class="info-card">
-            <span class="pill pill--soft">Member perks</span>
-            <h2>Rewards &amp; promos</h2>
-            <p>Earn points on eligible purchases and unlock seasonal perks.</p>
-            <a class="btn btn--outline" href="#">
-              Learn more <i class="fa-solid fa-arrow-right"></i>
-            </a>
-            <div class="info-card__art info-card__art--smile" aria-hidden="true"></div>
-          </article>
-
-          <article class="info-card info-card--alt">
-            <span class="pill pill--soft">Before you buy</span>
-            <h2>Product reviews</h2>
-            <p>Read verified feedback to choose the right item the first time.</p>
-            <a class="btn btn--outline" href="#">
-              Read reviews <i class="fa-solid fa-arrow-right"></i>
-            </a>
-            <div class="info-card__art info-card__art--stars" aria-hidden="true"></div>
-          </article>
-        </div>
-
-        <div class="section-head section-head--tight">
-          <div>
-            <h2 class="section-title">Verified buyer stories</h2>
-            <p class="section-sub">Shared experiences from customers across regions.</p>
-          </div>
-          <button class="more-btn" aria-label="More stories">
-            <i class="fa-solid fa-ellipsis"></i>
-          </button>
-        </div>
-
-        <div class="reviews">
-          <article class="review">
-            <div class="avatar" aria-hidden="true">S</div>
-            <div class="review__body">
-              <div class="review__top">
-                <h3>Shane J.</h3>
-                <span class="review__date">24 Jan 2026</span>
-              </div>
-              <div class="stars stars--small" aria-label="5 stars">
-                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-              </div>
-              <p>
-                Fast shipping and the packaging felt genuinely premium. The bundle options made it easy to build
-                exactly what I needed without overpaying.
-              </p>
-            </div>
-          </article>
-
-          <article class="review">
-            <div class="avatar" aria-hidden="true">A</div>
-            <div class="review__body">
-              <div class="review__top">
-                <h3>Amira K.</h3>
-                <span class="review__date">18 Jan 2026</span>
-              </div>
-              <div class="stars stars--small" aria-label="4.5 stars">
-                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
-              </div>
-              <p>
-                Clear product descriptions and quick support. Would love to see even more “drop” notifications.
-              </p>
-            </div>
-          </article>
-
-          <article class="review">
-            <div class="avatar" aria-hidden="true">M</div>
-            <div class="review__body">
-              <div class="review__top">
-                <h3>Marco L.</h3>
-                <span class="review__date">10 Jan 2026</span>
-              </div>
-              <div class="stars stars--small" aria-label="5 stars">
-                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-              </div>
-              <p>
-                The mobile experience is smooth, especially the sticky navigation and quick add-to-cart.
-                Everything feels clean and trustworthy.
-              </p>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- =========================
-         FOOTER
-    ========================== -->
-    <footer class="footer">
+    <!-- Footer -->
+    <footer class="footer" id="support">
       <div class="container footer__inner">
         <div>
           <h3>Premium Supply</h3>
           <p>
-            A regulated marketplace built for clarity, speed, and premium presentation.
-            Availability and access requirements vary by location.
+            Need help with an order? Email our team and include your Order ID.
           </p>
         </div>
 
         <div class="footer__links">
           <a href="#">Shipping</a>
+          <a href="#">Ordering</a>
           <a href="#">Returns</a>
-          <a href="#">Compliance</a>
           <a href="#">Contact</a>
         </div>
 
-        <p class="footer__fineprint">
-          © <span id="year">2026</span> Premium Supply. All rights reserved.
-        </p>
+        <p class="footer__fineprint">© <span id="year"></span> Premium Supply. All rights reserved.</p>
       </div>
     </footer>
   </main>
 
-  <!-- Floating actions -->
-  <a class="fab fab--top" href="#top" aria-label="Back to top">
-    <i class="fa-solid fa-arrow-up"></i>
-  </a>
+  <!-- Cart Drawer -->
+  <div id="backdrop" class="backdrop" hidden></div>
 
-  <a class="fab fab--chat" href="#" aria-label="Chat with support">
-    <i class="fa-solid fa-comment-dots"></i>
-  </a>
+  <aside id="cartDrawer" class="cart-drawer" aria-label="Shopping cart" aria-hidden="true">
+    <div class="cart-drawer__head">
+      <h2>Your Cart</h2>
+      <button id="closeCartBtn" class="icon-btn" aria-label="Close cart">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
 
-  <!-- =========================
-       MOBILE BOTTOM DOCK NAV
-  ========================== -->
-  <nav class="dock" aria-label="Primary navigation">
-    <a class="dock__item is-active" href="#">
-      <i class="fa-solid fa-store"></i>
-      <span>Shop</span>
-    </a>
-    <a class="dock__item" href="#">
-      <i class="fa-solid fa-magnifying-glass"></i>
-      <span>Search</span>
-    </a>
-    <a class="dock__item" href="#">
-      <i class="fa-regular fa-heart"></i>
-      <span>Saved</span>
-    </a>
-    <a class="dock__item" href="#">
-      <i class="fa-regular fa-user"></i>
-      <span>Account</span>
-    </a>
-    <a class="dock__item" href="#">
-      <i class="fa-solid fa-layer-group"></i>
-      <span>Menu</span>
-    </a>
-  </nav>
+    <div id="cartItems" class="cart-items"></div>
+
+    <div class="cart-drawer__foot">
+      <div class="cart-total">
+        <span>Total</span>
+        <strong id="cartTotal">$0.00</strong>
+      </div>
+
+      <button id="checkoutBtn" class="btn btn--solid btn--full">
+        Checkout (Email transfer) <i class="fa-solid fa-arrow-right"></i>
+      </button>
+
+      <p class="cart-note">
+        You’ll receive instructions and an “Email order request” button on the next step.
+      </p>
+    </div>
+  </aside>
+
+  <!-- Checkout Modal -->
+  <div id="modal" class="modal" hidden>
+    <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal__head">
+        <h2 id="modalTitle">Complete your order</h2>
+        <button id="closeModalBtn" class="icon-btn" aria-label="Close modal">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="modal__body">
+        <p class="muted">Order ID</p>
+        <div class="copy-row">
+          <strong id="orderId"></strong>
+          <button id="copyOrderIdBtn" class="mini-btn" type="button">Copy</button>
+        </div>
+
+        <div class="divider"></div>
+
+        <h3>Email transfer instructions</h3>
+        <ol class="steps">
+          <li>Send an email transfer to: <span class="mono" id="payEmail"></span></li>
+          <li>Include your Order ID in the message/notes.</li>
+          <li>Then email us your order request so we can confirm.</li>
+        </ol>
+
+        <div class="actions">
+          <button id="copyPayEmailBtn" class="btn btn--outline" type="button">
+            Copy payment email
+          </button>
+
+          <a id="emailOrderLink" class="btn btn--solid" href="#">
+            Email order request <i class="fa-solid fa-paper-plane"></i>
+          </a>
+        </div>
+
+        <p class="fineprint">
+          Tip: If “Email order request” doesn’t open, the customer may not have a mail app set up on their device.
+          In that case, show the order summary and let them copy/paste it.
+        </p>
+
+        <details class="summary">
+          <summary>View order summary</summary>
+          <pre id="orderSummary" class="summary__box"></pre>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>
