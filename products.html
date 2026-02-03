@@ -5,33 +5,56 @@ permalink: /products.html
 <html lang="en-CA">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Premium Supply — Catalogue</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
+  <!-- Always-on promo band -->
+  <div class="adband">
+    <div class="container adband__inner">
+      <div class="adband__tag">PROMO</div>
+      <div class="adband__marquee" aria-label="Promotions">
+        <div class="adband__track">
+          <span>Weekly deals • Limited drops • Canada-wide shipping</span><span class="sep">•</span>
+          <span>Minimum order $75 CAD • Instructions shown after placing order</span><span class="sep">•</span>
+          <span>Earn points & levels • Check Account page</span><span class="sep">•</span>
+
+          <span>Weekly deals • Limited drops • Canada-wide shipping</span><span class="sep">•</span>
+          <span>Minimum order $75 CAD • Instructions shown after placing order</span><span class="sep">•</span>
+          <span>Earn points & levels • Check Account page</span><span class="sep">•</span>
+        </div>
+      </div>
+      <a class="adband__cta" href="account.html">Rewards</a>
+    </div>
+  </div>
+
+  <!-- Header -->
   <header class="header">
     <div class="container header__inner">
-      <a class="brand" href="index.html" aria-label="Home">
-        <span class="brand__mark">PS</span>
+      <a class="brand" href="index.html">
+        <img class="brand__logo" src="assets/brand/logo-round.png" alt="Premium Supply logo">
         <span class="brand__text">
           <span class="brand__name">Premium Supply</span>
-          <span class="brand__tag">Proudly Canadian • CAD</span>
+          <span class="brand__tag">Catalogue • CAD</span>
         </span>
       </a>
 
-      <nav class="header__links" aria-label="Primary">
-        <a class="hlink" href="products.html" aria-current="page">Catalogue</a>
-        <a class="hlink" href="account.html">Account</a>
-        <a class="hlink" href="index.html">Home</a>
+      <nav class="nav" aria-label="Primary navigation">
+        <a href="index.html">Home</a>
+        <a href="products.html" aria-current="page">Catalogue</a>
+        <a href="account.html">Account</a>
       </nav>
 
-      <button class="btn btn--solid" id="openCart" type="button">
-        Cart (<span id="cartCount">0</span>)
-      </button>
+      <div class="header__right">
+        <button class="btn btn--solid" id="openCart" type="button">
+          Cart (<span id="cartCount">0</span>)
+        </button>
+      </div>
     </div>
 
+    <!-- Category chips -->
     <div class="container catbar" aria-label="Catalogue categories">
       <a class="chip" href="#cat-flowers">Flowers</a>
       <a class="chip" href="#cat-oil">Oil</a>
@@ -44,28 +67,34 @@ permalink: /products.html
 
   <main class="section">
     <div class="container">
-      <div class="pagehead">
-        <h1 class="title">Catalogue</h1>
-        <p class="sub">
-          Add items to your cart. Payment instructions appear only after you place an order.
-          Minimum order: <strong>$75 CAD</strong>.
-        </p>
+      <!-- Universal-style billboard -->
+      <div class="billboard">
+        <img class="billboard__img" src="assets/brand/logo-universal.png" alt="Premium Supply">
+        <div class="billboard__overlay" aria-hidden="true"></div>
+        <div class="billboard__content">
+          <div>
+            <p class="billboard__headline">Browse → Cart → Summary → Checkout</p>
+            <p class="billboard__sub">Minimum order is <strong>$75 CAD</strong>. Payment instructions appear only after you place the order.</p>
+          </div>
+          <a class="btn btn--outline" href="account.html">Points</a>
+        </div>
       </div>
 
       {% assign categories = "Flowers|Oil|Vapes|Extracts|Mushroom|Accessories" | split: "|" %}
+
       {% for cat in categories %}
         {% assign cat_id = cat | downcase | replace: " ", "-" %}
-        {% assign cat_products = site.products | where: "active", true | where: "category", cat %}
+        {% assign items = site.products | where: "active", true | where: "category", cat %}
 
         <section class="catsec" id="cat-{{ cat_id }}">
           <div class="catsec__head">
             <h2 class="catsec__title">{{ cat }}</h2>
-            <p class="catsec__note">Curated options • Fast ordering • CAD pricing</p>
+            <p class="catsec__note">Updated regularly • CAD pricing</p>
           </div>
 
-          {% if cat_products and cat_products.size > 0 %}
+          {% if items and items.size > 0 %}
             <div class="grid">
-              {% for p in cat_products %}
+              {% for p in items %}
                 <article class="card product"
                   data-sku="{{ p.sku | escape }}"
                   data-name="{{ p.name | escape }}"
@@ -87,13 +116,15 @@ permalink: /products.html
                     </div>
 
                     <h3 class="card__title">{{ p.name }}</h3>
-                    <p class="card__desc">{% if p.description %}{{ p.description }}{% else %}Premium-grade product, packaged for consistency.{% endif %}</p>
+                    <p class="card__desc">{% if p.description %}{{ p.description }}{% else %}Premium-grade product with consistent packaging standards.{% endif %}</p>
 
                     <div class="foot">
                       <div class="price">
                         <strong>${{ p.price }} CAD</strong>
                         {% if p.price_note %}<span class="muted small">{{ p.price_note }}</span>{% endif %}
                       </div>
+
+                      <!-- IMPORTANT: Add does not open checkout -->
                       <button class="btn btn--outline addBtn" type="button">Add</button>
                     </div>
                   </div>
@@ -101,19 +132,30 @@ permalink: /products.html
               {% endfor %}
             </div>
           {% else %}
-            <div class="empty">
-              <strong>No products yet in {{ cat }}.</strong>
-              <div class="muted">Your employee can add items in /admin → Products.</div>
+            <div class="adcard">
+              <h3>No products yet in {{ cat }}</h3>
+              <p>Your employee can add products using the admin panel.</p>
+              <div class="adcard__actions">
+                <a class="btn btn--outline" href="admin/">Open admin</a>
+              </div>
             </div>
           {% endif %}
         </section>
       {% endfor %}
+
+      <footer class="footer">
+        <div class="container footer__inner">
+          <span>© Premium Supply • Catalogue</span>
+          <span class="muted small">Cart → Summary → Checkout (fixed)</span>
+        </div>
+      </footer>
     </div>
   </main>
 
-  <!-- Cart Drawer -->
+  <!-- Backdrop (shared) -->
   <div class="backdrop" id="backdrop" hidden></div>
 
+  <!-- Cart drawer -->
   <aside class="drawer" id="drawer" aria-hidden="true">
     <div class="drawer__head">
       <strong>Your Cart</strong>
@@ -128,19 +170,20 @@ permalink: /products.html
         <strong id="cartTotal">$0.00 CAD</strong>
       </div>
 
-      <div class="minrule" id="minRule"></div>
+      <div class="minrule" id="minRule">Minimum order is $75 CAD.</div>
 
-      <button class="btn btn--solid btn--full" id="checkoutBtn" type="button">
-        Checkout
+      <!-- Cart Summary step opens from HERE -->
+      <button class="btn btn--solid btn--full" id="reviewBtn" type="button">
+        Review cart summary
       </button>
 
-      <p class="muted small">
-        Payment details appear after you place an order.
+      <p class="muted small" style="margin:10px 0 0">
+        Payment instructions are shown only after you place the order.
       </p>
     </div>
   </aside>
 
-  <!-- Checkout Modal -->
+  <!-- Checkout modal (multi-step) -->
   <div class="modal" id="modal" hidden>
     <div class="panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
       <div class="panel__head">
@@ -149,21 +192,46 @@ permalink: /products.html
       </div>
 
       <div class="panel__body">
-        <!-- STEP 1: Review + Place Order (NO payment instructions here) -->
-        <section id="step1">
-          <p class="muted small">Review your order, then place it to generate your confirmation number.</p>
+
+        <!-- STEP 0: Cart Summary -->
+        <section id="step0">
+          <p class="muted small">Confirm your order summary before checkout.</p>
+
+          <div id="summaryLines"></div>
+
+          <div class="divider"></div>
+
+          <div class="row">
+            <span>Order total</span>
+            <strong id="summaryTotal">$0.00 CAD</strong>
+          </div>
+
+          <div class="minrule" id="summaryMinRule">Minimum order is $75 CAD.</div>
+
+          <button class="btn btn--solid btn--full" id="toCheckoutBtn" type="button">
+            Continue to checkout
+          </button>
+
+          <button class="btn btn--ghost btn--full" id="backToCartBtn" type="button" style="margin-top:10px">
+            Back to cart
+          </button>
+        </section>
+
+        <!-- STEP 1: Customer Info + Place Order -->
+        <section id="step1" hidden>
+          <p class="muted small">Enter your information, then place the order to generate a confirmation number.</p>
 
           <div class="formgrid">
             <label class="field">
-              <span>Full name</span>
+              <span>Full name *</span>
               <input id="custName" type="text" placeholder="Your name">
             </label>
             <label class="field">
-              <span>Phone</span>
-              <input id="custPhone" type="tel" placeholder="(___) ___-____">
+              <span>Phone *</span>
+              <input id="custPhone" type="tel" placeholder="( ___ ) ___-____">
             </label>
             <label class="field">
-              <span>City / Province</span>
+              <span>City / Province *</span>
               <input id="custCity" type="text" placeholder="Toronto, ON">
             </label>
             <label class="field">
@@ -179,20 +247,22 @@ permalink: /products.html
             <strong id="checkoutTotal">$0.00 CAD</strong>
           </div>
 
-          <button class="btn btn--solid btn--full" id="placeOrderBtn" type="button">
+          <div id="formError" class="danger" hidden>Please fill in: Full name, Phone, City / Province.</div>
+
+          <button class="btn btn--solid btn--full" id="placeOrderBtn" type="button" style="margin-top:10px">
             Place Order
           </button>
 
-          <p class="muted small">
-            Minimum order is $75 CAD. Payment instructions appear after placing the order.
+          <p class="muted small" style="margin:10px 0 0">
+            Payment instructions appear after placing the order.
           </p>
         </section>
 
-        <!-- STEP 2: Payment Instructions (shown only AFTER Place Order) -->
+        <!-- STEP 2: Payment Instructions (confidential until order placed) -->
         <section id="step2" hidden>
           <p class="muted small">Order confirmation number</p>
           <div class="copyrow">
-            <strong id="orderId"></strong>
+            <strong id="orderId" class="mono"></strong>
             <button class="btn btn--outline" id="copyOrderId" type="button">Copy</button>
           </div>
 
@@ -200,9 +270,9 @@ permalink: /products.html
 
           <h3 class="h3">Interac e‑Transfer instructions</h3>
           <ol class="olist">
-            <li>Send an Interac e‑Transfer to: <strong id="payEmail">payments@premiumsupply.ca</strong></li>
+            <li>Send an Interac e‑Transfer to: <strong id="payEmail" class="mono"></strong></li>
             <li>Include your order number in the transfer message/notes.</li>
-            <li>Send your order email so we can confirm and fulfill.</li>
+            <li>Click the button below to email your order request.</li>
           </ol>
 
           <div class="danger">
@@ -221,102 +291,132 @@ permalink: /products.html
             <pre id="orderSummary"></pre>
           </details>
         </section>
+
       </div>
     </div>
   </div>
 
-  <!-- Inline JS only (no separate JS file) -->
+  <!-- Toast -->
+  <div class="toast" id="toast" hidden>
+    <span>Added to cart</span>
+    <button class="btn btn--outline" id="toastViewCart" type="button">View cart</button>
+  </div>
+
+  <!-- Inline JS only -->
   <script>
-    // ========= EDIT THESE 2 EMAILS =========
+    // ======================
+    // CONFIG (edit these)
+    // ======================
     const ORDER_EMAIL = "orders@premiumsupply.ca";
-    const PAYMENT_EMAIL = "payments@premiumsupply.ca";
-    // ======================================
+
+    // Keep payment email “confidential” until step2 (UI-level).
+    // NOTE: A determined person can still view source on a static site.
+    const PAY_USER = "payments";
+    const PAY_DOMAIN = "premiumsupply.ca";
 
     const MIN_ORDER_CAD = 75;
-    const POINTS_PER_DOLLAR = 1; // 1 point per $1 CAD spent
+    const POINTS_PER_DOLLAR = 1;
+    // ======================
 
     const $ = (s) => document.querySelector(s);
-    const fmt = (n) => new Intl.NumberFormat(undefined, { style: "currency", currency: "CAD" }).format(Number(n || 0));
+    const fmt = (n) => new Intl.NumberFormat(undefined, { style:"currency", currency:"CAD" }).format(Number(n||0));
 
-    const cartKey = "ps_cart_v2";
-    const loyaltyKey = "ps_loyalty_v1";
+    const cartKey = "ps_cart_v3";
+    const loyaltyKey = "ps_loyalty_v2";
 
     let cart = JSON.parse(localStorage.getItem(cartKey) || "{}");
 
-    const drawer = $("#drawer");
     const backdrop = $("#backdrop");
+    const drawer = $("#drawer");
     const modal = $("#modal");
 
     const cartCountEl = $("#cartCount");
     const cartItemsEl = $("#cartItems");
     const cartTotalEl = $("#cartTotal");
-    const checkoutTotalEl = $("#checkoutTotal");
     const minRuleEl = $("#minRule");
 
-    function saveCart() { localStorage.setItem(cartKey, JSON.stringify(cart)); }
-    function cartCount() { return Object.values(cart).reduce((a,b)=>a+b,0); }
+    const summaryLinesEl = $("#summaryLines");
+    const summaryTotalEl = $("#summaryTotal");
+    const summaryMinRuleEl = $("#summaryMinRule");
 
-    function cartTotal() {
+    const checkoutTotalEl = $("#checkoutTotal");
+    const formErrorEl = $("#formError");
+
+    const toast = $("#toast");
+    const toastViewCart = $("#toastViewCart");
+
+    function saveCart(){ localStorage.setItem(cartKey, JSON.stringify(cart)); }
+    function countItems(){ return Object.values(cart).reduce((a,b)=>a+b,0); }
+
+    function getProduct(sku){
+      const el = document.querySelector('.product[data-sku="' + CSS.escape(sku) + '"]');
+      if(!el) return null;
+      return {
+        sku,
+        name: el.dataset.name,
+        price: Number(el.dataset.price || 0),
+        category: el.dataset.category || ""
+      };
+    }
+
+    function cartTotal(){
       let total = 0;
-      for (const sku in cart) {
-        const qty = cart[sku];
-        const el = document.querySelector('.product[data-sku="' + CSS.escape(sku) + '"]');
-        const price = el ? Number(el.dataset.price || 0) : 0;
-        total += price * qty;
+      for(const sku in cart){
+        const p = getProduct(sku);
+        if(!p) continue;
+        total += p.price * cart[sku];
       }
       return total;
     }
 
-    function makeOrderId() {
-      const d = new Date();
-      const pad = (x) => String(x).padStart(2, "0");
-      const r = Math.floor(Math.random() * 9000) + 1000;
-      return "PS-" + d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate()) +
-        "-" + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds()) + "-" + r;
-    }
-
-    function openDrawer() {
+    function openDrawer(){
       drawer.classList.add("is-open");
       drawer.setAttribute("aria-hidden","false");
       backdrop.hidden = false;
     }
-    function closeDrawer() {
+    function closeDrawer(){
       drawer.classList.remove("is-open");
       drawer.setAttribute("aria-hidden","true");
       backdrop.hidden = true;
     }
-    function openModal() { modal.hidden = false; }
-    function closeModal() { modal.hidden = true; }
 
-    function renderCart() {
-      cartCountEl.textContent = cartCount();
+    function openModal(){
+      modal.hidden = false;
+    }
+    function closeModal(){
+      modal.hidden = true;
+    }
+
+    function showToast(){
+      toast.hidden = false;
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(()=> toast.hidden = true, 2200);
+    }
+
+    function renderCart(){
+      cartCountEl.textContent = countItems();
 
       const total = cartTotal();
       cartTotalEl.textContent = fmt(total) + " CAD";
-      checkoutTotalEl.textContent = fmt(total) + " CAD";
 
-      if (total < MIN_ORDER_CAD) {
+      if(total < MIN_ORDER_CAD){
         const diff = MIN_ORDER_CAD - total;
-        minRuleEl.innerHTML = '<strong>Minimum order:</strong> $' + MIN_ORDER_CAD + ' CAD. Add ' + fmt(diff) + ' more.';
-        $("#checkoutBtn").disabled = true;
-        $("#checkoutBtn").classList.add("is-disabled");
-      } else {
+        minRuleEl.innerHTML = "<strong>Minimum order:</strong> $"+MIN_ORDER_CAD+" CAD. Add "+fmt(diff)+" more.";
+      }else{
         minRuleEl.textContent = "Minimum order met.";
-        $("#checkoutBtn").disabled = false;
-        $("#checkoutBtn").classList.remove("is-disabled");
       }
 
       const skus = Object.keys(cart);
-      if (!skus.length) {
+      if(!skus.length){
         cartItemsEl.innerHTML = '<p class="muted">Your cart is empty.</p>';
         return;
       }
 
-      cartItemsEl.innerHTML = skus.map((sku) => {
+      cartItemsEl.innerHTML = skus.map((sku)=>{
         const qty = cart[sku];
-        const el = document.querySelector('.product[data-sku="' + CSS.escape(sku) + '"]');
-        const name = el ? el.dataset.name : sku;
-        const price = el ? Number(el.dataset.price || 0) : 0;
+        const p = getProduct(sku);
+        const name = p ? p.name : sku;
+        const price = p ? p.price : 0;
 
         return `
           <div class="line">
@@ -333,54 +433,84 @@ permalink: /products.html
         `;
       }).join("");
 
-      cartItemsEl.querySelectorAll("[data-inc]").forEach((b) => {
-        b.addEventListener("click", () => {
+      cartItemsEl.querySelectorAll("[data-inc]").forEach((b)=>{
+        b.addEventListener("click", ()=>{
           const sku = b.getAttribute("data-inc");
-          cart[sku] = (cart[sku] || 0) + 1;
+          cart[sku] = (cart[sku]||0) + 1;
           saveCart();
           renderCart();
         });
       });
-
-      cartItemsEl.querySelectorAll("[data-dec]").forEach((b) => {
-        b.addEventListener("click", () => {
+      cartItemsEl.querySelectorAll("[data-dec]").forEach((b)=>{
+        b.addEventListener("click", ()=>{
           const sku = b.getAttribute("data-dec");
-          cart[sku] = (cart[sku] || 0) - 1;
-          if (cart[sku] <= 0) delete cart[sku];
+          cart[sku] = (cart[sku]||0) - 1;
+          if(cart[sku] <= 0) delete cart[sku];
           saveCart();
           renderCart();
         });
       });
     }
 
-    // Add buttons
-    document.querySelectorAll(".addBtn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const card = btn.closest(".product");
-        const sku = card.dataset.sku;
-        cart[sku] = (cart[sku] || 0) + 1;
-        saveCart();
-        renderCart();
-        openDrawer();
-      });
-    });
+    function renderSummary(){
+      const skus = Object.keys(cart);
+      const total = cartTotal();
 
-    // Drawer controls
-    $("#openCart").addEventListener("click", () => { renderCart(); openDrawer(); });
-    $("#closeCart").addEventListener("click", closeDrawer);
-    backdrop.addEventListener("click", () => { closeDrawer(); closeModal(); });
+      summaryTotalEl.textContent = fmt(total) + " CAD";
+      checkoutTotalEl.textContent = fmt(total) + " CAD";
 
-    // Checkout flow
-    $("#checkoutBtn").addEventListener("click", () => {
-      if (cartTotal() < MIN_ORDER_CAD) return;
-      $("#step1").hidden = false;
-      $("#step2").hidden = true;
-      openModal();
-    });
+      if(!skus.length){
+        summaryLinesEl.innerHTML = '<p class="muted">No items in your cart.</p>';
+        $("#toCheckoutBtn").disabled = true;
+        summaryMinRuleEl.textContent = "Add items to continue.";
+        return;
+      }
 
-    $("#closeModal").addEventListener("click", closeModal);
+      summaryLinesEl.innerHTML = skus.map((sku)=>{
+        const qty = cart[sku];
+        const p = getProduct(sku);
+        const name = p ? p.name : sku;
+        const price = p ? p.price : 0;
+        return `
+          <div class="line">
+            <div>
+              <strong>${name}</strong>
+              <div class="muted small">SKU: ${sku} • Qty: ${qty}</div>
+            </div>
+            <div class="mono">${fmt(price * qty)}</div>
+          </div>
+        `;
+      }).join("");
 
-    function buildOrderEmail(orderId, expiresAt) {
+      if(total < MIN_ORDER_CAD){
+        const diff = MIN_ORDER_CAD - total;
+        summaryMinRuleEl.innerHTML = "<strong>Minimum order:</strong> $"+MIN_ORDER_CAD+" CAD. Add "+fmt(diff)+" more.";
+        $("#toCheckoutBtn").disabled = true;
+      }else{
+        summaryMinRuleEl.textContent = "Minimum order met.";
+        $("#toCheckoutBtn").disabled = false;
+      }
+    }
+
+    function makeOrderId(){
+      const d = new Date();
+      const pad = (x) => String(x).padStart(2,"0");
+      const r = Math.floor(Math.random()*9000)+1000;
+      return `PS-${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}-${r}`;
+    }
+
+    function addLoyaltyPoints(total){
+      const earned = Math.floor(total * POINTS_PER_DOLLAR);
+      const data = JSON.parse(localStorage.getItem(loyaltyKey) || "{}");
+      data.points = Number(data.points || 0) + earned;
+      data.spend = Number(data.spend || 0) + total;
+      data.orders = Number(data.orders || 0) + 1;
+      data.updatedAt = Date.now();
+      localStorage.setItem(loyaltyKey, JSON.stringify(data));
+      return earned;
+    }
+
+    function buildOrderEmail(orderId, expiresAt, payEmail){
       const lines = [];
       lines.push("Premium Supply — Order Request");
       lines.push("Order #: " + orderId);
@@ -395,11 +525,11 @@ permalink: /products.html
       lines.push("Items:");
 
       let total = 0;
-      for (const sku in cart) {
+      for(const sku in cart){
         const qty = cart[sku];
-        const el = document.querySelector('.product[data-sku="' + CSS.escape(sku) + '"]');
-        const name = el ? el.dataset.name : sku;
-        const price = el ? Number(el.dataset.price || 0) : 0;
+        const p = getProduct(sku);
+        const name = p ? p.name : sku;
+        const price = p ? p.price : 0;
         total += price * qty;
         lines.push("- " + name + " (SKU: " + sku + ") x" + qty + " — " + fmt(price) + " CAD each");
       }
@@ -407,7 +537,8 @@ permalink: /products.html
       lines.push("");
       lines.push("Total: " + fmt(total) + " CAD");
       lines.push("");
-      lines.push("Payment (shown after order is placed): Interac e-Transfer");
+      lines.push("Payment: Interac e-Transfer");
+      lines.push("Send to: " + payEmail);
       lines.push("Include Order # in transfer notes: " + orderId);
       lines.push("");
       lines.push("Account will be closed after 24h without payment.");
@@ -415,55 +546,133 @@ permalink: /products.html
       return { body: lines.join("\\n"), total };
     }
 
-    function updateLoyalty(total) {
-      const earned = Math.floor(total * POINTS_PER_DOLLAR);
-      const data = JSON.parse(localStorage.getItem(loyaltyKey) || "{}");
+    // ============================
+    // Events
+    // ============================
 
-      data.points = Number(data.points || 0) + earned;
-      data.spend = Number(data.spend || 0) + total;
-      data.orders = Number(data.orders || 0) + 1;
-      data.updatedAt = Date.now();
+    // Add buttons: only add + toast (no checkout, no cart auto-open)
+    document.querySelectorAll(".addBtn").forEach((btn)=>{
+      btn.addEventListener("click", ()=>{
+        const card = btn.closest(".product");
+        const sku = card.dataset.sku;
+        cart[sku] = (cart[sku]||0) + 1;
+        saveCart();
+        renderCart();
+        showToast();
+      });
+    });
 
-      localStorage.setItem(loyaltyKey, JSON.stringify(data));
-      return { earned, data };
-    }
+    // Toast button to open cart
+    toastViewCart.addEventListener("click", ()=>{
+      toast.hidden = true;
+      renderCart();
+      openDrawer();
+    });
 
-    $("#placeOrderBtn").addEventListener("click", async () => {
+    // Cart open/close
+    $("#openCart").addEventListener("click", ()=>{
+      renderCart();
+      openDrawer();
+    });
+    $("#closeCart").addEventListener("click", closeDrawer);
+
+    // Backdrop closes cart + modal
+    backdrop.addEventListener("click", ()=>{
+      closeDrawer();
+      closeModal();
+    });
+
+    // Review cart summary (opens modal step0)
+    $("#reviewBtn").addEventListener("click", ()=>{
+      renderSummary();
+      // Step0 only
+      $("#step0").hidden = false;
+      $("#step1").hidden = true;
+      $("#step2").hidden = true;
+      openModal();
+    });
+
+    // Modal close
+    $("#closeModal").addEventListener("click", closeModal);
+
+    // Modal flow buttons
+    $("#backToCartBtn").addEventListener("click", ()=>{
+      closeModal();
+      renderCart();
+      openDrawer();
+    });
+
+    $("#toCheckoutBtn").addEventListener("click", ()=>{
+      renderSummary();
+      if($("#toCheckoutBtn").disabled) return;
+
+      formErrorEl.hidden = true;
+      $("#step0").hidden = true;
+      $("#step1").hidden = false;
+      $("#step2").hidden = true;
+      checkoutTotalEl.textContent = fmt(cartTotal()) + " CAD";
+    });
+
+    // Place order -> shows payment instructions (step2)
+    $("#placeOrderBtn").addEventListener("click", async ()=>{
       const total = cartTotal();
-      if (total < MIN_ORDER_CAD) return;
+      if(total < MIN_ORDER_CAD){
+        formErrorEl.hidden = false;
+        formErrorEl.textContent = "Minimum order is $75 CAD.";
+        return;
+      }
+
+      // Validate required fields
+      const name = $("#custName").value.trim();
+      const phone = $("#custPhone").value.trim();
+      const city = $("#custCity").value.trim();
+      if(!name || !phone || !city){
+        formErrorEl.hidden = false;
+        return;
+      }
+      formErrorEl.hidden = true;
 
       const orderId = makeOrderId();
-      const expiresAt = Date.now() + 24 * 60 * 60 * 1000;
+      const expiresAt = Date.now() + 24*60*60*1000;
 
-      const built = buildOrderEmail(orderId, expiresAt);
-      updateLoyalty(built.total);
+      const payEmail = PAY_USER + "@" + PAY_DOMAIN;
 
-      // Show step2 now
+      const built = buildOrderEmail(orderId, expiresAt, payEmail);
+      addLoyaltyPoints(built.total);
+
+      // Fill step2
       $("#orderId").textContent = orderId;
-      $("#payEmail").textContent = PAYMENT_EMAIL;
+      $("#payEmail").textContent = payEmail;
       $("#expiryLine").textContent = "Pay before: " + new Date(expiresAt).toLocaleString();
-
       $("#orderSummary").textContent = built.body;
 
       const subject = "Order Confirmation " + orderId;
-      const mailto = "mailto:" + encodeURIComponent(ORDER_EMAIL) +
-        "?subject=" + encodeURIComponent(subject) +
-        "&body=" + encodeURIComponent(built.body);
+      const mailto = "mailto:" + encodeURIComponent(ORDER_EMAIL)
+        + "?subject=" + encodeURIComponent(subject)
+        + "&body=" + encodeURIComponent(built.body);
 
       $("#emailOrderBtn").setAttribute("href", mailto);
 
+      // Clear cart after placing order (keeps flow clean)
+      cart = {};
+      saveCart();
+      renderCart();
+
+      // Switch to step2
+      $("#step0").hidden = true;
       $("#step1").hidden = true;
       $("#step2").hidden = false;
     });
 
-    $("#copyOrderId").addEventListener("click", async () => {
-      try {
+    // Copy order ID
+    $("#copyOrderId").addEventListener("click", async ()=>{
+      try{
         await navigator.clipboard.writeText($("#orderId").textContent);
         $("#copyOrderId").textContent = "Copied";
-        setTimeout(() => $("#copyOrderId").textContent = "Copy", 1200);
-      } catch (e) {
+        setTimeout(()=> $("#copyOrderId").textContent = "Copy", 1200);
+      }catch(e){
         $("#copyOrderId").textContent = "Copy failed";
-        setTimeout(() => $("#copyOrderId").textContent = "Copy", 1200);
+        setTimeout(()=> $("#copyOrderId").textContent = "Copy", 1200);
       }
     });
 
