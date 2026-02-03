@@ -2,58 +2,136 @@
 <html lang="en-CA">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Premium Supply — Canada</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Premium Supply — Proudly Canadian • CAD</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
+  <!-- Always-on promo band -->
+  <div class="adband">
+    <div class="container adband__inner">
+      <div class="adband__tag">PROMO</div>
+      <div class="adband__marquee" aria-label="Promotions">
+        <div class="adband__track">
+          <span>Weekly deals • Limited drops • Canada-wide shipping</span><span class="sep">•</span>
+          <span>Earn points every order • Levels & perks</span><span class="sep">•</span>
+          <span>Minimum order $75 CAD • Interac e‑Transfer at checkout</span><span class="sep">•</span>
+
+          <span>Weekly deals • Limited drops • Canada-wide shipping</span><span class="sep">•</span>
+          <span>Earn points every order • Levels & perks</span><span class="sep">•</span>
+          <span>Minimum order $75 CAD • Interac e‑Transfer at checkout</span><span class="sep">•</span>
+        </div>
+      </div>
+      <a class="adband__cta" href="products.html">Shop now</a>
+    </div>
+  </div>
+
+  <!-- Header -->
   <header class="header">
     <div class="container header__inner">
-      <a class="brand" href="index.html">
-        <span class="brand__mark">PS</span>
+      <a class="brand" href="index.html" aria-label="Premium Supply home">
+        <img class="brand__logo" src="assets/brand/logo-round.png" alt="Premium Supply logo">
         <span class="brand__text">
           <span class="brand__name">Premium Supply</span>
-          <span class="brand__tag">100% Canadian • Proud</span>
+          <span class="brand__tag">Proudly Canadian • CAD</span>
         </span>
       </a>
 
-      <nav class="header__links" aria-label="Primary">
-        <a class="hlink" href="products.html">Catalogue</a>
-        <a class="hlink" href="account.html">Account</a>
+      <nav class="nav" aria-label="Primary navigation">
+        <a href="index.html" aria-current="page">Home</a>
+        <a href="products.html">Catalogue</a>
+        <a href="account.html">Account</a>
       </nav>
 
-      <a class="btn btn--solid" href="products.html">Browse</a>
+      <div class="header__right">
+        <a class="btn btn--solid" href="products.html">Browse catalogue</a>
+      </div>
     </div>
   </header>
 
-  <main class="section">
-    <div class="container">
-      <div class="pagehead">
-        <h1 class="title">Premium Supply</h1>
-        <p class="sub">
-          Browse the catalogue, build your cart, then place your order to receive your confirmation number and Interac e‑Transfer instructions.
-          Minimum order is $75 CAD.
-        </p>
+  <main>
+    <!-- Big hero with Universal-style banner -->
+    <section class="hero">
+      <div class="container">
+        <div class="hero__wrap">
+          <div class="hero__inner">
+            <img class="hero__logo" src="assets/brand/logo-universal.png" alt="Premium Supply">
+            <h1 class="hero__title">A bigger, cleaner storefront — built for fast ordering.</h1>
+            <p class="hero__sub">
+              Browse, build your cart, review your summary, then place your order to receive your confirmation number
+              and Interac e‑Transfer instructions.
+            </p>
+            <div class="hero__cta">
+              <a class="btn btn--solid" href="products.html">Start shopping</a>
+              <a class="btn btn--outline" href="account.html">Rewards & points</a>
+            </div>
+          </div>
+        </div>
       </div>
+    </section>
 
-      <div class="acctgrid">
-        <div class="abox">
-          <div class="muted small">Catalogue sections</div>
-          <div class="big">6</div>
-          <div class="muted small">Flowers • Oil • Vapes • Extracts • Mushroom • Accessories</div>
+    <!-- Ad / promo slots -->
+    <section class="section">
+      <div class="container">
+        <div class="section__head">
+          <h2 class="h2">Promotions</h2>
+          <span class="muted small">Edit this content anytime</span>
         </div>
-        <div class="abox">
-          <div class="muted small">Payment</div>
-          <div class="big">Interac</div>
-          <div class="muted small">Instructions shown after placing order</div>
-        </div>
-        <div class="abox">
-          <div class="muted small">Rewards</div>
-          <div class="big">Points</div>
-          <div class="muted small">1 point per $1 CAD spent</div>
+
+        <div class="ads">
+          <article class="adcard">
+            <h3>Hot Drop</h3>
+            <p>Limited inventory — updated weekly. Check the catalogue for the newest releases.</p>
+            <div class="adcard__actions">
+              <a class="btn btn--outline" href="products.html">Browse</a>
+            </div>
+          </article>
+
+          <article class="adcard">
+            <h3>Points Boost</h3>
+            <p>Earn points on every order. Track your level from the Account page.</p>
+            <div class="adcard__actions">
+              <a class="btn btn--outline" href="account.html">View account</a>
+            </div>
+          </article>
+
+          <article class="adcard">
+            <h3>Canada-first</h3>
+            <p>Pricing is CAD. Ordering is simple. Instructions appear only after placing the order.</p>
+            <div class="adcard__actions">
+              <a class="btn btn--outline" href="products.html">Shop now</a>
+            </div>
+          </article>
         </div>
       </div>
-    </div>
+    </section>
+
+    <!-- Category tiles -->
+    <section class="section">
+      <div class="container">
+        <div class="section__head">
+          <h2 class="h2">Shop by category</h2>
+          <span class="muted small">Quick links</span>
+        </div>
+
+        <div class="cat-tiles">
+          <a class="tile" href="products.html#cat-flowers"><strong>Flowers</strong><span>Explore flower selections</span></a>
+          <a class="tile" href="products.html#cat-oil"><strong>Oil</strong><span>Oil options and formats</span></a>
+          <a class="tile" href="products.html#cat-vapes"><strong>Vapes</strong><span>Vape category lineup</span></a>
+          <a class="tile" href="products.html#cat-extracts"><strong>Extracts</strong><span>Extract category options</span></a>
+          <a class="tile" href="products.html#cat-mushroom"><strong>Mushroom</strong><span>Mushroom category items</span></a>
+          <a class="tile" href="products.html#cat-accessories"><strong>Accessories</strong><span>Tools and extras</span></a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="container footer__inner">
+        <span>© Premium Supply • Canada • CAD</span>
+        <span class="muted small">Advertising band stays on top on every page</span>
+      </div>
+    </footer>
   </main>
 </body>
 </html>
