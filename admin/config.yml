@@ -1,0 +1,28 @@
+backend:
+  name: github
+  repo: YOUR_GITHUB_USERNAME/YOUR_REPO_NAME
+  branch: main
+
+media_folder: "assets/uploads"
+public_folder: "/assets/uploads"
+
+publish_mode: editorial_workflow  # enables draft -> review -> publish workflow
+
+collections:
+  - name: "products"
+    label: "Products"
+    folder: "_products"
+    create: true
+    slug: "{{fields.sku}}"
+    fields:
+      - { label: "Active", name: "active", widget: "boolean", default: true }
+      - { label: "SKU", name: "sku", widget: "string" }
+      - { label: "Name", name: "name", widget: "string" }
+      - { label: "Category", name: "category", widget: "string", default: "General" }
+      - { label: "Badge", name: "badge", widget: "string", required: false }
+      - { label: "Price (from) CAD", name: "price_from", widget: "number", value_type: "float" }
+      - { label: "Price (to) CAD", name: "price_to", widget: "number", value_type: "float", required: false }
+      - { label: "Rating (0-5)", name: "rating", widget: "number", value_type: "float", required: false }
+      - { label: "Reviews count", name: "reviews", widget: "number", value_type: "int", required: false }
+      - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: "Short description", name: "description", widget: "text", required: false }
