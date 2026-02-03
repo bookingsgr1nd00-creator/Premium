@@ -6,205 +6,323 @@ permalink: /products.html
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Premium Supply — Products</title>
+  <title>Premium Supply — Catalogue</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
-  <header class="simple-header">
-    <div class="container simple-header__inner">
-      <a href="index.html" class="link">← Home</a>
-      <strong>Premium Supply (Canada)</strong>
-      <button class="btn btn--solid" id="openCart">Cart (<span id="cartCount">0</span>)</button>
+  <header class="header">
+    <div class="container header__inner">
+      <a class="brand" href="index.html" aria-label="Home">
+        <span class="brand__mark">PS</span>
+        <span class="brand__text">
+          <span class="brand__name">Premium Supply</span>
+          <span class="brand__tag">Proudly Canadian • CAD</span>
+        </span>
+      </a>
+
+      <nav class="header__links" aria-label="Primary">
+        <a class="hlink" href="products.html" aria-current="page">Catalogue</a>
+        <a class="hlink" href="account.html">Account</a>
+        <a class="hlink" href="index.html">Home</a>
+      </nav>
+
+      <button class="btn btn--solid" id="openCart" type="button">
+        Cart (<span id="cartCount">0</span>)
+      </button>
+    </div>
+
+    <div class="container catbar" aria-label="Catalogue categories">
+      <a class="chip" href="#cat-flowers">Flowers</a>
+      <a class="chip" href="#cat-oil">Oil</a>
+      <a class="chip" href="#cat-vapes">Vapes</a>
+      <a class="chip" href="#cat-extracts">Extracts</a>
+      <a class="chip" href="#cat-mushroom">Mushroom</a>
+      <a class="chip" href="#cat-accessories">Accessories</a>
     </div>
   </header>
 
   <main class="section">
     <div class="container">
-      <h1 class="section-title">Products</h1>
-      <p class="section-sub">Add items, then checkout for Interac e-Transfer instructions + order number.</p>
-
-      <div class="product-grid">
-        {% assign items = site.products | where: "active", true %}
-        {% for p in items %}
-          <article class="product" data-sku="{{ p.sku | escape }}" data-name="{{ p.name | escape }}"
-                   data-price="{{ p.price_from }}" data-category="{{ p.category | escape }}">
-            <div class="product__img">
-              {% if p.image %}
-                <img src="{{ p.image | escape }}" alt="{{ p.name | escape }}">
-              {% else %}
-                <div class="product__placeholder" aria-hidden="true"></div>
-              {% endif %}
-            </div>
-
-            <div class="product__body">
-              <div class="product__top">
-                <span class="badge">{% if p.badge %}{{ p.badge }}{% else %}Standard{% endif %}</span>
-                <span class="sku">SKU: {{ p.sku }}</span>
-              </div>
-
-              <h2 class="product__title">{{ p.name }}</h2>
-              <p class="product__desc">{% if p.description %}{{ p.description }}{% endif %}</p>
-
-              <div class="product__bottom">
-                <strong class="price">${{ p.price_from }} CAD{% if p.price_to %} – ${{ p.price_to }} CAD{% endif %}</strong>
-                <button class="btn btn--outline addBtn" type="button">Add</button>
-              </div>
-            </div>
-          </article>
-        {% endfor %}
+      <div class="pagehead">
+        <h1 class="title">Catalogue</h1>
+        <p class="sub">
+          Add items to your cart. Payment instructions appear only after you place an order.
+          Minimum order: <strong>$75 CAD</strong>.
+        </p>
       </div>
+
+      {% assign categories = "Flowers|Oil|Vapes|Extracts|Mushroom|Accessories" | split: "|" %}
+      {% for cat in categories %}
+        {% assign cat_id = cat | downcase | replace: " ", "-" %}
+        {% assign cat_products = site.products | where: "active", true | where: "category", cat %}
+
+        <section class="catsec" id="cat-{{ cat_id }}">
+          <div class="catsec__head">
+            <h2 class="catsec__title">{{ cat }}</h2>
+            <p class="catsec__note">Curated options • Fast ordering • CAD pricing</p>
+          </div>
+
+          {% if cat_products and cat_products.size > 0 %}
+            <div class="grid">
+              {% for p in cat_products %}
+                <article class="card product"
+                  data-sku="{{ p.sku | escape }}"
+                  data-name="{{ p.name | escape }}"
+                  data-price="{{ p.price | default: 0 }}"
+                  data-category="{{ p.category | escape }}"
+                >
+                  <div class="card__img">
+                    {% if p.image %}
+                      <img src="{{ p.image | escape }}" alt="{{ p.name | escape }}">
+                    {% else %}
+                      <div class="ph" aria-hidden="true"></div>
+                    {% endif %}
+                  </div>
+
+                  <div class="card__body">
+                    <div class="meta">
+                      <span class="badge">{% if p.badge %}{{ p.badge }}{% else %}Standard{% endif %}</span>
+                      <span class="sku">SKU: {{ p.sku }}</span>
+                    </div>
+
+                    <h3 class="card__title">{{ p.name }}</h3>
+                    <p class="card__desc">{% if p.description %}{{ p.description }}{% else %}Premium-grade product, packaged for consistency.{% endif %}</p>
+
+                    <div class="foot">
+                      <div class="price">
+                        <strong>${{ p.price }} CAD</strong>
+                        {% if p.price_note %}<span class="muted small">{{ p.price_note }}</span>{% endif %}
+                      </div>
+                      <button class="btn btn--outline addBtn" type="button">Add</button>
+                    </div>
+                  </div>
+                </article>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="empty">
+              <strong>No products yet in {{ cat }}.</strong>
+              <div class="muted">Your employee can add items in /admin → Products.</div>
+            </div>
+          {% endif %}
+        </section>
+      {% endfor %}
     </div>
   </main>
 
   <!-- Cart Drawer -->
   <div class="backdrop" id="backdrop" hidden></div>
-  <aside class="cart" id="cart" aria-hidden="true">
-    <div class="cart__head">
+
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawer__head">
       <strong>Your Cart</strong>
       <button class="btn btn--outline" id="closeCart" type="button">Close</button>
     </div>
 
-    <div class="cart__items" id="cartItems"></div>
+    <div class="drawer__body" id="cartItems"></div>
 
-    <div class="cart__foot">
-      <div class="cart__total">
+    <div class="drawer__foot">
+      <div class="row">
         <span>Total</span>
         <strong id="cartTotal">$0.00 CAD</strong>
       </div>
 
+      <div class="minrule" id="minRule"></div>
+
       <button class="btn btn--solid btn--full" id="checkoutBtn" type="button">
         Checkout
       </button>
-      <p class="muted small">Checkout shows Interac e-Transfer instructions and generates an order number.</p>
+
+      <p class="muted small">
+        Payment details appear after you place an order.
+      </p>
     </div>
   </aside>
 
   <!-- Checkout Modal -->
   <div class="modal" id="modal" hidden>
-    <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="mTitle">
-      <div class="modal__head">
-        <strong id="mTitle">Order Confirmation</strong>
+    <div class="panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="panel__head">
+        <strong id="modalTitle">Checkout</strong>
         <button class="btn btn--outline" id="closeModal" type="button">Close</button>
       </div>
 
-      <div class="modal__body">
-        <p class="muted small">Order confirmation number</p>
-        <div class="copyrow">
-          <strong id="orderId"></strong>
-          <button class="btn btn--outline" id="copyOrder" type="button">Copy</button>
-        </div>
+      <div class="panel__body">
+        <!-- STEP 1: Review + Place Order (NO payment instructions here) -->
+        <section id="step1">
+          <p class="muted small">Review your order, then place it to generate your confirmation number.</p>
 
-        <div class="divider"></div>
+          <div class="formgrid">
+            <label class="field">
+              <span>Full name</span>
+              <input id="custName" type="text" placeholder="Your name">
+            </label>
+            <label class="field">
+              <span>Phone</span>
+              <input id="custPhone" type="tel" placeholder="(___) ___-____">
+            </label>
+            <label class="field">
+              <span>City / Province</span>
+              <input id="custCity" type="text" placeholder="Toronto, ON">
+            </label>
+            <label class="field">
+              <span>Address (optional)</span>
+              <input id="custAddr" type="text" placeholder="Street, unit, postal code">
+            </label>
+          </div>
 
-        <h3>Interac e-Transfer instructions</h3>
-        <ol class="steps">
-          <li>Send an Interac e-Transfer to: <strong id="payEmail">payments@premiumsupply.ca</strong></li>
-          <li>Include your order number in the message/notes.</li>
-          <li>Email your order request so we can confirm and fulfill.</li>
-        </ol>
+          <div class="divider"></div>
 
-        <div class="notice danger">
-          <!-- You asked for account closure in 24h.
-               This is risky wording if you don't have accounts. Strong recommendation below in note. -->
-          If payment is not received within 24 hours, your order will be cancelled and access may be restricted.
-        </div>
+          <div class="row">
+            <span>Order total</span>
+            <strong id="checkoutTotal">$0.00 CAD</strong>
+          </div>
 
-        <div class="divider"></div>
+          <button class="btn btn--solid btn--full" id="placeOrderBtn" type="button">
+            Place Order
+          </button>
 
-        <a class="btn btn--solid btn--full" id="emailOrder" href="#">
-          Email order request
-        </a>
+          <p class="muted small">
+            Minimum order is $75 CAD. Payment instructions appear after placing the order.
+          </p>
+        </section>
 
-        <details class="summary">
-          <summary>View / copy order summary</summary>
-          <pre id="orderSummary"></pre>
-        </details>
+        <!-- STEP 2: Payment Instructions (shown only AFTER Place Order) -->
+        <section id="step2" hidden>
+          <p class="muted small">Order confirmation number</p>
+          <div class="copyrow">
+            <strong id="orderId"></strong>
+            <button class="btn btn--outline" id="copyOrderId" type="button">Copy</button>
+          </div>
+
+          <div class="divider"></div>
+
+          <h3 class="h3">Interac e‑Transfer instructions</h3>
+          <ol class="olist">
+            <li>Send an Interac e‑Transfer to: <strong id="payEmail">payments@premiumsupply.ca</strong></li>
+            <li>Include your order number in the transfer message/notes.</li>
+            <li>Send your order email so we can confirm and fulfill.</li>
+          </ol>
+
+          <div class="danger">
+            Account will be closed after 24h without payment.
+            <div class="muted small" id="expiryLine"></div>
+          </div>
+
+          <div class="divider"></div>
+
+          <a class="btn btn--solid btn--full" id="emailOrderBtn" href="#">
+            Email order request
+          </a>
+
+          <details class="summary">
+            <summary>View / copy order summary</summary>
+            <pre id="orderSummary"></pre>
+          </details>
+        </section>
       </div>
     </div>
   </div>
 
-  <!-- Inline JS (inside HTML, no separate .js file needed) -->
+  <!-- Inline JS only (no separate JS file) -->
   <script>
-    // ===== EDIT THESE =====
+    // ========= EDIT THESE 2 EMAILS =========
     const ORDER_EMAIL = "orders@premiumsupply.ca";
     const PAYMENT_EMAIL = "payments@premiumsupply.ca";
-    const CURRENCY = "CAD";
-    // ======================
+    // ======================================
+
+    const MIN_ORDER_CAD = 75;
+    const POINTS_PER_DOLLAR = 1; // 1 point per $1 CAD spent
 
     const $ = (s) => document.querySelector(s);
-    const money = (n) => new Intl.NumberFormat(undefined, {style:"currency", currency:CURRENCY}).format(Number(n||0));
-    const cartKey = "ps_cart_v1";
+    const fmt = (n) => new Intl.NumberFormat(undefined, { style: "currency", currency: "CAD" }).format(Number(n || 0));
+
+    const cartKey = "ps_cart_v2";
+    const loyaltyKey = "ps_loyalty_v1";
+
     let cart = JSON.parse(localStorage.getItem(cartKey) || "{}");
+
+    const drawer = $("#drawer");
+    const backdrop = $("#backdrop");
+    const modal = $("#modal");
 
     const cartCountEl = $("#cartCount");
     const cartItemsEl = $("#cartItems");
     const cartTotalEl = $("#cartTotal");
+    const checkoutTotalEl = $("#checkoutTotal");
+    const minRuleEl = $("#minRule");
 
-    function saveCart(){ localStorage.setItem(cartKey, JSON.stringify(cart)); }
-    function cartCount(){ return Object.values(cart).reduce((a,b)=>a+b,0); }
+    function saveCart() { localStorage.setItem(cartKey, JSON.stringify(cart)); }
+    function cartCount() { return Object.values(cart).reduce((a,b)=>a+b,0); }
 
-    function makeOrderId(){
-      const d = new Date();
-      const pad = (x)=>String(x).padStart(2,"0");
-      const r = Math.floor(Math.random()*9000)+1000;
-      return `PS-${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}-${r}`;
-    }
-
-    function buildSummary(orderId){
-      const lines = [];
-      lines.push(`Premium Supply — Order Request`);
-      lines.push(`Order #: ${orderId}`);
-      lines.push("");
-      lines.push("Items:");
-
+    function cartTotal() {
       let total = 0;
-      for(const sku in cart){
+      for (const sku in cart) {
         const qty = cart[sku];
-        const card = document.querySelector(\`.product[data-sku="\${CSS.escape(sku)}"]\`);
-        if(!card) continue;
-        const name = card.dataset.name;
-        const price = Number(card.dataset.price || 0);
+        const el = document.querySelector('.product[data-sku="' + CSS.escape(sku) + '"]');
+        const price = el ? Number(el.dataset.price || 0) : 0;
         total += price * qty;
-        lines.push(`- ${name} (SKU: ${sku}) x${qty} — ${money(price)} each`);
       }
-      lines.push("");
-      lines.push(`Total: ${money(total)} ${CURRENCY}`);
-      lines.push("");
-      lines.push("Payment: Interac e-Transfer");
-      lines.push(`Send to: ${PAYMENT_EMAIL}`);
-      lines.push(`Include Order # in transfer message: ${orderId}`);
-      lines.push("");
-      lines.push("Customer details (please reply with):");
-      lines.push("- Full name:");
-      lines.push("- Phone:");
-      lines.push("- Shipping city/province:");
-      lines.push("- Address (if applicable):");
-      lines.push("- Notes:");
-      return { text: lines.join("\\n"), total };
+      return total;
     }
 
-    function renderCart(){
+    function makeOrderId() {
+      const d = new Date();
+      const pad = (x) => String(x).padStart(2, "0");
+      const r = Math.floor(Math.random() * 9000) + 1000;
+      return "PS-" + d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate()) +
+        "-" + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds()) + "-" + r;
+    }
+
+    function openDrawer() {
+      drawer.classList.add("is-open");
+      drawer.setAttribute("aria-hidden","false");
+      backdrop.hidden = false;
+    }
+    function closeDrawer() {
+      drawer.classList.remove("is-open");
+      drawer.setAttribute("aria-hidden","true");
+      backdrop.hidden = true;
+    }
+    function openModal() { modal.hidden = false; }
+    function closeModal() { modal.hidden = true; }
+
+    function renderCart() {
       cartCountEl.textContent = cartCount();
+
+      const total = cartTotal();
+      cartTotalEl.textContent = fmt(total) + " CAD";
+      checkoutTotalEl.textContent = fmt(total) + " CAD";
+
+      if (total < MIN_ORDER_CAD) {
+        const diff = MIN_ORDER_CAD - total;
+        minRuleEl.innerHTML = '<strong>Minimum order:</strong> $' + MIN_ORDER_CAD + ' CAD. Add ' + fmt(diff) + ' more.';
+        $("#checkoutBtn").disabled = true;
+        $("#checkoutBtn").classList.add("is-disabled");
+      } else {
+        minRuleEl.textContent = "Minimum order met.";
+        $("#checkoutBtn").disabled = false;
+        $("#checkoutBtn").classList.remove("is-disabled");
+      }
+
       const skus = Object.keys(cart);
-      if(!skus.length){
+      if (!skus.length) {
         cartItemsEl.innerHTML = '<p class="muted">Your cart is empty.</p>';
-        cartTotalEl.textContent = money(0) + " " + CURRENCY;
         return;
       }
 
-      let total = 0;
-      cartItemsEl.innerHTML = skus.map(sku=>{
+      cartItemsEl.innerHTML = skus.map((sku) => {
         const qty = cart[sku];
-        const card = document.querySelector(\`.product[data-sku="\${CSS.escape(sku)}"]\`);
-        const name = card ? card.dataset.name : sku;
-        const price = card ? Number(card.dataset.price || 0) : 0;
-        total += price * qty;
+        const el = document.querySelector('.product[data-sku="' + CSS.escape(sku) + '"]');
+        const name = el ? el.dataset.name : sku;
+        const price = el ? Number(el.dataset.price || 0) : 0;
+
         return `
-          <div class="cartitem">
+          <div class="line">
             <div>
               <strong>${name}</strong>
-              <div class="muted small">SKU: ${sku} • ${money(price)} ${CURRENCY}</div>
+              <div class="muted small">SKU: ${sku} • ${fmt(price)} CAD</div>
             </div>
             <div class="qty">
               <button class="qbtn" data-dec="${sku}" type="button">−</button>
@@ -215,72 +333,137 @@ permalink: /products.html
         `;
       }).join("");
 
-      cartTotalEl.textContent = money(total) + " " + CURRENCY;
-
-      cartItemsEl.querySelectorAll("[data-inc]").forEach(b=>{
-        b.addEventListener("click", ()=>{
+      cartItemsEl.querySelectorAll("[data-inc]").forEach((b) => {
+        b.addEventListener("click", () => {
           const sku = b.getAttribute("data-inc");
-          cart[sku] = (cart[sku]||0)+1; saveCart(); renderCart();
+          cart[sku] = (cart[sku] || 0) + 1;
+          saveCart();
+          renderCart();
         });
       });
-      cartItemsEl.querySelectorAll("[data-dec]").forEach(b=>{
-        b.addEventListener("click", ()=>{
+
+      cartItemsEl.querySelectorAll("[data-dec]").forEach((b) => {
+        b.addEventListener("click", () => {
           const sku = b.getAttribute("data-dec");
-          cart[sku] = (cart[sku]||0)-1;
-          if(cart[sku] <= 0) delete cart[sku];
-          saveCart(); renderCart();
+          cart[sku] = (cart[sku] || 0) - 1;
+          if (cart[sku] <= 0) delete cart[sku];
+          saveCart();
+          renderCart();
         });
       });
     }
 
-    // Drawer / modal
-    const cartEl = $("#cart"), backdrop = $("#backdrop"), modal = $("#modal");
-    function openCart(){ cartEl.classList.add("is-open"); cartEl.setAttribute("aria-hidden","false"); backdrop.hidden=false; }
-    function closeCart(){ cartEl.classList.remove("is-open"); cartEl.setAttribute("aria-hidden","true"); backdrop.hidden=true; }
-    function openModal(){ modal.hidden=false; }
-    function closeModal(){ modal.hidden=true; }
-
-    // Wire up product add buttons
-    document.querySelectorAll(".product").forEach(card=>{
-      card.querySelector(".addBtn").addEventListener("click", ()=>{
+    // Add buttons
+    document.querySelectorAll(".addBtn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const card = btn.closest(".product");
         const sku = card.dataset.sku;
-        cart[sku] = (cart[sku]||0)+1;
+        cart[sku] = (cart[sku] || 0) + 1;
         saveCart();
         renderCart();
-        openCart();
+        openDrawer();
       });
     });
 
-    $("#openCart").addEventListener("click", ()=>{ renderCart(); openCart(); });
-    $("#closeCart").addEventListener("click", closeCart);
-    backdrop.addEventListener("click", ()=>{ closeCart(); closeModal(); });
+    // Drawer controls
+    $("#openCart").addEventListener("click", () => { renderCart(); openDrawer(); });
+    $("#closeCart").addEventListener("click", closeDrawer);
+    backdrop.addEventListener("click", () => { closeDrawer(); closeModal(); });
 
-    // Checkout
-    $("#checkoutBtn").addEventListener("click", ()=>{
-      if(cartCount() === 0){ openCart(); return; }
-      const orderId = makeOrderId();
-      const { text } = buildSummary(orderId);
-
-      $("#orderId").textContent = orderId;
-      $("#payEmail").textContent = PAYMENT_EMAIL;
-      $("#orderSummary").textContent = text;
-
-      const subject = `Order Request ${orderId}`;
-      const mailto = `mailto:${encodeURIComponent(ORDER_EMAIL)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(text)}`;
-      $("#emailOrder").setAttribute("href", mailto);
-
+    // Checkout flow
+    $("#checkoutBtn").addEventListener("click", () => {
+      if (cartTotal() < MIN_ORDER_CAD) return;
+      $("#step1").hidden = false;
+      $("#step2").hidden = true;
       openModal();
     });
 
     $("#closeModal").addEventListener("click", closeModal);
-    $("#copyOrder").addEventListener("click", async ()=>{
-      try{
+
+    function buildOrderEmail(orderId, expiresAt) {
+      const lines = [];
+      lines.push("Premium Supply — Order Request");
+      lines.push("Order #: " + orderId);
+      lines.push("Expires: " + new Date(expiresAt).toLocaleString());
+      lines.push("");
+      lines.push("Customer:");
+      lines.push("- Name: " + ($("#custName").value || ""));
+      lines.push("- Phone: " + ($("#custPhone").value || ""));
+      lines.push("- City/Province: " + ($("#custCity").value || ""));
+      lines.push("- Address: " + ($("#custAddr").value || ""));
+      lines.push("");
+      lines.push("Items:");
+
+      let total = 0;
+      for (const sku in cart) {
+        const qty = cart[sku];
+        const el = document.querySelector('.product[data-sku="' + CSS.escape(sku) + '"]');
+        const name = el ? el.dataset.name : sku;
+        const price = el ? Number(el.dataset.price || 0) : 0;
+        total += price * qty;
+        lines.push("- " + name + " (SKU: " + sku + ") x" + qty + " — " + fmt(price) + " CAD each");
+      }
+
+      lines.push("");
+      lines.push("Total: " + fmt(total) + " CAD");
+      lines.push("");
+      lines.push("Payment (shown after order is placed): Interac e-Transfer");
+      lines.push("Include Order # in transfer notes: " + orderId);
+      lines.push("");
+      lines.push("Account will be closed after 24h without payment.");
+
+      return { body: lines.join("\\n"), total };
+    }
+
+    function updateLoyalty(total) {
+      const earned = Math.floor(total * POINTS_PER_DOLLAR);
+      const data = JSON.parse(localStorage.getItem(loyaltyKey) || "{}");
+
+      data.points = Number(data.points || 0) + earned;
+      data.spend = Number(data.spend || 0) + total;
+      data.orders = Number(data.orders || 0) + 1;
+      data.updatedAt = Date.now();
+
+      localStorage.setItem(loyaltyKey, JSON.stringify(data));
+      return { earned, data };
+    }
+
+    $("#placeOrderBtn").addEventListener("click", async () => {
+      const total = cartTotal();
+      if (total < MIN_ORDER_CAD) return;
+
+      const orderId = makeOrderId();
+      const expiresAt = Date.now() + 24 * 60 * 60 * 1000;
+
+      const built = buildOrderEmail(orderId, expiresAt);
+      updateLoyalty(built.total);
+
+      // Show step2 now
+      $("#orderId").textContent = orderId;
+      $("#payEmail").textContent = PAYMENT_EMAIL;
+      $("#expiryLine").textContent = "Pay before: " + new Date(expiresAt).toLocaleString();
+
+      $("#orderSummary").textContent = built.body;
+
+      const subject = "Order Confirmation " + orderId;
+      const mailto = "mailto:" + encodeURIComponent(ORDER_EMAIL) +
+        "?subject=" + encodeURIComponent(subject) +
+        "&body=" + encodeURIComponent(built.body);
+
+      $("#emailOrderBtn").setAttribute("href", mailto);
+
+      $("#step1").hidden = true;
+      $("#step2").hidden = false;
+    });
+
+    $("#copyOrderId").addEventListener("click", async () => {
+      try {
         await navigator.clipboard.writeText($("#orderId").textContent);
-        $("#copyOrder").textContent = "Copied";
-        setTimeout(()=>$("#copyOrder").textContent="Copy", 1200);
-      }catch(e){
-        $("#copyOrder").textContent = "Copy failed";
-        setTimeout(()=>$("#copyOrder").textContent="Copy", 1200);
+        $("#copyOrderId").textContent = "Copied";
+        setTimeout(() => $("#copyOrderId").textContent = "Copy", 1200);
+      } catch (e) {
+        $("#copyOrderId").textContent = "Copy failed";
+        setTimeout(() => $("#copyOrderId").textContent = "Copy", 1200);
       }
     });
 
