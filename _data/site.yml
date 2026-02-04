@@ -1,0 +1,32 @@
+promo_band:
+  tag: "PROMO"
+  cta_label: "Shop now"
+  cta_link: "/products.html"
+  messages:
+    - "Weekly deals • Limited drops • Canada-wide shipping"
+    - "Earn points every order • Levels & perks"
+    - "Minimum order $75 CAD • Instructions shown after placing order"
+
+home_promos:
+  - title: "Hot Drop"
+    text: "Limited inventory—updated weekly. Check the catalogue for what’s new."
+    button_label: "Browse"
+    button_link: "/products.html"
+
+  - title: "Points Boost"
+    text: "Earn points every order. Track your level from the Account page."
+    button_label: "View rewards"
+    button_link: "/account.html"
+
+  - title: "Canada-first"
+    text: "Pricing in CAD. Clean checkout flow. Instructions shown after placing order."
+    button_label: "Shop"
+    button_link: "/products.html"
+
+rules:
+  min_order_cad: 75
+  close_after_hours: 24
+
+emails:
+  orders: "orders@premiumsupply.ca"
+  payments: "payments@premiumsupply.ca"
