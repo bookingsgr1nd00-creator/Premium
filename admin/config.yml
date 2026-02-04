@@ -5,7 +5,7 @@ backend:
 
   # IMPORTANT (GitHub Pages needs an OAuth proxy)
   # Fill these after you deploy the Cloudflare Worker proxy (see section 7):
-  base_url: https://YOUR-PROXY-DOMAIN.example.workers.dev
+  base_url: https://premium.bookingsgr1nd00.workers.dev
   auth_endpoint: /auth
 
 media_folder: "assets/uploads"
