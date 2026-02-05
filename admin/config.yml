@@ -21,34 +21,45 @@ collections:
           - Extracts
           - Mushroom
           - Accessories
+          - Male Enhancers
         default: Flowers
 
       - { label: "Badge (optional)", name: "badge", widget: "string", required: false }
 
-      # For non-variant products (Oil/Vapes/etc), use price.
-      - { label: "Base price (CAD)", name: "price", widget: "number", value_type: "float", required: false, hint: "Used when Variants are empty" }
+      # Used if you do NOT use variants
+      - { label: "Base price (CAD)", name: "price", widget: "number", value_type: "float", required: false, hint: "Used only when Variants are empty" }
 
-      # For Flowers: add sizes/doses here.
+      # THIS is what creates the dropdown sizes (quantities like 3.5g, 7g, etc.)
       - label: "Variants / Sizes (use for Flowers)"
         name: "variants"
         widget: "list"
         required: false
-        hint: "Add sizes like 3.5g, 7g, 14g, 1oz, 1/2 lb, 1 lb with prices."
+        hint: "Add size options and prices. Sort from smallest to largest."
         fields:
           - { label: "Label", name: "label", widget: "string", default: "3.5g" }
           - { label: "Price (CAD)", name: "price", widget: "number", value_type: "float" }
 
-      - { label: "Main image (optional)", name: "image", widget: "image", required: false }
+      - { label: "Main image", name: "image", widget: "image", required: false }
 
-      - label: "Gallery (more pictures)"
+      # Easy gallery: employee just clicks “Add” and uploads images
+      - label: "Gallery images (more pictures)"
         name: "gallery"
         widget: "list"
         required: false
-        fields:
-          - { label: "Image", name: "image", widget: "image" }
-          - { label: "Alt text (optional)", name: "alt", widget: "string", required: false }
+        field: { label: "Image", name: "image", widget: "image" }
 
       - { label: "Short description", name: "description", widget: "text", required: false }
 
-      # This is the detailed product page content
+      # Full product-page content
       - { label: "Detailed description", name: "body", widget: "markdown", required: false }
+
+      # Related products - EASY picker (search by name/SKU)
+      - label: "Related products (Customers may like)"
+        name: "related"
+        widget: "relation"
+        collection: "products"
+        search_fields: ["name", "sku"]
+        value_field: "sku"
+        display_fields: ["name", "sku"]
+        multiple: true
+        required: false
