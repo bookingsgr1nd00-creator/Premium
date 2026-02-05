@@ -1,3 +1,18 @@
+publish_mode: simple
+
+backend:
+  name: github
+  repo: premium2supply/Premium
+  branch: main
+
+  # GitHub Pages needs an OAuth proxy (Cloudflare Worker / decap-proxy).
+  # Replace this with your real proxy URL when ready.
+  base_url: https://YOUR-PROXY-DOMAIN.workers.dev
+  auth_endpoint: /auth
+
+media_folder: "assets/uploads"
+public_folder: "/assets/uploads"
+
 collections:
   - name: "products"
     label: "Products"
@@ -26,34 +41,34 @@ collections:
 
       - { label: "Badge (optional)", name: "badge", widget: "string", required: false }
 
-      # Used if you do NOT use variants
-      - { label: "Base price (CAD)", name: "price", widget: "number", value_type: "float", required: false, hint: "Used only when Variants are empty" }
+      # Used for non-variant products (or as fallback if no variants)
+      - { label: "Base price (CAD)", name: "price", widget: "number", value_type: "float", required: false }
 
-      # THIS is what creates the dropdown sizes (quantities like 3.5g, 7g, etc.)
-      - label: "Variants / Sizes (use for Flowers)"
+      # Flower sizes / doses dropdown (3.5g, 7g, 14g, 1oz, 1/2 lb, 1 lb etc.)
+      - label: "Variants / Sizes (optional — use for Flowers)"
         name: "variants"
         widget: "list"
         required: false
-        hint: "Add size options and prices. Sort from smallest to largest."
         fields:
           - { label: "Label", name: "label", widget: "string", default: "3.5g" }
           - { label: "Price (CAD)", name: "price", widget: "number", value_type: "float" }
 
+      # Easy pictures for your employee
       - { label: "Main image", name: "image", widget: "image", required: false }
 
-      # Easy gallery: employee just clicks “Add” and uploads images
       - label: "Gallery images (more pictures)"
         name: "gallery"
         widget: "list"
         required: false
-        field: { label: "Image", name: "image", widget: "image" }
+        fields:
+          - { label: "Image", name: "image", widget: "image" }
 
       - { label: "Short description", name: "description", widget: "text", required: false }
 
-      # Full product-page content
+      # Product page long description
       - { label: "Detailed description", name: "body", widget: "markdown", required: false }
 
-      # Related products - EASY picker (search by name/SKU)
+      # Optional: choose related products
       - label: "Related products (Customers may like)"
         name: "related"
         widget: "relation"
@@ -63,11 +78,3 @@ collections:
         display_fields: ["name", "sku"]
         multiple: true
         required: false
-- { label: "Main image", name: "image", widget: "image", required: false }
-
-- label: "Gallery images (more pictures)"
-  name: "gallery"
-  widget: "list"
-  required: false
-  fields:
-    - { label: "Image", name: "image", widget: "image" }
