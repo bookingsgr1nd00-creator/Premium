@@ -1,10 +1,6 @@
 title: Premium Supply
 description: Proudly Canadian storefront
-
-# IMPORTANT:
-# If this is a PROJECT page (repo name Premium), baseurl should be "/Premium"
-# If it’s a USER page (repo name premium2supply.github.io) or a custom domain, keep baseurl ""
-baseurl: "/Premium"
+baseurl: "/Premium"   # because repo = Premium
 
 collections:
   products:
