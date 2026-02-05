@@ -4,12 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>{{ page.name | escape }} — Premium Supply</title>
-
-  <link rel="stylesheet" href="{{ "/styles.css" | relative_url }}" />
+  <link rel="stylesheet" href="{{ "/styles.css" | relative_url }}">
 </head>
 
 <body>
-  <!-- Promo band (always on top) -->
+  <!-- Always-on promo band -->
   <div class="adband">
     <div class="container adband__inner">
       <div class="adband__tag">PROMO</div>
@@ -17,11 +16,11 @@
         <div class="adband__track">
           <span>Proudly Canadian • CAD</span><span class="sep">•</span>
           <span>Minimum order $75 CAD</span><span class="sep">•</span>
-          <span>Interac instructions shown after order</span><span class="sep">•</span>
+          <span>Instructions shown after placing order</span><span class="sep">•</span>
 
           <span>Proudly Canadian • CAD</span><span class="sep">•</span>
           <span>Minimum order $75 CAD</span><span class="sep">•</span>
-          <span>Interac instructions shown after order</span><span class="sep">•</span>
+          <span>Instructions shown after placing order</span><span class="sep">•</span>
         </div>
       </div>
       <a class="adband__cta" href="{{ "/products.html" | relative_url }}">Catalogue</a>
@@ -46,8 +45,7 @@
       </nav>
 
       <div class="header__right">
-        <!-- Go to catalogue and open cart -->
-        <a class="btn btn--solid" id="cartLink" href="{{ "/products.html?cart=open" | relative_url }}">
+        <a class="btn btn--solid" href="{{ "/products.html" | relative_url }}?cart=open">
           Cart (<span id="cartCount">0</span>)
         </a>
       </div>
@@ -67,10 +65,9 @@
         <div class="pgrid">
           <!-- Gallery -->
           <div class="pgallery">
-            {% assign main_img = page.image %}
-            {% if main_img %}
-              <a class="pmain" href="{{ main_img | relative_url }}" target="_blank" rel="noopener">
-                <img id="mainImage" src="{{ main_img | relative_url }}" alt="{{ page.name | escape }}">
+            {% if page.image %}
+              <a class="pmain" href="{{ page.image | relative_url }}" target="_blank" rel="noopener">
+                <img id="mainImage" src="{{ page.image | relative_url }}" alt="{{ page.name | escape }}">
               </a>
             {% else %}
               <div class="pmain"><div class="ph" aria-hidden="true"></div></div>
@@ -78,26 +75,21 @@
 
             {% if page.gallery and page.gallery.size > 0 %}
               <div class="pthumbs">
-                {% if main_img %}
-                  <button class="pthumb" type="button" data-src="{{ main_img | relative_url }}">
-                    <img src="{{ main_img | relative_url }}" alt="Main image">
+                {% if page.image %}
+                  <button class="pthumb" type="button" data-src="{{ page.image | relative_url }}">
+                    <img src="{{ page.image | relative_url }}" alt="Main image">
                   </button>
                 {% endif %}
-
                 {% for g in page.gallery %}
                   <button class="pthumb" type="button" data-src="{{ g.image | relative_url }}">
-                    <img src="{{ g.image | relative_url }}" alt="{{ g.alt | default: page.name | escape }}">
+                    <img src="{{ g.image | relative_url }}" alt="{{ page.name | escape }}">
                   </button>
                 {% endfor %}
               </div>
             {% endif %}
-
-            <p class="muted small" style="margin:10px 0 0">
-              Tip: tap an image to open it larger.
-            </p>
           </div>
 
-          <!-- Product info -->
+          <!-- Info -->
           <div class="pinfo">
             <div class="meta">
               <span class="badge">{{ page.badge | default: "Standard" }}</span>
@@ -110,9 +102,8 @@
               <p class="pdesc">{{ page.description }}</p>
             {% endif %}
 
-            <!-- Variants (sizes/doses) -->
-            {% if page.variants and page.variants.size > 0 %}
-              <div class="pbox">
+            <div class="pbox">
+              {% if page.variants and page.variants.size > 0 %}
                 <label class="field">
                   <span>Choose size</span>
                   <select id="variantSelect">
@@ -123,41 +114,35 @@
                     {% endfor %}
                   </select>
                 </label>
+              {% endif %}
 
-                <div class="prow">
-                  <span class="muted">Unit price</span>
-                  <strong id="unitPrice"></strong>
-                </div>
-
-                <button class="btn btn--solid btn--full" id="addToCart" type="button">
-                  Add to cart
-                </button>
-
-                <p class="muted small" style="margin:10px 0 0">
-                  Sizes are selected here; checkout happens later in your cart.
-                </p>
+              <div class="prow">
+                <span class="muted">Unit price</span>
+                <strong id="unitPrice"></strong>
               </div>
-            {% else %}
-              <div class="pbox">
-                <div class="prow">
-                  <span class="muted">Price</span>
-                  <strong id="unitPrice">${{ page.price | default: 0 }} CAD</strong>
+
+              <div class="prow">
+                <span class="muted">Quantity</span>
+                <div class="qtypicker">
+                  <button class="qbtn" id="qtyDec" type="button">−</button>
+                  <input id="qtyInput" type="number" min="1" max="99" value="1">
+                  <button class="qbtn" id="qtyInc" type="button">+</button>
                 </div>
-
-                <button class="btn btn--solid btn--full" id="addToCart" type="button">
-                  Add to cart
-                </button>
-
-                <p class="muted small" style="margin:10px 0 0">
-                  Checkout happens later in your cart.
-                </p>
               </div>
-            {% endif %}
+
+              <button class="btn btn--solid btn--full" id="addToCart" type="button">
+                Add to cart
+              </button>
+
+              <p class="muted small" style="margin:10px 0 0">
+                Checkout happens later in your cart.
+              </p>
+            </div>
 
             <div class="divider"></div>
 
             <div class="pdetail">
-              <h2 class="h3">Details</h2>
+              <h2 class="h3">Detailed description</h2>
               <div class="pcontent">
                 {{ content }}
               </div>
@@ -165,61 +150,94 @@
 
             <div class="divider"></div>
 
-            <div class="pactions">
-              <a class="btn btn--outline" href="{{ "/products.html" | relative_url }}">Back to catalogue</a>
-              <a class="btn btn--ghost" href="{{ "/products.html?cart=open" | relative_url }}">View cart</a>
-            </div>
+            <!-- Related products -->
+            <section class="relsec">
+              <div class="section__head">
+                <h2 class="h2">Customers may also like</h2>
+                <a class="muted small" href="{{ "/products.html" | relative_url }}">View all</a>
+              </div>
+
+              {% assign related_items = "" | split: "" %}
+
+              {% if page.related and page.related.size > 0 %}
+                {% assign related_items = site.products | where: "active", true | where_exp: "p", "page.related contains p.sku" %}
+              {% else %}
+                {% assign related_items = site.products | where: "active", true | where: "category", page.category | where_exp: "p", "p.sku != page.sku" %}
+              {% endif %}
+
+              {% assign related_items = related_items | slice: 0, 4 %}
+
+              <div class="grid">
+                {% for rp in related_items %}
+                  <article class="card">
+                    <div class="card__img">
+                      {% if rp.image %}
+                        <img src="{{ rp.image | relative_url }}" alt="{{ rp.name | escape }}">
+                      {% else %}
+                        <div class="ph" aria-hidden="true"></div>
+                      {% endif %}
+                    </div>
+                    <div class="card__body">
+                      <h3 class="card__title">{{ rp.name }}</h3>
+                      <p class="card__desc">{{ rp.description | default: "Premium Supply selection." }}</p>
+                      <div class="foot">
+                        <div class="price">
+                          {% if rp.variants and rp.variants.size > 0 %}
+                            <strong>From ${{ rp.variants[0].price }} CAD</strong>
+                          {% else %}
+                            <strong>${{ rp.price | default: 0 }} CAD</strong>
+                          {% endif %}
+                        </div>
+                        <a class="btn btn--outline" href="{{ rp.url | relative_url }}">View</a>
+                      </div>
+                    </div>
+                  </article>
+                {% endfor %}
+              </div>
+            </section>
+
           </div>
         </div>
       </section>
 
-      <footer class="footer">
-        <div class="container footer__inner">
-          <span>© Premium Supply • Product page</span>
-          <span class="muted small">Proudly Canadian • CAD</span>
-        </div>
-      </footer>
-
     </div>
   </main>
 
-  <!-- Toast -->
   <div class="toast" id="toast" hidden>
     <span>Added to cart</span>
-    <a class="btn btn--outline" href="{{ "/products.html?cart=open" | relative_url }}">View cart</a>
+    <a class="btn btn--outline" href="{{ "/products.html" | relative_url }}?cart=open">View cart</a>
   </div>
 
-  <!-- Inline JS only -->
   <script>
-    const cartKey = "ps_cart_v4";
+    const cartKey = "ps_cart_main";
     const toast = document.getElementById("toast");
     const cartCountEl = document.getElementById("cartCount");
 
-    function readCart(){
-      return JSON.parse(localStorage.getItem(cartKey) || "{}");
-    }
-    function writeCart(cart){
-      localStorage.setItem(cartKey, JSON.stringify(cart));
-    }
-    function cartCount(cart){
-      return Object.values(cart).reduce((sum, line)=> sum + (Number(line.qty)||0), 0);
-    }
-    function lineKey(sku, variant){
-      return variant ? (sku + "::" + variant) : sku;
-    }
+    const qtyInput = document.getElementById("qtyInput");
+    const qtyDec = document.getElementById("qtyDec");
+    const qtyInc = document.getElementById("qtyInc");
+
+    function readCart(){ return JSON.parse(localStorage.getItem(cartKey) || "{}"); }
+    function writeCart(c){ localStorage.setItem(cartKey, JSON.stringify(c)); }
+    function countCart(c){ return Object.values(c).reduce((s,it)=> s + (Number(it.qty)||0), 0); }
+
+    function lineKey(sku, variant){ return variant ? (sku + "::" + variant) : sku; }
+
     function showToast(){
       toast.hidden = false;
       clearTimeout(showToast._t);
       showToast._t = setTimeout(()=> toast.hidden = true, 2200);
     }
 
-    // Update cart count on load
-    (function(){
-      const cart = readCart();
-      cartCountEl.textContent = cartCount(cart);
-    })();
+    // Quantity stepper
+    qtyDec.addEventListener("click", ()=>{
+      qtyInput.value = Math.max(1, (Number(qtyInput.value)||1) - 1);
+    });
+    qtyInc.addEventListener("click", ()=>{
+      qtyInput.value = Math.min(99, (Number(qtyInput.value)||1) + 1);
+    });
 
-    // Gallery click (swap main image)
+    // Gallery swap
     (function(){
       const main = document.getElementById("mainImage");
       if(!main) return;
@@ -227,19 +245,20 @@
         btn.addEventListener("click", ()=>{
           const src = btn.getAttribute("data-src");
           main.src = src;
-          // if wrapped in <a>, update href to open bigger
           const wrap = main.closest("a");
           if(wrap) wrap.href = src;
         });
       });
     })();
 
-    // Variant price display
+    // Variant price
     const unitPriceEl = document.getElementById("unitPrice");
     const variantSelect = document.getElementById("variantSelect");
 
     function currentVariant(){
-      if(!variantSelect) return { label: "", price: {{ page.price | default: 0 }} };
+      if(!variantSelect){
+        return { label:"", price: Number("{{ page.price | default: 0 }}") };
+      }
       const opt = variantSelect.options[variantSelect.selectedIndex];
       return { label: opt.value, price: Number(opt.dataset.price || 0) };
     }
@@ -247,34 +266,32 @@
       const v = currentVariant();
       unitPriceEl.textContent = new Intl.NumberFormat(undefined,{style:"currency",currency:"CAD"}).format(v.price) + " CAD";
     }
-    if(variantSelect){
-      variantSelect.addEventListener("change", renderUnitPrice);
-    }
+    if(variantSelect) variantSelect.addEventListener("change", renderUnitPrice);
     renderUnitPrice();
+
+    // Load cart count
+    (function(){
+      const c = readCart();
+      cartCountEl.textContent = countCart(c);
+    })();
 
     // Add to cart
     document.getElementById("addToCart").addEventListener("click", ()=>{
-      const cart = readCart();
+      const c = readCart();
+      const v = currentVariant();
+      const qty = Math.max(1, Math.min(99, Number(qtyInput.value)||1));
 
       const sku = "{{ page.sku | escape }}";
       const name = "{{ page.name | escape }}";
-      const v = currentVariant();
+      const url = "{{ page.url | relative_url }}";
+      const image = "{{ page.image | default: "" | relative_url }}";
 
       const key = lineKey(sku, v.label);
-      if(cart[key]){
-        cart[key].qty += 1;
-      }else{
-        cart[key] = {
-          sku,
-          name,
-          variant: v.label || "",
-          unitPrice: Number(v.price || 0),
-          qty: 1
-        };
-      }
+      if(c[key]) c[key].qty += qty;
+      else c[key] = { sku, name, variant: v.label || "", unitPrice: Number(v.price||0), qty, url, image };
 
-      writeCart(cart);
-      cartCountEl.textContent = cartCount(cart);
+      writeCart(c);
+      cartCountEl.textContent = countCart(c);
       showToast();
     });
   </script>
