@@ -1,6 +1,4 @@
 ---
----
----
 permalink: /products.html
 ---
 <!doctype html>
@@ -64,6 +62,7 @@ permalink: /products.html
       <a class="chip" href="#cat-extracts">Extracts</a>
       <a class="chip" href="#cat-mushroom">Mushroom</a>
       <a class="chip" href="#cat-accessories">Accessories</a>
+      <a class="chip" href="#cat-male-enhancers">Male Enhancers</a>
     </div>
   </header>
 
@@ -82,7 +81,7 @@ permalink: /products.html
         </div>
       </div>
 
-      {% assign categories = "Flowers|Oil|Vapes|Extracts|Mushroom|Accessories" | split: "|" %}
+      {% assign categories = "Flowers|Oil|Vapes|Extracts|Mushroom|Accessories|Male Enhancers" | split: "|" %}
 
       {% for cat in categories %}
         {% assign cat_id = cat | downcase | replace: " ", "-" %}
@@ -98,10 +97,12 @@ permalink: /products.html
             <div class="grid">
               {% for p in items %}
                 <article class="card product"
+                  data-url="{{ p.url | relative_url }}"
                   data-sku="{{ p.sku | escape }}"
                   data-name="{{ p.name | escape }}"
                   data-price="{{ p.price | default: 0 }}"
                   data-category="{{ p.category | escape }}"
+                  data-has-variants="{% if p.variants and p.variants.size > 0 %}1{% else %}0{% endif %}"
                 >
                   <div class="card__img">
                     {% if p.image %}
@@ -122,12 +123,21 @@ permalink: /products.html
 
                     <div class="foot">
                       <div class="price">
-                        <strong>${{ p.price }} CAD</strong>
+                        {% if p.variants and p.variants.size > 0 %}
+                          <strong>From ${{ p.variants[0].price }} CAD</strong>
+                        {% else %}
+                          <strong>${{ p.price }} CAD</strong>
+                        {% endif %}
                         {% if p.price_note %}<span class="muted small">{{ p.price_note }}</span>{% endif %}
                       </div>
 
-                      <!-- IMPORTANT: Add does not open checkout -->
-                      <button class="btn btn--outline addBtn" type="button">Add</button>
+                      {% if p.variants and p.variants.size > 0 %}
+                        <!-- Flowers / variant products: choose size on product page -->
+                        <a class="btn btn--outline" href="{{ p.url | relative_url }}">Choose size</a>
+                      {% else %}
+                        <!-- Non-variant products: quick add -->
+                        <button class="btn btn--outline addBtn" type="button">Add</button>
+                      {% endif %}
                     </div>
                   </div>
                 </article>
@@ -174,7 +184,6 @@ permalink: /products.html
 
       <div class="minrule" id="minRule">Minimum order is $75 CAD.</div>
 
-      <!-- Cart Summary step opens from HERE -->
       <button class="btn btn--solid btn--full" id="reviewBtn" type="button">
         Review cart summary
       </button>
@@ -260,7 +269,7 @@ permalink: /products.html
           </p>
         </section>
 
-        <!-- STEP 2: Payment Instructions (confidential until order placed) -->
+        <!-- STEP 2: Payment Instructions -->
         <section id="step2" hidden>
           <p class="muted small">Order confirmation number</p>
           <div class="copyrow">
@@ -304,29 +313,24 @@ permalink: /products.html
     <button class="btn btn--outline" id="toastViewCart" type="button">View cart</button>
   </div>
 
-  <!-- Inline JS only -->
   <script>
     // ======================
-    // CONFIG (edit these)
+    // CONFIG
     // ======================
     const ORDER_EMAIL = "orders@premiumsupply.ca";
-
-    // Keep payment email “confidential” until step2 (UI-level).
-    // NOTE: A determined person can still view source on a static site.
     const PAY_USER = "payments";
     const PAY_DOMAIN = "premiumsupply.ca";
 
     const MIN_ORDER_CAD = 75;
     const POINTS_PER_DOLLAR = 1;
+
+    // IMPORTANT: variant-aware cart
+    const cartKey = "ps_cart_v3";
+    const loyaltyKey = "ps_loyalty_v2";
     // ======================
 
     const $ = (s) => document.querySelector(s);
     const fmt = (n) => new Intl.NumberFormat(undefined, { style:"currency", currency:"CAD" }).format(Number(n||0));
-
-    const cartKey = "ps_cart_v3";
-    const loyaltyKey = "ps_loyalty_v2";
-
-    let cart = JSON.parse(localStorage.getItem(cartKey) || "{}");
 
     const backdrop = $("#backdrop");
     const drawer = $("#drawer");
@@ -347,28 +351,59 @@ permalink: /products.html
     const toast = $("#toast");
     const toastViewCart = $("#toastViewCart");
 
-    function saveCart(){ localStorage.setItem(cartKey, JSON.stringify(cart)); }
-    function countItems(){ return Object.values(cart).reduce((a,b)=>a+b,0); }
+    // ---------- Cart model ----------
+    // cart = { "SKU" or "SKU::Variant": { sku, name, variant, unitPrice, qty } }
 
-    function getProduct(sku){
+    function lineKey(sku, variant){
+      return variant ? (sku + "::" + variant) : sku;
+    }
+
+    function getProductFromDOM(sku){
       const el = document.querySelector('.product[data-sku="' + CSS.escape(sku) + '"]');
       if(!el) return null;
       return {
         sku,
-        name: el.dataset.name,
-        price: Number(el.dataset.price || 0),
-        category: el.dataset.category || ""
+        name: el.dataset.name || sku,
+        unitPrice: Number(el.dataset.price || 0)
       };
     }
 
-    function cartTotal(){
-      let total = 0;
-      for(const sku in cart){
-        const p = getProduct(sku);
-        if(!p) continue;
-        total += p.price * cart[sku];
+    function readCart(){
+      let raw = {};
+      try{ raw = JSON.parse(localStorage.getItem(cartKey) || "{}"); }catch(e){ raw = {}; }
+
+      // MIGRATION: old format was { sku: qtyNumber }
+      const needsMigration = raw && typeof raw === "object" && Object.values(raw).some(v => typeof v === "number");
+      if(needsMigration){
+        const migrated = {};
+        for(const sku in raw){
+          const qty = Number(raw[sku] || 0);
+          if(qty <= 0) continue;
+          const p = getProductFromDOM(sku);
+          migrated[sku] = {
+            sku,
+            name: p ? p.name : sku,
+            variant: "",
+            unitPrice: p ? p.unitPrice : 0,
+            qty
+          };
+        }
+        raw = migrated;
+        localStorage.setItem(cartKey, JSON.stringify(raw));
       }
-      return total;
+      return (raw && typeof raw === "object") ? raw : {};
+    }
+
+    function saveCart(cart){
+      localStorage.setItem(cartKey, JSON.stringify(cart));
+    }
+
+    function countItems(cart){
+      return Object.values(cart).reduce((sum, item) => sum + (Number(item.qty)||0), 0);
+    }
+
+    function cartTotal(cart){
+      return Object.values(cart).reduce((sum, item) => sum + (Number(item.unitPrice||0) * (Number(item.qty)||0)), 0);
     }
 
     function openDrawer(){
@@ -382,12 +417,8 @@ permalink: /products.html
       backdrop.hidden = true;
     }
 
-    function openModal(){
-      modal.hidden = false;
-    }
-    function closeModal(){
-      modal.hidden = true;
-    }
+    function openModal(){ modal.hidden = false; }
+    function closeModal(){ modal.hidden = true; }
 
     function showToast(){
       toast.hidden = false;
@@ -395,41 +426,40 @@ permalink: /products.html
       showToast._t = setTimeout(()=> toast.hidden = true, 2200);
     }
 
-    function renderCart(){
-      cartCountEl.textContent = countItems();
+    let cart = readCart();
 
-      const total = cartTotal();
+    function renderCart(){
+      cartCountEl.textContent = countItems(cart);
+
+      const total = cartTotal(cart);
       cartTotalEl.textContent = fmt(total) + " CAD";
 
       if(total < MIN_ORDER_CAD){
         const diff = MIN_ORDER_CAD - total;
-        minRuleEl.innerHTML = "<strong>Minimum order:</strong> $"+MIN_ORDER_CAD+" CAD. Add "+fmt(diff)+" more.";
+        minRuleEl.innerHTML = "<strong>Minimum order:</strong> $" + MIN_ORDER_CAD + " CAD. Add " + fmt(diff) + " more.";
       }else{
         minRuleEl.textContent = "Minimum order met.";
       }
 
-      const skus = Object.keys(cart);
-      if(!skus.length){
+      const keys = Object.keys(cart);
+      if(!keys.length){
         cartItemsEl.innerHTML = '<p class="muted">Your cart is empty.</p>';
         return;
       }
 
-      cartItemsEl.innerHTML = skus.map((sku)=>{
-        const qty = cart[sku];
-        const p = getProduct(sku);
-        const name = p ? p.name : sku;
-        const price = p ? p.price : 0;
-
+      cartItemsEl.innerHTML = keys.map((k)=>{
+        const it = cart[k];
+        const v = it.variant ? ` • Size: ${it.variant}` : "";
         return `
           <div class="line">
             <div>
-              <strong>${name}</strong>
-              <div class="muted small">SKU: ${sku} • ${fmt(price)} CAD</div>
+              <strong>${it.name}</strong>
+              <div class="muted small">SKU: ${it.sku}${v} • ${fmt(it.unitPrice)} CAD</div>
             </div>
             <div class="qty">
-              <button class="qbtn" data-dec="${sku}" type="button">−</button>
-              <strong>${qty}</strong>
-              <button class="qbtn" data-inc="${sku}" type="button">+</button>
+              <button class="qbtn" data-dec="${k}" type="button">−</button>
+              <strong>${it.qty}</strong>
+              <button class="qbtn" data-inc="${k}" type="button">+</button>
             </div>
           </div>
         `;
@@ -437,56 +467,55 @@ permalink: /products.html
 
       cartItemsEl.querySelectorAll("[data-inc]").forEach((b)=>{
         b.addEventListener("click", ()=>{
-          const sku = b.getAttribute("data-inc");
-          cart[sku] = (cart[sku]||0) + 1;
-          saveCart();
+          const key = b.getAttribute("data-inc");
+          cart[key].qty += 1;
+          saveCart(cart);
           renderCart();
         });
       });
+
       cartItemsEl.querySelectorAll("[data-dec]").forEach((b)=>{
         b.addEventListener("click", ()=>{
-          const sku = b.getAttribute("data-dec");
-          cart[sku] = (cart[sku]||0) - 1;
-          if(cart[sku] <= 0) delete cart[sku];
-          saveCart();
+          const key = b.getAttribute("data-dec");
+          cart[key].qty -= 1;
+          if(cart[key].qty <= 0) delete cart[key];
+          saveCart(cart);
           renderCart();
         });
       });
     }
 
     function renderSummary(){
-      const skus = Object.keys(cart);
-      const total = cartTotal();
+      const keys = Object.keys(cart);
+      const total = cartTotal(cart);
 
       summaryTotalEl.textContent = fmt(total) + " CAD";
       checkoutTotalEl.textContent = fmt(total) + " CAD";
 
-      if(!skus.length){
+      if(!keys.length){
         summaryLinesEl.innerHTML = '<p class="muted">No items in your cart.</p>';
         $("#toCheckoutBtn").disabled = true;
         summaryMinRuleEl.textContent = "Add items to continue.";
         return;
       }
 
-      summaryLinesEl.innerHTML = skus.map((sku)=>{
-        const qty = cart[sku];
-        const p = getProduct(sku);
-        const name = p ? p.name : sku;
-        const price = p ? p.price : 0;
+      summaryLinesEl.innerHTML = keys.map((k)=>{
+        const it = cart[k];
+        const v = it.variant ? ` • Size: ${it.variant}` : "";
         return `
           <div class="line">
             <div>
-              <strong>${name}</strong>
-              <div class="muted small">SKU: ${sku} • Qty: ${qty}</div>
+              <strong>${it.name}</strong>
+              <div class="muted small">SKU: ${it.sku}${v} • Qty: ${it.qty}</div>
             </div>
-            <div class="mono">${fmt(price * qty)}</div>
+            <div class="mono">${fmt(it.unitPrice * it.qty)}</div>
           </div>
         `;
       }).join("");
 
       if(total < MIN_ORDER_CAD){
         const diff = MIN_ORDER_CAD - total;
-        summaryMinRuleEl.innerHTML = "<strong>Minimum order:</strong> $"+MIN_ORDER_CAD+" CAD. Add "+fmt(diff)+" more.";
+        summaryMinRuleEl.innerHTML = "<strong>Minimum order:</strong> $" + MIN_ORDER_CAD + " CAD. Add " + fmt(diff) + " more.";
         $("#toCheckoutBtn").disabled = true;
       }else{
         summaryMinRuleEl.textContent = "Minimum order met.";
@@ -527,13 +556,11 @@ permalink: /products.html
       lines.push("Items:");
 
       let total = 0;
-      for(const sku in cart){
-        const qty = cart[sku];
-        const p = getProduct(sku);
-        const name = p ? p.name : sku;
-        const price = p ? p.price : 0;
-        total += price * qty;
-        lines.push("- " + name + " (SKU: " + sku + ") x" + qty + " — " + fmt(price) + " CAD each");
+      for(const k in cart){
+        const it = cart[k];
+        total += (it.unitPrice * it.qty);
+        const v = it.variant ? (" [" + it.variant + "]") : "";
+        lines.push("- " + it.name + " (SKU: " + it.sku + ")" + v + " x" + it.qty + " — " + fmt(it.unitPrice) + " CAD each");
       }
 
       lines.push("");
@@ -548,23 +575,37 @@ permalink: /products.html
       return { body: lines.join("\\n"), total };
     }
 
-    // ============================
-    // Events
-    // ============================
+    // ---------- Events ----------
 
-    // Add buttons: only add + toast (no checkout, no cart auto-open)
+    // Quick add (non-variant items only)
     document.querySelectorAll(".addBtn").forEach((btn)=>{
       btn.addEventListener("click", ()=>{
         const card = btn.closest(".product");
         const sku = card.dataset.sku;
-        cart[sku] = (cart[sku]||0) + 1;
-        saveCart();
+        const name = card.dataset.name;
+        const unitPrice = Number(card.dataset.price || 0);
+
+        const key = lineKey(sku, "");
+        if(cart[key]) cart[key].qty += 1;
+        else cart[key] = { sku, name, variant:"", unitPrice, qty: 1 };
+
+        saveCart(cart);
         renderCart();
         showToast();
       });
     });
 
-    // Toast button to open cart
+    // Card click -> go to product page (unless clicking a button/link)
+    document.querySelectorAll(".product").forEach(card => {
+      card.style.cursor = "pointer";
+      card.addEventListener("click", (e) => {
+        if (e.target.closest("button, a, input, select, textarea, label")) return;
+        const url = card.getAttribute("data-url");
+        if (url) window.location.href = url;
+      });
+    });
+
+    // Toast opens cart
     toastViewCart.addEventListener("click", ()=>{
       toast.hidden = true;
       renderCart();
@@ -578,26 +619,22 @@ permalink: /products.html
     });
     $("#closeCart").addEventListener("click", closeDrawer);
 
-    // Backdrop closes cart + modal
     backdrop.addEventListener("click", ()=>{
       closeDrawer();
       closeModal();
     });
 
-    // Review cart summary (opens modal step0)
+    // Review cart summary (opens step0)
     $("#reviewBtn").addEventListener("click", ()=>{
       renderSummary();
-      // Step0 only
       $("#step0").hidden = false;
       $("#step1").hidden = true;
       $("#step2").hidden = true;
       openModal();
     });
 
-    // Modal close
     $("#closeModal").addEventListener("click", closeModal);
 
-    // Modal flow buttons
     $("#backToCartBtn").addEventListener("click", ()=>{
       closeModal();
       renderCart();
@@ -612,19 +649,17 @@ permalink: /products.html
       $("#step0").hidden = true;
       $("#step1").hidden = false;
       $("#step2").hidden = true;
-      checkoutTotalEl.textContent = fmt(cartTotal()) + " CAD";
+      checkoutTotalEl.textContent = fmt(cartTotal(cart)) + " CAD";
     });
 
-    // Place order -> shows payment instructions (step2)
-    $("#placeOrderBtn").addEventListener("click", async ()=>{
-      const total = cartTotal();
+    $("#placeOrderBtn").addEventListener("click", ()=>{
+      const total = cartTotal(cart);
       if(total < MIN_ORDER_CAD){
         formErrorEl.hidden = false;
         formErrorEl.textContent = "Minimum order is $75 CAD.";
         return;
       }
 
-      // Validate required fields
       const name = $("#custName").value.trim();
       const phone = $("#custPhone").value.trim();
       const city = $("#custCity").value.trim();
@@ -636,13 +671,11 @@ permalink: /products.html
 
       const orderId = makeOrderId();
       const expiresAt = Date.now() + 24*60*60*1000;
-
       const payEmail = PAY_USER + "@" + PAY_DOMAIN;
 
       const built = buildOrderEmail(orderId, expiresAt, payEmail);
       addLoyaltyPoints(built.total);
 
-      // Fill step2
       $("#orderId").textContent = orderId;
       $("#payEmail").textContent = payEmail;
       $("#expiryLine").textContent = "Pay before: " + new Date(expiresAt).toLocaleString();
@@ -655,18 +688,16 @@ permalink: /products.html
 
       $("#emailOrderBtn").setAttribute("href", mailto);
 
-      // Clear cart after placing order (keeps flow clean)
+      // Clear cart AFTER placing order
       cart = {};
-      saveCart();
+      saveCart(cart);
       renderCart();
 
-      // Switch to step2
       $("#step0").hidden = true;
       $("#step1").hidden = true;
       $("#step2").hidden = false;
     });
 
-    // Copy order ID
     $("#copyOrderId").addEventListener("click", async ()=>{
       try{
         await navigator.clipboard.writeText($("#orderId").textContent);
@@ -683,16 +714,3 @@ permalink: /products.html
   </script>
 </body>
 </html>
-<script>
-  document.querySelectorAll(".product").forEach(card => {
-    card.style.cursor = "pointer";
-
-    card.addEventListener("click", (e) => {
-      // If user clicked a button or link inside the card, do not redirect
-      if (e.target.closest("button, a, input, select, textarea, label")) return;
-
-      const url = card.getAttribute("data-url");
-      if (url) window.location.href = url;
-    });
-  });
-</script>
