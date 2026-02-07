@@ -142,6 +142,15 @@
     const $ = (s, el=document) => el.querySelector(s);
     const $$ = (s, el=document) => Array.from(el.querySelectorAll(s));
 
+   const CATEGORY_ORDER = [
+  "Flower",
+  "Concentrates",
+  "Edibles",
+  "Vapes",
+  "CBD",
+  "Male Enhancers"
+];
+
     const money = (n) =>
       new Intl.NumberFormat("en-CA", { style:"currency", currency: PS.currency }).format(n);
 
