@@ -9,14 +9,14 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 
-<body data-page="cart">
+<body>
   <input class="toggle" type="checkbox" id="catDrawerToggle">
 
   <div class="topbar">
     <div class="container topbar__inner">
       <span class="topbar__badge"><i class="fa-solid fa-maple-leaf"></i> 100% Canadian</span>
-      <p class="topbar__text">Your Cart</p>
-      <a class="topbar__link" href="products.html">Continue shopping</a>
+      <p class="topbar__text">Cart</p>
+      <a class="topbar__link" href="products.html">Shop</a>
     </div>
   </div>
 
@@ -24,7 +24,8 @@
     <div class="container header__inner">
       <label class="icon-btn" for="catDrawerToggle" aria-label="Open categories"><i class="fa-solid fa-bars"></i></label>
 
-      <a class="brand" href="products.html">
+      <a class="brand" href="products.html" aria-label="All products">
+        <img class="brand__logo-img" src="assets/brand/logo-planet.png" alt="Premium Supply">
         <span class="brand__text">
           <span class="brand__name">Premium Supply</span>
           <span class="brand__tag">Cart</span>
@@ -32,6 +33,7 @@
       </a>
 
       <div class="header__right">
+        <a class="icon-btn" href="products.html" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></a>
         <a class="icon-btn cart-btn" href="cart.html" aria-label="Cart">
           <i class="fa-solid fa-bag-shopping"></i>
           <span class="cart-badge js-cart-count">0</span>
@@ -41,18 +43,21 @@
   </header>
 
   <label for="catDrawerToggle" class="drawer-backdrop" aria-hidden="true"></label>
-  <aside class="drawer">
+  <aside class="drawer" aria-label="Shop by category">
     <div class="drawer__head">
-      <div class="drawer__title"><i class="fa-solid fa-list"></i> Menu</div>
+      <div class="drawer__title"><i class="fa-solid fa-list"></i> Shop by category</div>
       <label class="icon-btn" for="catDrawerToggle" aria-label="Close"><i class="fa-solid fa-xmark"></i></label>
     </div>
+
     <nav class="cat-nav">
       <a class="cat-link" href="products.html">All Products</a>
-      <a class="cat-link" href="category-flower.html">Flower</a>
-      <a class="cat-link" href="category-concentrates.html">Concentrates</a>
-      <a class="cat-link" href="category-edibles.html">Edibles</a>
-      <a class="cat-link" href="category-vape.html">Vape</a>
-      <a class="cat-link" href="category-cbd.html">CBD</a>
+      <div class="cat-sep"></div>
+      <a class="cat-link" href="category.html?c=Flower">Flower</a>
+      <a class="cat-link" href="category.html?c=Concentrates">Concentrates</a>
+      <a class="cat-link" href="category.html?c=Edibles">Edibles</a>
+      <a class="cat-link" href="category.html?c=Vapes">Vapes</a>
+      <a class="cat-link" href="category.html?c=CBD">CBD</a>
+      <a class="cat-link" href="category.html?c=Male%20Enhancers">Male Enhancers</a>
       <div class="cat-sep"></div>
       <a class="cat-link" href="checkout.html">Checkout</a>
     </nav>
@@ -61,125 +66,173 @@
   <main class="section">
     <div class="container">
       <div class="cart-layout">
+        <!-- Items -->
         <section class="card">
-          <h1 class="block__title" style="margin:0 0 10px;">Cart items</h1>
-          <div id="cartItems"></div>
-          <p class="muted" id="emptyCartMsg" style="display:none; margin:10px 0 0;">
-            Your cart is empty. <a href="products.html" style="text-decoration:underline; font-weight:900;">Shop products</a>
-          </p>
+          <h1 class="block__title" style="margin:0 0 8px;">Your cart</h1>
+          <p class="muted" style="margin:0 0 10px;">Adjust quantities or remove items before checkout.</p>
+          <div id="items"></div>
+
+          <div style="margin-top:12px;">
+            <a class="btn btn--full" href="products.html"><i class="fa-solid fa-arrow-left"></i> Continue shopping</a>
+          </div>
         </section>
 
+        <!-- Summary -->
         <aside class="card">
           <h2 class="block__title" style="margin:0 0 8px;">Summary</h2>
+
           <div class="summary-row"><span>Subtotal</span> <strong id="subtotal">$0.00</strong></div>
           <div class="summary-row"><span>Shipping</span> <strong id="shipping">$0.00</strong></div>
-          <div class="hr"></div>
           <div class="summary-row"><span>Total</span> <strong id="total">$0.00</strong></div>
-          <p class="muted" style="margin:8px 0 12px;">Final total confirmed at checkout.</p>
 
-          <a class="btn btn--solid btn--full" href="checkout.html">Checkout</a>
-          <a class="btn btn--outline btn--full" href="products.html" style="margin-top:10px;">Continue shopping</a>
+          <div class="hr"></div>
+
+          <div class="pill-row" style="margin-bottom:10px;">
+            <span class="pill pill--mint"><i class="fa-solid fa-circle-check"></i> Min order $75</span>
+            <span class="pill pill--gold"><i class="fa-solid fa-truck-fast"></i> Free ship $250+</span>
+          </div>
+
+          <div id="minAlert" class="alert-danger" style="display:none; margin-bottom:10px;">
+            Minimum order is <strong>$75 CAD</strong> before shipping. Add more items to continue.
+          </div>
+
+          <button class="btn btn--solid btn--full" id="checkoutBtn" type="button">
+            Proceed to checkout
+          </button>
+
+          <p class="muted" style="margin:10px 0 0;">
+            Shipping is <strong>$0</strong> at $250+, otherwise <strong>$15</strong>.
+          </p>
         </aside>
       </div>
     </div>
   </main>
 
   <script>
-    const PS = { currency:"CAD", cartKey:"ps_cart_v1", freeShipOver:150, flatShip:15 };
+    const PS = {
+      currency:"CAD",
+      cartKey:"ps_cart_v1",
+      minOrder: 75,
+      freeShipOver: 250,
+      flatShip: 15
+    };
+
     const $ = (s, el=document) => el.querySelector(s);
     const $$ = (s, el=document) => Array.from(el.querySelectorAll(s));
     const money = (n) => new Intl.NumberFormat("en-CA",{style:"currency",currency:PS.currency}).format(n);
 
-    function readCart(){ try{return JSON.parse(localStorage.getItem(PS.cartKey)||"{}");}catch{return {};} }
+    function readCart(){ try { return JSON.parse(localStorage.getItem(PS.cartKey) || "{}"); } catch { return {}; } }
     function writeCart(cart){ localStorage.setItem(PS.cartKey, JSON.stringify(cart)); }
-    function cartCount(cart){ return Object.values(cart).reduce((s,i)=>s+(i.qty||0),0); }
-    function updateBadges(){ const c=cartCount(readCart()); $$(".js-cart-count").forEach(el=>el.textContent=String(c)); }
+    function cartCount(cart){ return Object.values(cart).reduce((s,i)=> s + (i.qty||0), 0); }
+    function updateBadges(){
+      const count = cartCount(readCart());
+      $$(".js-cart-count").forEach(el => el.textContent = String(count));
+    }
 
     function calc(cart){
       const items = Object.values(cart);
-      const subtotal = items.reduce((s,i)=> s + (i.price*i.qty), 0);
-      const shipping = subtotal >= PS.freeShipOver : 250 : (items.length ? PS.flatShip : 15);
+      const subtotal = items.reduce((s,i)=> s + (Number(i.price||0) * Number(i.qty||0)), 0);
+      const shipping = items.length ? (subtotal >= PS.freeShipOver ? 0 : PS.flatShip) : 0;
       const total = subtotal + shipping;
-      return { subtotal, shipping, total, items };
+      return { items, subtotal, shipping, total };
     }
 
     function render(){
       const cart = readCart();
       updateBadges();
 
-      const wrap = $("#cartItems");
-      const empty = $("#emptyCartMsg");
-
-      const { subtotal, shipping, total, items } = calc(cart);
+      const { items, subtotal, shipping, total } = calc(cart);
 
       $("#subtotal").textContent = money(subtotal);
       $("#shipping").textContent = money(shipping);
       $("#total").textContent = money(total);
 
+      // Min order gating
+      const minOk = subtotal >= PS.minOrder;
+      $("#minAlert").style.display = (!items.length || minOk) ? "none" : "block";
+      $("#checkoutBtn").disabled = (!items.length || !minOk);
+      $("#checkoutBtn").style.opacity = (!items.length || !minOk) ? ".6" : "1";
+      $("#checkoutBtn").style.cursor = (!items.length || !minOk) ? "not-allowed" : "pointer";
+
       if(!items.length){
-        wrap.innerHTML = "";
-        empty.style.display = "block";
+        $("#items").innerHTML = `<p class="muted">Your cart is empty. <a href="products.html" style="text-decoration:underline; font-weight:950;">Shop products</a>.</p>`;
         return;
       }
-      empty.style.display = "none";
 
-      wrap.innerHTML = items.map(i => `
+      $("#items").innerHTML = items.map(i => `
         <div class="cart-item" data-id="${i.id}">
-          <div class="cart-thumb" aria-hidden="true"></div>
+          <div class="cart-thumb">
+            ${i.image ? `<img src="${i.image}" alt="${i.name}">` : ``}
+          </div>
+
           <div class="cart-meta">
-            <h3>${i.name}</h3>
-            <div class="meta">${i.category} • ${i.tier} • ${i.type}</div>
+            <h3><a href="product.html?id=${encodeURIComponent(i.id)}" style="text-decoration:underline; text-underline-offset:3px;">${i.name}</a></h3>
+            <div class="meta">${i.category || ""} • ${i.tier || ""} • ${i.type || ""}</div>
+            <div class="meta"><strong>${money(Number(i.price||0))}</strong> each</div>
 
-            <div class="cart-actions">
-              <div class="qty">
-                <span>Qty</span>
-                <div class="qty-stepper">
-                  <button class="qty-btn js-minus" type="button">−</button>
-                  <input class="qty-input js-qty" type="number" min="1" value="${i.qty}">
-                  <button class="qty-btn js-plus" type="button">+</button>
-                </div>
+            <div class="qty" style="margin-top:10px;">
+              <span>Quantity</span>
+              <div class="qty-stepper">
+                <button class="qty-btn js-minus" type="button">−</button>
+                <input class="qty-input js-qty" type="number" min="1" value="${Number(i.qty||1)}">
+                <button class="qty-btn js-plus" type="button">+</button>
               </div>
-
-              <div class="muted"><strong>${money(i.price)}</strong> each</div>
-              <button class="link-danger js-remove" type="button">Remove</button>
             </div>
+          </div>
+
+          <div class="cart-actions">
+            <button class="btn" type="button" data-remove>Remove</button>
+            <div class="muted">${money(Number(i.price||0) * Number(i.qty||0))}</div>
           </div>
         </div>
       `).join("");
     }
 
-    document.addEventListener("click", (e)=>{
+    document.addEventListener("click", (e) => {
       const row = e.target.closest(".cart-item");
       if(!row) return;
+
       const id = row.dataset.id;
       const cart = readCart();
-      const item = cart[id];
-      if(!item) return;
+
+      if(e.target.closest("[data-remove]")){
+        delete cart[id];
+        writeCart(cart);
+        render();
+        return;
+      }
 
       if(e.target.closest(".js-plus")){
-        item.qty = Math.max(1, (item.qty||1) + 1);
-        writeCart(cart); render();
+        cart[id].qty = Math.max(1, Number(cart[id].qty||1) + 1);
+        writeCart(cart);
+        render();
+        return;
       }
+
       if(e.target.closest(".js-minus")){
-        item.qty = Math.max(1, (item.qty||1) - 1);
-        writeCart(cart); render();
-      }
-      if(e.target.closest(".js-remove")){
-        delete cart[id];
-        writeCart(cart); render();
+        cart[id].qty = Math.max(1, Number(cart[id].qty||1) - 1);
+        writeCart(cart);
+        render();
+        return;
       }
     });
 
-    document.addEventListener("change", (e)=>{
+    document.addEventListener("input", (e) => {
       const input = e.target.closest(".js-qty");
       if(!input) return;
+
       const row = e.target.closest(".cart-item");
+      if(!row) return;
+
       const id = row.dataset.id;
       const cart = readCart();
-      if(!cart[id]) return;
       cart[id].qty = Math.max(1, Number(input.value||1));
       writeCart(cart);
       render();
+    });
+
+    $("#checkoutBtn").addEventListener("click", () => {
+      location.href = "checkout.html";
     });
 
     render();
