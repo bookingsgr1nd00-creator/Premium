@@ -190,60 +190,62 @@
     }
 
     function productCard(p){
-      const badges = (p.badges || []);
-      const notes = (p.notes || []).slice(0,4);
-      const sale = badges.map(b => String(b).toLowerCase()).includes("sale");
+  const sale = (p.badges || []).map(b => String(b).toLowerCase()).includes("sale");
+  const notes = (p.notes || []).slice(0,4);
 
-      const notesHTML = notes.length
-        ? `<ul class="tag-stack">${notes.map(n => `<li class="tagchip ${noteColorClass(n)}">${n}</li>`).join("")}</ul>`
-        : "";
+  const notesHTML = notes.length
+    ? `<ul class="tag-stack">${notes.map(n => `<li class="tagchip ${noteColorClass(n)}">${n}</li>`).join("")}</ul>`
+    : "";
 
-      const media = p.image
-        ? `<img class="img-square" src="${p.image}" alt="${p.name}">`
-        : `<div class="img-square" aria-hidden="true"></div>`;
+  const mediaInner = p.image
+    ? `<img class="img-square" src="${p.image}" alt="${p.name}">`
+    : `<div class="img-square" aria-hidden="true"></div>`;
 
-      return `
-        <article class="product-tile" data-id="${p.id}">
-          <div class="product-tile__media">
-            ${sale ? `<span class="sale-bubble">Sale!</span>` : ""}
-            ${notesHTML}
-            ${media}
-            <div class="type-strip ${typeClass(p.type)}">${p.type || "—"}</div>
-          </div>
+  return `
+    <article class="product-tile" data-id="${p.id}">
+      <div class="product-tile__media">
+        ${sale ? `<span class="sale-bubble">Sale!</span>` : ""}
+        ${notesHTML}
 
-          <div class="product-tile__body">
-            <div class="pill-row">
-              <span class="pill pill--tier">${p.tier || "Premium"}</span>
-              <span class="pill pill--tag">${p.tag || p.category}</span>
-            </div>
+        <a class="product-link" href="product.html?id=${encodeURIComponent(p.id)}" aria-label="View ${p.name}">
+          ${mediaInner}
+          <div class="type-strip ${typeClass(p.type)}">${p.type || "—"}</div>
+        </a>
+      </div>
 
-            <h2 class="product-tile__title">${p.name}</h2>
+      <div class="product-tile__body">
+        <div class="pill-row">
+          <span class="pill pill--tier">${p.tier || "Premium"}</span>
+          <span class="pill pill--tag">${p.tag || p.category}</span>
+        </div>
 
-            <div class="rating">
-              <div class="stars" aria-label="${p.rating} stars">${toStarHTML(p.rating)}</div>
-              <div class="reviews">${Number(p.reviews||0)} reviews</div>
-            </div>
+        <a class="product-title-link" href="product.html?id=${encodeURIComponent(p.id)}">${p.name}</a>
 
-            <div class="price">${money(Number(p.price||0))} ${PS.currency}</div>
+        <div class="rating">
+          <div class="stars" aria-label="${p.rating} stars">${toStarHTML(p.rating)}</div>
+          <div class="reviews">${Number(p.reviews||0)} reviews</div>
+        </div>
 
-            <div class="buy-row">
-              <div class="qty">
-                <span>Quantity</span>
-                <div class="qty-stepper">
-                  <button class="qty-btn js-minus" type="button" data-id="${p.id}">−</button>
-                  <input class="qty-input js-qty" type="number" min="1" value="1" data-id="${p.id}">
-                  <button class="qty-btn js-plus" type="button" data-id="${p.id}">+</button>
-                </div>
-              </div>
+        <div class="price">${money(Number(p.price||0))} ${PS.currency}</div>
 
-              <button class="btn btn--solid btn--full js-buy" type="button" data-id="${p.id}">
-                Buy
-              </button>
+        <div class="buy-row">
+          <div class="qty">
+            <span>Quantity</span>
+            <div class="qty-stepper">
+              <button class="qty-btn js-minus" type="button" data-id="${p.id}">−</button>
+              <input class="qty-input js-qty" type="number" min="1" value="1" data-id="${p.id}">
+              <button class="qty-btn js-plus" type="button" data-id="${p.id}">+</button>
             </div>
           </div>
-        </article>
-      `;
-    }
+
+          <button class="btn btn--solid btn--full js-buy" type="button" data-id="${p.id}">
+            Buy
+          </button>
+        </div>
+      </div>
+    </article>
+  `;
+}
 
     function showToast(msg){
       const toast = $("#toast");
