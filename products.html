@@ -9,8 +9,8 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 
-<body data-page="listing" data-category="all">
-  <!-- Toggles -->
+<body>
+  <!-- Toggles (must be first for CSS ~ selectors) -->
   <input class="toggle" type="checkbox" id="catDrawerToggle">
   <input class="toggle" type="checkbox" id="searchToggle">
 
@@ -19,26 +19,28 @@
     <label for="searchToggle" class="search-modal__overlay" aria-hidden="true"></label>
     <div class="search-modal__panel">
       <div class="search-modal__head">
-        <h2 class="search-modal__title" id="searchTitle">Search products</h2>
+        <h2 class="search-modal__title" id="searchTitle">Search & sort</h2>
         <label class="icon-btn" for="searchToggle" aria-label="Close search"><i class="fa-solid fa-xmark"></i></label>
       </div>
 
       <div class="search-box">
-        <label class="sr-only" for="searchInput">Search</label>
-        <input id="searchInput" type="search" placeholder="Search by name, category, notes…" autocomplete="off">
-        <button class="btn btn--outline" type="button" id="clearSearch">Clear</button>
+        <label class="sr-only" for="q">Search</label>
+        <input id="q" type="search" placeholder="Search products…" autocomplete="off">
+        <button class="btn" type="button" id="clearBtn">Clear</button>
       </div>
 
-      <div class="sort-row">
-        <span class="muted">Sort:</span>
-        <select id="sortSelect" aria-label="Sort products">
+      <div class="search-box" style="margin-top:10px;">
+        <span class="pill"><i class="fa-solid fa-arrow-down-wide-short"></i> Sort</span>
+        <select id="sort" class="btn" style="flex:1; justify-content:flex-start;">
           <option value="price_desc" selected>Price: High → Low</option>
           <option value="price_asc">Price: Low → High</option>
           <option value="rating_desc">Rating: High → Low</option>
         </select>
       </div>
 
-      <p class="muted" style="margin:10px 0 0;">Tip: “gas”, “citrus”, “craft”, etc. works if it’s in Notes/Tag.</p>
+      <p class="muted" style="margin:10px 0 0;">
+        Tip: tap a product image or title to open the product page.
+      </p>
     </div>
   </div>
 
@@ -56,22 +58,11 @@
     <div class="container header__inner">
       <label class="icon-btn" for="catDrawerToggle" aria-label="Open categories"><i class="fa-solid fa-bars"></i></label>
 
-      <a class="brand" href="index.html" aria-label="Premium Supply home">
-        <svg class="brand__logo" viewBox="0 0 64 64" aria-hidden="true">
-          <defs>
-            <radialGradient id="g2" cx="30%" cy="30%" r="70%">
-              <stop offset="0" stop-color="#E6D7FF"/>
-              <stop offset="1" stop-color="#6A2DFF"/>
-            </radialGradient>
-          </defs>
-          <circle cx="32" cy="32" r="18" fill="url(#g2)"/>
-          <path d="M10 34c10 10 34 10 44 0" fill="none" stroke="#B8F3D0" stroke-width="3" stroke-linecap="round"/>
-          <path d="M14 28c10-10 30-10 40 0" fill="none" stroke="#F2D48B" stroke-width="3" stroke-linecap="round" opacity=".9"/>
-        </svg>
-
+      <a class="brand" href="products.html" aria-label="Premium Supply home">
+        <img class="brand__logo-img" src="assets/brand/logo-planet.png" alt="Premium Supply">
         <span class="brand__text">
           <span class="brand__name">Premium Supply</span>
-          <span class="brand__tag">Shop</span>
+          <span class="brand__tag">Space Store</span>
         </span>
       </a>
 
@@ -97,11 +88,12 @@
     <nav class="cat-nav">
       <a class="cat-link" href="products.html">All Products</a>
       <div class="cat-sep"></div>
-      <a class="cat-link" href="category-flower.html">Flower</a>
-      <a class="cat-link" href="category-concentrates.html">Concentrates</a>
-      <a class="cat-link" href="category-edibles.html">Edibles</a>
-      <a class="cat-link" href="category-vape.html">Vape</a>
-      <a class="cat-link" href="category-cbd.html">CBD</a>
+      <a class="cat-link" href="category.html?c=Flower">Flower</a>
+      <a class="cat-link" href="category.html?c=Concentrates">Concentrates</a>
+      <a class="cat-link" href="category.html?c=Edibles">Edibles</a>
+      <a class="cat-link" href="category.html?c=Vapes">Vapes</a>
+      <a class="cat-link" href="category.html?c=CBD">CBD</a>
+      <a class="cat-link" href="category.html?c=Male%20Enhancers">Male Enhancers</a>
       <div class="cat-sep"></div>
       <a class="cat-link" href="cart.html">Cart</a>
       <a class="cat-link" href="checkout.html">Checkout</a>
@@ -110,13 +102,34 @@
 
   <main class="section">
     <div class="container">
+      <section class="hero">
+        <div class="hero__inner">
+          <h1 class="hero__title">Futuristic deals, proudly Canadian.</h1>
+          <p class="hero__sub">Neon‑clean storefront • Fast browsing • Simple checkout</p>
+
+          <div class="hero__meta">
+            <span class="pill pill--gold"><i class="fa-solid fa-truck-fast"></i> Free shipping $250+</span>
+            <span class="pill pill--mint"><i class="fa-solid fa-circle-check"></i> Min order $75</span>
+          </div>
+
+          <div class="cat-pills" aria-label="Quick categories">
+            <a class="cat-pill" href="category.html?c=Flower">Flower</a>
+            <a class="cat-pill" href="category.html?c=Concentrates">Concentrates</a>
+            <a class="cat-pill" href="category.html?c=Edibles">Edibles</a>
+            <a class="cat-pill" href="category.html?c=Vapes">Vapes</a>
+            <a class="cat-pill" href="category.html?c=CBD">CBD</a>
+            <a class="cat-pill" href="category.html?c=Male%20Enhancers">Male Enhancers</a>
+          </div>
+        </div>
+      </section>
+
       <section class="block">
         <div class="block__head">
-          <h1 class="block__title">All Products</h1>
-          <p class="block__sub">Choose quantity → Buy → review cart → checkout.</p>
+          <h2 class="block__title">All Products</h2>
+          <p class="block__sub">Tap 🔎 to search • Default: High → Low</p>
         </div>
 
-        <div class="products-grid" id="productGrid" aria-live="polite"></div>
+        <div class="products-grid" id="grid"></div>
       </section>
 
       <footer class="block muted">
@@ -130,41 +143,50 @@
     <a href="cart.html">View cart</a>
   </div>
 
-  <!-- Inline JS (cart + render + search + sort) -->
+  <!-- Promo popup -->
+  <div class="promo-modal" id="promoModal" aria-hidden="true">
+    <div class="promo-modal__overlay" data-close></div>
+    <div class="promo-modal__panel">
+      <div class="promo-head">
+        <h3 class="promo-title">Welcome to Premium Supply ✨</h3>
+        <button class="icon-btn" type="button" id="promoClose" aria-label="Close promo"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <p class="muted" style="margin:10px 0 0;">
+        Quick reminder:
+      </p>
+      <div class="hero__meta" style="margin-top:10px;">
+        <span class="pill pill--mint"><i class="fa-solid fa-circle-check"></i> Minimum order $75</span>
+        <span class="pill pill--gold"><i class="fa-solid fa-truck-fast"></i> Free shipping $250+</span>
+        <span class="pill"><i class="fa-solid fa-maple-leaf"></i> 100% Canadian</span>
+      </div>
+
+      <div class="promo-actions">
+        <button class="btn btn--solid" type="button" id="promoContinue">Shop now</button>
+        <button class="btn" type="button" id="promoDontShow">Don’t show again</button>
+      </div>
+    </div>
+  </div>
+
   <script>
+    // ===== Config =====
     const PS = {
       currency: "CAD",
-      cartKey: "ps_cart_v1"
+      cartKey: "ps_cart_v1",
+      promoKey: "ps_promo_dismissed_v1"
     };
 
+    // ===== Helpers =====
     const $ = (s, el=document) => el.querySelector(s);
     const $$ = (s, el=document) => Array.from(el.querySelectorAll(s));
-
-   const CATEGORY_ORDER = [
-  "Flower",
-  "Concentrates",
-  "Edibles",
-  "Vapes",
-  "CBD",
-  "Male Enhancers"
-];
-
     const money = (n) => new Intl.NumberFormat("en-CA", { style:"currency", currency: PS.currency }).format(n);
 
-    function readCart(){
-      try { return JSON.parse(localStorage.getItem(PS.cartKey) || "{}"); }
-      catch { return {}; }
-    }
-    function writeCart(cart){
-      localStorage.setItem(PS.cartKey, JSON.stringify(cart));
-    }
-    function cartCount(cart){
-      return Object.values(cart).reduce((sum, item) => sum + (item.qty || 0), 0);
-    }
-    function updateBadges(){
-      const cart = readCart();
-      const count = cartCount(cart);
-      $$(".js-cart-count").forEach(el => el.textContent = String(count));
+    function typeClass(type){
+      const t = String(type||"").toLowerCase();
+      if(t.includes("indica")) return "type-strip--indica";
+      if(t.includes("hybrid")) return "type-strip--hybrid";
+      if(t.includes("sativa")) return "type-strip--sativa";
+      return "type-strip--other";
     }
 
     function toStarHTML(rating){
@@ -179,141 +201,138 @@
       return html;
     }
 
-    function typeClass(type){
-      const t = (type||"").toLowerCase();
-      if(t.includes("indica")) return "type-strip--indica";
-      if(t.includes("hybrid")) return "type-strip--hybrid";
-      if(t.includes("sativa")) return "type-strip--sativa";
-      return "type-strip--other";
+    function readCart(){ try { return JSON.parse(localStorage.getItem(PS.cartKey) || "{}"); } catch { return {}; } }
+    function writeCart(cart){ localStorage.setItem(PS.cartKey, JSON.stringify(cart)); }
+    function cartCount(cart){ return Object.values(cart).reduce((s,i)=> s+(i.qty||0), 0); }
+    function updateBadges(){
+      const c = cartCount(readCart());
+      $$(".js-cart-count").forEach(el => el.textContent = String(c));
     }
-
-    function noteColorClass(note){
-      const n = (note||"").toLowerCase();
-      if(n.includes("bold") || n.includes("fire")) return "tagchip--red";
-      if(n.includes("citrus") || n.includes("gas") || n.includes("bright")) return "tagchip--yellow";
-      if(n.includes("deep") || n.includes("dank") || n.includes("smooth")) return "tagchip--purple";
-      if(n.includes("fresh") || n.includes("clean") || n.includes("sticky")) return "tagchip--teal";
-      if(n.includes("rich") || n.includes("skunk")) return "tagchip--black";
-      if(n.includes("berry") || n.includes("sweet")) return "tagchip--pink";
-      return "tagchip--green";
-    }
-
-    function productCard(p){
-  const sale = (p.badges || []).map(b => String(b).toLowerCase()).includes("sale");
-
-  const mediaHTML = p.image
-    ? `<div class="media-square"><img src="${p.image}" alt="${p.name}"></div>`
-    : `<div class="media-square"><div class="media-placeholder" aria-hidden="true"></div></div>`;
-
-  return `
-    <article class="product-tile" data-id="${p.id}">
-      <div class="product-tile__media">
-        ${sale ? `<span class="sale-bubble">Sale!</span>` : ""}
-
-        <a class="product-link" href="product.html?id=${encodeURIComponent(p.id)}" aria-label="View ${p.name}">
-          ${mediaHTML}
-          <div class="type-strip ${typeClass(p.type)}">${p.type || "—"}</div>
-        </a>
-      </div>
-
-      <div class="product-tile__body">
-        <div class="pill-row">
-          <span class="pill pill--tier">${p.tier || "Premium"}</span>
-          <span class="pill pill--tag">${normalizeCategory(p.category)}</span>
-        </div>
-
-        <a class="product-title-link" href="product.html?id=${encodeURIComponent(p.id)}">${p.name}</a>
-
-        <div class="rating">
-          <div class="stars" aria-label="${p.rating} stars">${toStarHTML(p.rating)}</div>
-          <div class="reviews">${Number(p.reviews||0)} reviews</div>
-        </div>
-
-        <div class="price">${money(Number(p.price||0))} ${PS.currency}</div>
-
-        <div class="buy-row">
-          <div class="qty">
-            <span>Quantity</span>
-            <div class="qty-stepper">
-              <button class="qty-btn js-minus" type="button" data-id="${p.id}">−</button>
-              <input class="qty-input js-qty" type="number" min="1" value="1" data-id="${p.id}">
-              <button class="qty-btn js-plus" type="button" data-id="${p.id}">+</button>
-            </div>
-          </div>
-
-          <button class="btn btn--solid btn--full js-buy" type="button" data-id="${p.id}">
-            Buy
-          </button>
-        </div>
-      </div>
-    </article>
-  `;
-}
 
     function showToast(msg){
-      const toast = $("#toast");
       $("#toastText").textContent = msg;
-      toast.classList.add("toast--show");
-      window.clearTimeout(showToast._t);
-      showToast._t = window.setTimeout(() => toast.classList.remove("toast--show"), 2200);
+      $("#toast").classList.add("toast--show");
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(()=> $("#toast").classList.remove("toast--show"), 2200);
     }
 
     async function loadCatalog(){
-      const res = await fetch("catalog.json", { cache: "no-store" });
-      if(!res.ok) throw new Error("Could not load catalog.json");
+      const res = await fetch("catalog.json", { cache:"no-store" });
+      if(!res.ok) throw new Error("catalog.json missing");
       return await res.json();
     }
 
-    (async function initListing(){
+    function productCard(p){
+      const sale = (p.badges || []).map(b => String(b).toLowerCase()).includes("sale");
+
+      const mediaHTML = p.image
+        ? `<div class="media-square"><img src="${p.image}" alt="${p.name}"></div>`
+        : `<div class="media-square"><div class="media-placeholder" aria-hidden="true"></div></div>`;
+
+      return `
+        <article class="product-tile" data-id="${p.id}">
+          <div class="product-tile__media">
+            ${sale ? `<span class="sale-bubble">Sale!</span>` : ""}
+
+            <a class="product-link" href="product.html?id=${encodeURIComponent(p.id)}" aria-label="View ${p.name}">
+              ${mediaHTML}
+              <div class="type-strip ${typeClass(p.type)}">${p.type || "—"}</div>
+            </a>
+          </div>
+
+          <div class="product-tile__body">
+            <div class="pill-row">
+              <span class="pill pill--tier">${p.tier || "Premium"}</span>
+              <span class="pill pill--tag">${p.category || "Category"}</span>
+            </div>
+
+            <a class="product-title-link" href="product.html?id=${encodeURIComponent(p.id)}">${p.name}</a>
+
+            <div class="rating">
+              <div class="stars">${toStarHTML(p.rating)}</div>
+              <div class="reviews">${Number(p.reviews||0)} reviews</div>
+            </div>
+
+            <div class="price">${money(Number(p.price||0))} ${PS.currency}</div>
+
+            <div class="buy-row">
+              <div class="qty">
+                <span>Quantity</span>
+                <div class="qty-stepper">
+                  <button class="qty-btn js-minus" type="button" data-id="${p.id}">−</button>
+                  <input class="qty-input js-qty" type="number" min="1" value="1" data-id="${p.id}">
+                  <button class="qty-btn js-plus" type="button" data-id="${p.id}">+</button>
+                </div>
+              </div>
+
+              <button class="btn btn--solid btn--full js-buy" type="button" data-id="${p.id}">Buy</button>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    // ===== Promo popup =====
+    function initPromo(){
+      const modal = $("#promoModal");
+      const dismissed = localStorage.getItem(PS.promoKey) === "1";
+      if(dismissed) return;
+
+      modal.classList.add("promo-modal--show");
+
+      const close = () => modal.classList.remove("promo-modal--show");
+      $("#promoClose").onclick = close;
+      $("#promoContinue").onclick = close;
+      $("#promoDontShow").onclick = () => { localStorage.setItem(PS.promoKey, "1"); close(); };
+      modal.querySelector("[data-close]").onclick = close;
+    }
+
+    // ===== Main =====
+    (async function init(){
       updateBadges();
+      initPromo();
 
-      const grid = $("#productGrid");
-      const searchInput = $("#searchInput");
-      const clearSearch = $("#clearSearch");
-      const sortSelect = $("#sortSelect");
-      const pageCategory = (document.body.dataset.category || "all").toLowerCase();
+      const catalog = await loadCatalog();
 
-      let catalog = await loadCatalog();
+      const q = $("#q");
+      const sort = $("#sort");
+      const clearBtn = $("#clearBtn");
+      const grid = $("#grid");
 
-      function filterAndSort(){
-        const q = (searchInput.value || "").trim().toLowerCase();
-        const sort = sortSelect.value;
+      function getFiltered(){
+        const query = (q.value || "").trim().toLowerCase();
+        const mode = sort.value;
 
         let list = catalog.slice();
 
-        if(pageCategory !== "all"){
-          list = list.filter(p => String(p.category||"").toLowerCase() === pageCategory);
-        }
-
-        if(q){
+        if(query){
           list = list.filter(p => {
-            const blob = [
-              p.name, p.category, p.type, p.tier, p.tag,
-              ...(p.notes||[]), ...(p.badges||[])
-            ].join(" ").toLowerCase();
-            return blob.includes(q);
+            const blob = [p.name, p.category, p.type, p.tier, p.tag].join(" ").toLowerCase();
+            return blob.includes(query);
           });
         }
 
         list.sort((a,b) => {
-          if(sort === "price_asc") return (a.price||0) - (b.price||0);
-          if(sort === "rating_desc") return (b.rating||0) - (a.rating||0);
-          return (b.price||0) - (a.price||0); // price_desc
+          if(mode === "price_asc") return (a.price||0) - (b.price||0);
+          if(mode === "rating_desc") return (b.rating||0) - (a.rating||0);
+          return (b.price||0) - (a.price||0); // price_desc default
         });
 
         return list;
       }
 
       function render(){
-        const list = filterAndSort();
+        const list = getFiltered();
+        if(!list.length){
+          grid.innerHTML = `<div class="card" style="grid-column:1/-1;"><strong>No results.</strong><p class="muted" style="margin:.5rem 0 0;">Try another search.</p></div>`;
+          return;
+        }
         grid.innerHTML = list.map(productCard).join("");
       }
 
-      // Events
-      clearSearch.addEventListener("click", () => { searchInput.value = ""; render(); });
-
-      sortSelect.addEventListener("change", render);
-      searchInput.addEventListener("input", render);
+      q.addEventListener("input", render);
+      sort.addEventListener("change", render);
+      clearBtn.addEventListener("click", () => { q.value=""; render(); });
 
       document.addEventListener("click", (e) => {
         const plus = e.target.closest(".js-plus");
@@ -325,31 +344,24 @@
           const input = document.querySelector(`.js-qty[data-id="${id}"]`);
           input.value = String(Math.max(1, (Number(input.value)||1) + 1));
         }
+
         if(minus){
           const id = minus.dataset.id;
           const input = document.querySelector(`.js-qty[data-id="${id}"]`);
           input.value = String(Math.max(1, (Number(input.value)||1) - 1));
         }
+
         if(buy){
           const id = buy.dataset.id;
-          const p = catalog.find(x => x.id === id);
           const qtyInput = document.querySelector(`.js-qty[data-id="${id}"]`);
           const qty = Math.max(1, Number(qtyInput?.value || 1));
+          const p = catalog.find(x => x.id === id);
+          if(!p) return;
 
           const cart = readCart();
-          if(cart[id]){
-            cart[id].qty += qty;
-          } else {
-            cart[id] = {
-              id: p.id,
-              name: p.name,
-              price: Number(p.price||0),
-              category: p.category,
-              type: p.type,
-              tier: p.tier,
-              qty: qty
-            };
-          }
+          if(cart[id]) cart[id].qty += qty;
+          else cart[id] = { ...p, qty };
+
           writeCart(cart);
           updateBadges();
           showToast(`Added ${qty} × ${p.name}`);
@@ -359,8 +371,7 @@
       render();
     })().catch(err => {
       console.error(err);
-      document.querySelector("#productGrid").innerHTML =
-        `<div class="card"><strong>Catalog failed to load.</strong><p class="muted">Make sure <span class="mono">catalog.json</span> is in the same folder as this page.</p></div>`;
+      $("#grid").innerHTML = `<div class="card" style="grid-column:1/-1;"><strong>Catalog failed to load.</strong><p class="muted" style="margin:.5rem 0 0;">Make sure <span style="text-decoration:underline;">catalog.json</span> is in the same folder.</p></div>`;
     });
   </script>
 </body>
