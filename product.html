@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Premium Supply — Product</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body data-page="product">
+  <!-- Toggles -->
+  <input class="toggle" type="checkbox" id="catDrawerToggle">
+  <input class="toggle" type="checkbox" id="searchToggle">
+
+  <!-- Search modal -->
+  <div class="search-modal" role="dialog" aria-modal="true" aria-labelledby="searchTitle">
+    <label for="searchToggle" class="search-modal__overlay" aria-hidden="true"></label>
+    <div class="search-modal__panel">
+      <div class="search-modal__head">
+        <h2 class="search-modal__title" id="searchTitle">Search products</h2>
+        <label class="icon-btn" for="searchToggle" aria-label="Close search"><i class="fa-solid fa-xmark"></i></label>
+      </div>
+
+      <div class="search-box">
+        <label class="sr-only" for="searchRedirect">Search</label>
+        <input id="searchRedirect" type="search" placeholder="Search products…" autocomplete="off">
+        <button class="btn btn--solid" type="button" id="goSearch">
+          Search <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+      </div>
+
+      <p class="muted" style="margin:10px 0 0;">
+        Tip: This sends you to <span class="mono">products.html</span> with filtered results.
+      </p>
+    </div>
+  </div>
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="container topbar__inner">
+      <span class="topbar__badge"><i class="fa-solid fa-maple-leaf"></i> 100% Canadian</span>
+      <p class="topbar__text">Premium Supply • Product details</p>
+      <a class="topbar__link" href="cart.html">Cart</a>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container header__inner">
+      <label class="icon-btn" for="catDrawerToggle" aria-label="Open categories"><i class="fa-solid fa-bars"></i></label>
+
+      <a class="brand" href="products.html" aria-label="All products">
+        <svg class="brand__logo" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <radialGradient id="g2" cx="30%" cy="30%" r="70%">
+              <stop offset="0" stop-color="#E6D7FF"/>
+              <stop offset="1" stop-color="#6A2DFF"/>
+            </radialGradient>
+          </defs>
+          <circle cx="32" cy="32" r="18" fill="url(#g2)"></circle>
+          <path d="M10 34c10 10 34 10 44 0" fill="none" stroke="#B8F3D0" stroke-width="3" stroke-linecap="round"/>
+          <path d="M14 28c10-10 30-10 40 0" fill="none" stroke="#F2D48B" stroke-width="3" stroke-linecap="round" opacity=".9"/>
+        </svg>
+
+        <span class="brand__text">
+          <span class="brand__name">Premium Supply</span>
+          <span class="brand__tag">Product</span>
+        </span>
+      </a>
+
+      <div class="header__right">
+        <label class="icon-btn" for="searchToggle" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></label>
+
+        <a class="icon-btn cart-btn" href="cart.html" aria-label="Cart">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span class="cart-badge js-cart-count">0</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Drawer -->
+  <label for="catDrawerToggle" class="drawer-backdrop" aria-hidden="true"></label>
+  <aside class="drawer" aria-label="Shop by category">
+    <div class="drawer__head">
+      <div class="drawer__title"><i class="fa-solid fa-list"></i> Shop by category</div>
+      <label class="icon-btn" for="catDrawerToggle" aria-label="Close"><i class="fa-solid fa-xmark"></i></label>
+    </div>
+
+    <nav class="cat-nav">
+      <a class="cat-link" href="products.html">All Products</a>
+      <div class="cat-sep"></div>
+      <a class="cat-link" href="category-flower.html">Flower</a>
+      <a class="cat-link" href="category-concentrates.html">Concentrates</a>
+      <a class="cat-link" href="category-edibles.html">Edibles</a>
+      <a class="cat-link" href="category-vape.html">Vape</a>
+      <a class="cat-link" href="category-cbd.html">CBD</a>
+      <div class="cat-sep"></div>
+      <a class="cat-link" href="cart.html">Cart</a>
+      <a class="cat-link" href="checkout.html">Checkout</a>
+    </nav>
+  </aside>
+
+  <main class="section">
+    <div class="container">
+      <div id="productMount"></div>
+
+      <section class="block" id="relatedBlock" style="display:none;">
+        <div class="block__head">
+          <h2 class="block__title">You might also like</h2>
+          <p class="block__sub">Same category picks — quick add to cart.</p>
+        </div>
+        <div class="products-grid" id="relatedGrid"></div>
+      </section>
+
+      <footer class="block muted">
+        <p style="margin:0;">© 2026 Premium Supply • Proudly Canadian</p>
+      </footer>
+    </div>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <span id="toastText">Added to cart.</span>
+    <a href="cart.html">View cart</a>
+  </div>
+
+  <script>
+    const PS = { currency:"CAD", cartKey:"ps_cart_v1" };
+    const $ = (s, el=document) => el.querySelector(s);
+    const $$ = (s, el=document) => Array.from(el.querySelectorAll(s));
+    const money = (n) => new Intl.NumberFormat("en-CA", { style:"currency", currency: PS.currency }).format(n);
+
+    function readCart(){ try { return JSON.parse(localStorage.getItem(PS.cartKey) || "{}"); } catch { return {}; } }
+    function writeCart(cart){ localStorage.setItem(PS.cartKey, JSON.stringify(cart)); }
+    function cartCount(cart){ return Object.values(cart).reduce((sum, item) => sum + (item.qty || 0), 0); }
+    function updateBadges(){
+      const count = cartCount(readCart());
+      $$(".js-cart-count").forEach(el => el.textContent = String(count));
+    }
+
+    function toStarHTML(rating){
+      const r = Math.round((Number(rating)||0) * 2) / 2;
+      const full = Math.floor(r);
+      const half = (r - full) >= 0.5;
+      let html = "";
+      for(let i=0;i<full;i++) html += '<i class="fa-solid fa-star"></i>';
+      if(half) html += '<i class="fa-solid fa-star-half-stroke"></i>';
+      const empty = 5 - full - (half ? 1 : 0);
+      for(let i=0;i<empty;i++) html += '<i class="fa-regular fa-star"></i>';
+      return html;
+    }
+
+    function typeClass(type){
+      const t = (type||"").toLowerCase();
+      if(t.includes("indica")) return "type-strip--indica";
+      if(t.includes("hybrid")) return "type-strip--hybrid";
+      if(t.includes("sativa")) return "type-strip--sativa";
+      return "type-strip--other";
+    }
+
+    function noteColorClass(note){
+      const n = (note||"").toLowerCase();
+      if(n.includes("bold")) return "tagchip--red";
+      if(n.includes("citrus") || n.includes("bright") || n.includes("gas")) return "tagchip--yellow";
+      if(n.includes("deep") || n.includes("smooth")) return "tagchip--purple";
+      if(n.includes("fresh") || n.includes("clean")) return "tagchip--teal";
+      if(n.includes("rich")) return "tagchip--black";
+      if(n.includes("berry") || n.includes("sweet")) return "tagchip--pink";
+      return "tagchip--green";
+    }
+
+    function showToast(msg){
+      const toast = $("#toast");
+      $("#toastText").textContent = msg;
+      toast.classList.add("toast--show");
+      window.clearTimeout(showToast._t);
+      showToast._t = window.setTimeout(() => toast.classList.remove("toast--show"), 2200);
+    }
+
+    async function loadCatalog(){
+      const res = await fetch("catalog.json", { cache: "no-store" });
+      if(!res.ok) throw new Error("Could not load catalog.json");
+      return await res.json();
+    }
+
+    function getParam(name){
+      return new URLSearchParams(location.search).get(name);
+    }
+
+    function productDetailHTML(p){
+      const sale = (p.badges||[]).map(x => String(x).toLowerCase()).includes("sale");
+      const notes = (p.notes||[]).slice(0,4);
+
+      const notesHTML = notes.length
+        ? `<ul class="tag-stack">
+            ${notes.map(n => `<li class="tagchip ${noteColorClass(n)}">${n}</li>`).join("")}
+           </ul>`
+        : "";
+
+      const media = p.image
+        ? `<img class="img-square" src="${p.image}" alt="${p.name}">`
+        : `<div class="img-square" aria-hidden="true"></div>`;
+
+      return `
+        <section class="product-hero card">
+          <div class="product-hero__media product-tile__media">
+            ${sale ? `<span class="sale-bubble">Sale!</span>` : ""}
+            ${notesHTML}
+            ${media}
+            <div class="type-strip ${typeClass(p.type)}">${p.type || "—"}</div>
+          </div>
+
+          <div class="product-hero__content">
+            <p class="crumbs">
+              <a href="products.html">All products</a>
+              <span class="muted">/</span>
+              <a href="category-${String(p.category||"").toLowerCase()}.html">${p.category}</a>
+            </p>
+
+            <h1 class="product-title">${p.name}</h1>
+
+            <div class="rating" style="max-width:360px;">
+              <div class="stars" aria-label="${p.rating} stars">${toStarHTML(p.rating)}</div>
+              <div class="reviews">${Number(p.reviews||0)} reviews</div>
+            </div>
+
+            <div class="pill-row" style="margin-top:10px;">
+              <span class="pill pill--tier">${p.tier || "Premium"}</span>
+              <span class="pill pill--tag">${p.tag || p.category}</span>
+            </div>
+
+            <div class="price" style="font-size:1.15rem; margin-top:10px;">
+              ${money(Number(p.price||0))} ${PS.currency}
+            </div>
+
+            <div class="buy-row" style="margin-top:12px;">
+              <div class="qty">
+                <span>Quantity</span>
+                <div class="qty-stepper">
+                  <button class="qty-btn" type="button" id="minusBtn">−</button>
+                  <input class="qty-input" type="number" min="1" value="1" id="qtyInput">
+                  <button class="qty-btn" type="button" id="plusBtn">+</button>
+                </div>
+              </div>
+
+              <button class="btn btn--solid btn--full" type="button" id="buyBtn">
+                Buy Now
+              </button>
+
+              <p class="muted" style="margin:8px 0 0;">
+                Review your cart before checkout. You can edit quantities or remove items anytime.
+              </p>
+            </div>
+
+            <div class="product-info">
+              <div class="info-row"><span class="muted">Category</span> <strong>${p.category || "—"}</strong></div>
+              <div class="info-row"><span class="muted">Type</span> <strong>${p.type || "—"}</strong></div>
+              <div class="info-row"><span class="muted">Quality</span> <strong>${p.tier || "—"}</strong></div>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function smallCardHTML(p){
+      const media = p.image
+        ? `<img class="img-square" src="${p.image}" alt="${p.name}">`
+        : `<div class="img-square" aria-hidden="true"></div>`;
+
+      return `
+        <article class="product-tile" data-id="${p.id}">
+          <a class="product-link" href="product.html?id=${encodeURIComponent(p.id)}" aria-label="View ${p.name}">
+            <div class="product-tile__media">
+              ${media}
+              <div class="type-strip ${typeClass(p.type)}">${p.type || "—"}</div>
+            </div>
+          </a>
+
+          <div class="product-tile__body">
+            <a class="product-title-link" href="product.html?id=${encodeURIComponent(p.id)}">${p.name}</a>
+
+            <div class="rating">
+              <div class="stars">${toStarHTML(p.rating)}</div>
+              <div class="reviews">${Number(p.reviews||0)} reviews</div>
+            </div>
+
+            <div class="price">${money(Number(p.price||0))} ${PS.currency}</div>
+
+            <button class="btn btn--outline btn--full js-quickbuy" type="button" data-id="${p.id}">
+              Quick Add
+            </button>
+          </div>
+        </article>
+      `;
+    }
+
+    (async function init(){
+      updateBadges();
+
+      // Search redirect (go to listing with query)
+      $("#goSearch").addEventListener("click", () => {
+        const q = ($("#searchRedirect").value || "").trim();
+        location.href = q ? `products.html?q=${encodeURIComponent(q)}` : "products.html";
+      });
+      $("#searchRedirect").addEventListener("keydown", (e) => {
+        if(e.key === "Enter"){ e.preventDefault(); $("#goSearch").click(); }
+      });
+
+      const id = getParam("id");
+      const mount = $("#productMount");
+
+      if(!id){
+        mount.innerHTML = `<div class="card"><strong>Missing product id.</strong><p class="muted">Go back to <a href="products.html" style="text-decoration:underline;font-weight:900;">All products</a>.</p></div>`;
+        return;
+      }
+
+      const catalog = await loadCatalog();
+      const p = catalog.find(x => x.id === id);
+
+      if(!p){
+        mount.innerHTML = `<div class="card"><strong>Product not found.</strong><p class="muted">Go back to <a href="products.html" style="text-decoration:underline;font-weight:900;">All products</a>.</p></div>`;
+        return;
+      }
+
+      document.title = `Premium Supply — ${p.name}`;
+      mount.innerHTML = productDetailHTML(p);
+
+      // Quantity stepper
+      const qtyInput = $("#qtyInput");
+      $("#plusBtn").addEventListener("click", () => qtyInput.value = String(Math.max(1, (Number(qtyInput.value)||1) + 1)));
+      $("#minusBtn").addEventListener("click", () => qtyInput.value = String(Math.max(1, (Number(qtyInput.value)||1) - 1)));
+
+      // Buy Now
+      $("#buyBtn").addEventListener("click", () => {
+        const qty = Math.max(1, Number(qtyInput.value || 1));
+        const cart = readCart();
+        if(cart[p.id]) cart[p.id].qty += qty;
+        else cart[p.id] = { id:p.id, name:p.name, price:Number(p.price||0), category:p.category, type:p.type, tier:p.tier, qty:qty };
+        writeCart(cart);
+        updateBadges();
+        showToast(`Added ${qty} × ${p.name}`);
+      });
+
+      // Related (same category)
+      const related = catalog
+        .filter(x => x.id !== p.id && String(x.category||"") === String(p.category||""))
+        .sort((a,b) => (b.rating||0) - (a.rating||0))
+        .slice(0, 4);
+
+      if(related.length){
+        $("#relatedBlock").style.display = "block";
+        $("#relatedGrid").innerHTML = related.map(smallCardHTML).join("");
+      }
+
+      // Quick add (related)
+      document.addEventListener("click", (e) => {
+        const btn = e.target.closest(".js-quickbuy");
+        if(!btn) return;
+        const pid = btn.dataset.id;
+        const prod = catalog.find(x => x.id === pid);
+        if(!prod) return;
+
+        const cart = readCart();
+        if(cart[pid]) cart[pid].qty += 1;
+        else cart[pid] = { id:prod.id, name:prod.name, price:Number(prod.price||0), category:prod.category, type:prod.type, tier:prod.tier, qty:1 };
+        writeCart(cart);
+        updateBadges();
+        showToast(`Added 1 × ${prod.name}`);
+      });
+
+    })().catch(err => {
+      console.error(err);
+      $("#productMount").innerHTML =
+        `<div class="card"><strong>Could not load product.</strong><p class="muted">Make sure <span class="mono">catalog.json</span> is in the same folder as this page.</p></div>`;
+    });
+  </script>
+</body>
+</html>
