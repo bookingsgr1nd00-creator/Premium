@@ -768,3 +768,14 @@ a{ color: var(--text); }
   background: rgba(10,4,18,.92) !important;
   border: 1px solid var(--border) !important;
 }
+/* Overlays should NEVER block clicking */
+.tag-stack, .sale-bubble, .type-strip{ pointer-events: none; }
+
+/* Make clickable areas obvious */
+.product-link{ display:block; }
+.product-title-link{
+  display:inline-block;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 950;
+}
