@@ -200,7 +200,55 @@
 
     function productCard(p){
   const sale = (p.badges || []).map(b => String(b).toLowerCase()).includes("sale");
-  const notes = (p.notes || []).slice(0,4);
+
+  const mediaHTML = p.image
+    ? `<div class="media-square"><img src="${p.image}" alt="${p.name}"></div>`
+    : `<div class="media-square"><div class="media-placeholder" aria-hidden="true"></div></div>`;
+
+  return `
+    <article class="product-tile" data-id="${p.id}">
+      <div class="product-tile__media">
+        ${sale ? `<span class="sale-bubble">Sale!</span>` : ""}
+
+        <a class="product-link" href="product.html?id=${encodeURIComponent(p.id)}" aria-label="View ${p.name}">
+          ${mediaHTML}
+          <div class="type-strip ${typeClass(p.type)}">${p.type || "—"}</div>
+        </a>
+      </div>
+
+      <div class="product-tile__body">
+        <div class="pill-row">
+          <span class="pill pill--tier">${p.tier || "Premium"}</span>
+          <span class="pill pill--tag">${p.tag || p.category}</span>
+        </div>
+
+        <a class="product-title-link" href="product.html?id=${encodeURIComponent(p.id)}">${p.name}</a>
+
+        <div class="rating">
+          <div class="stars" aria-label="${p.rating} stars">${toStarHTML(p.rating)}</div>
+          <div class="reviews">${Number(p.reviews||0)} reviews</div>
+        </div>
+
+        <div class="price">${money(Number(p.price||0))} ${PS.currency}</div>
+
+        <div class="buy-row">
+          <div class="qty">
+            <span>Quantity</span>
+            <div class="qty-stepper">
+              <button class="qty-btn js-minus" type="button" data-id="${p.id}">−</button>
+              <input class="qty-input js-qty" type="number" min="1" value="1" data-id="${p.id}">
+              <button class="qty-btn js-plus" type="button" data-id="${p.id}">+</button>
+            </div>
+          </div>
+
+          <button class="btn btn--solid btn--full js-buy" type="button" data-id="${p.id}">
+            Buy
+          </button>
+        </div>
+      </div>
+    </article>
+  `;
+}
 
   const notesHTML = notes.length
     ? `<ul class="tag-stack">${notes.map(n => `<li class="tagchip ${noteColorClass(n)}">${n}</li>`).join("")}</ul>`
