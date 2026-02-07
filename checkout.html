@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Premium Supply — Checkout</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body data-page="checkout">
+  <div class="topbar">
+    <div class="container topbar__inner">
+      <span class="topbar__badge"><i class="fa-solid fa-maple-leaf"></i> 100% Canadian</span>
+      <p class="topbar__text">Checkout</p>
+      <a class="topbar__link" href="cart.html">Back to cart</a>
+    </div>
+  </div>
+
+  <main class="section">
+    <div class="container">
+      <div class="cart-layout">
+        <section class="card">
+          <h1 class="block__title" style="margin:0 0 10px;">Delivery details</h1>
+
+          <form class="checkout-form" id="checkoutForm">
+            <div class="field">
+              <label for="fullName">Full name</label>
+              <input id="fullName" name="fullName" required>
+            </div>
+
+            <div class="field">
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" required>
+            </div>
+
+            <div class="field">
+              <label for="phone">Phone</label>
+              <input id="phone" name="phone" required>
+            </div>
+
+            <div class="field">
+              <label for="address">Address</label>
+              <input id="address" name="address" required>
+            </div>
+
+            <div class="field">
+              <label for="city">City</label>
+              <input id="city" name="city" required>
+            </div>
+
+            <div class="field">
+              <label for="province">Province</label>
+              <select id="province" name="province" required>
+                <option value="">Select…</option>
+                <option>AB</option><option>BC</option><option>MB</option><option>NB</option><option>NL</option>
+                <option>NS</option><option>NT</option><option>NU</option><option>ON</option><option>PE</option>
+                <option>QC</option><option>SK</option><option>YT</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="postal">Postal code</label>
+              <input id="postal" name="postal" required>
+            </div>
+
+            <div class="field">
+              <label for="notes">Order notes (optional)</label>
+              <textarea id="notes" name="notes" rows="4"></textarea>
+            </div>
+
+            <!-- filled by JS -->
+            <input type="hidden" name="orderId" id="orderId">
+            <textarea class="sr-only" name="orderSummary" id="orderSummary"></textarea>
+
+            <button class="btn btn--solid btn--full" type="submit">Place order</button>
+            <p class="muted" style="margin:10px 0 0;">
+              Payment: Interac e‑Transfer after confirmation (details shown after you place the order).
+            </p>
+          </form>
+
+          <div id="checkoutResult" class="card" style="display:none; margin-top:14px;">
+            <h2 class="block__title" style="margin:0 0 6px;">Order placed ✅</h2>
+            <p class="muted" id="resultText" style="margin:0;"></p>
+          </div>
+        </section>
+
+        <aside class="card">
+          <h2 class="block__title" style="margin:0 0 8px;">Order review</h2>
+          <div id="reviewItems"></div>
+
+          <div class="hr"></div>
+          <div class="summary-row"><span>Subtotal</span> <strong id="subtotal">$0.00</strong></div>
+          <div class="summary-row"><span>Shipping</span> <strong id="shipping">$0.00</strong></div>
+          <div class="summary-row"><span>Total</span> <strong id="total">$0.00</strong></div>
+
+          <p class="muted" style="margin:10px 0 0;">
+            Proudly Canadian. We confirm totals + payment instructions after checkout.
+          </p>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const PS = {
+      currency: "CAD",
+      cartKey: "ps_cart_v1",
+      freeShipOver: 150,
+      flatShip: 15,
+
+      // ✅ Replace this with your Formspree endpoint:
+      // Example: "https://formspree.io/f/abcdwxyz"
+      FORMSPREE_ENDPOINT: ""
+    };
+
+    const $ = (s, el=document) => el.querySelector(s);
+    const money = (n) => new Intl.NumberFormat("en-CA", { style:"currency", currency: PS.currency }).format(n);
+
+    function readCart(){ try { return JSON.parse(localStorage.getItem(PS.cartKey) || "{}"); } catch { return {}; } }
+    function writeCart(cart){ localStorage.setItem(PS.cartKey, JSON.stringify(cart)); }
+
+    function calc(cart){
+      const items = Object.values(cart);
+      const subtotal = items.reduce((s,i)=> s + (i.price*i.qty), 0);
+      const shipping = subtotal >= PS.freeShipOver ? 0 : (items.length ? PS.flatShip : 0);
+      const total = subtotal + shipping;
+      return { items, subtotal, shipping, total };
+    }
+
+    function makeOrderId(){
+      const now = Date.now().toString(36).toUpperCase();
+      const rnd = Math.random().toString(36).slice(2,6).toUpperCase();
+      return `PS-${now}-${rnd}`;
+    }
+
+    function buildSummary(orderId, cart, totals, formData){
+      const lines = [];
+      lines.push(`Order ID: ${orderId}`);
+      lines.push(`Name: ${formData.fullName}`);
+      lines.push(`Email: ${formData.email}`);
+      lines.push(`Phone: ${formData.phone}`);
+      lines.push(`Address: ${formData.address}, ${formData.city}, ${formData.province}, ${formData.postal}`);
+      if(formData.notes) lines.push(`Notes: ${formData.notes}`);
+      lines.push("");
+      lines.push("Items:");
+      totals.items.forEach(i => {
+        lines.push(`- ${i.qty} x ${i.name} @ ${money(i.price)} (${i.category} • ${i.tier} • ${i.type})`);
+      });
+      lines.push("");
+      lines.push(`Subtotal: ${money(totals.subtotal)}`);
+      lines.push(`Shipping: ${money(totals.shipping)}`);
+      lines.push(`Total: ${money(totals.total)}`);
+      return lines.join("\n");
+    }
+
+    function renderReview(){
+      const cart = readCart();
+      const totals = calc(cart);
+
+      $("#reviewItems").innerHTML = totals.items.length
+        ? totals.items.map(i => `
+            <div class="cart-item" style="grid-template-columns: 60px 1fr;">
+              <div class="cart-thumb" style="width:60px;height:60px;"></div>
+              <div class="cart-meta">
+                <h3 style="margin:0;font-size:.98rem;">${i.name}</h3>
+                <div class="meta">${i.category} • ${i.tier} • ${i.type}</div>
+                <div class="meta"><strong>${i.qty}</strong> × ${money(i.price)}</div>
+              </div>
+            </div>
+          `).join("")
+        : `<p class="muted">Your cart is empty. <a href="products.html" style="text-decoration:underline;font-weight:900;">Shop products</a></p>`;
+
+      $("#subtotal").textContent = money(totals.subtotal);
+      $("#shipping").textContent = money(totals.shipping);
+      $("#total").textContent = money(totals.total);
+    }
+
+    renderReview();
+
+    $("#checkoutForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const cart = readCart();
+      const totals = calc(cart);
+      if(!totals.items.length){
+        alert("Your cart is empty.");
+        return;
+      }
+
+      const orderId = makeOrderId();
+      $("#orderId").value = orderId;
+
+      const formData = {
+        fullName: $("#fullName").value.trim(),
+        email: $("#email").value.trim(),
+        phone: $("#phone").value.trim(),
+        address: $("#address").value.trim(),
+        city: $("#city").value.trim(),
+        province: $("#province").value,
+        postal: $("#postal").value.trim(),
+        notes: $("#notes").value.trim()
+      };
+
+      const summary = buildSummary(orderId, cart, totals, formData);
+      $("#orderSummary").value = summary;
+
+      if(!PS.FORMSPREE_ENDPOINT){
+        alert("Checkout endpoint not configured. Set FORMSPREE_ENDPOINT in checkout.html to receive orders.");
+        return;
+      }
+
+      // send to Formspree
+      const fd = new FormData($("#checkoutForm"));
+
+      try{
+        const res = await fetch(PS.FORMSPREE_ENDPOINT, {
+          method: "POST",
+          headers: { "Accept": "application/json" },
+          body: fd
+        });
+
+        if(!res.ok) throw new Error("Order submission failed.");
+
+        // clear cart
+        writeCart({});
+
+        $("#checkoutResult").style.display = "block";
+        $("#resultText").textContent =
+          `Order ${orderId} submitted. Next step: you'll receive confirmation + Interac e‑Transfer instructions.`;
+
+        // refresh review UI
+        renderReview();
+      }catch(err){
+        console.error(err);
+        alert("Could not submit the order. Please try again.");
+      }
+    });
+  </script>
+</body>
+</html>
