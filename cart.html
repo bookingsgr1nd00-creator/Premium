@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Premium Supply — Cart</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body data-page="cart">
+  <input class="toggle" type="checkbox" id="catDrawerToggle">
+
+  <div class="topbar">
+    <div class="container topbar__inner">
+      <span class="topbar__badge"><i class="fa-solid fa-maple-leaf"></i> 100% Canadian</span>
+      <p class="topbar__text">Your Cart</p>
+      <a class="topbar__link" href="products.html">Continue shopping</a>
+    </div>
+  </div>
+
+  <header class="header">
+    <div class="container header__inner">
+      <label class="icon-btn" for="catDrawerToggle" aria-label="Open categories"><i class="fa-solid fa-bars"></i></label>
+
+      <a class="brand" href="products.html">
+        <span class="brand__text">
+          <span class="brand__name">Premium Supply</span>
+          <span class="brand__tag">Cart</span>
+        </span>
+      </a>
+
+      <div class="header__right">
+        <a class="icon-btn cart-btn" href="cart.html" aria-label="Cart">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span class="cart-badge js-cart-count">0</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <label for="catDrawerToggle" class="drawer-backdrop" aria-hidden="true"></label>
+  <aside class="drawer">
+    <div class="drawer__head">
+      <div class="drawer__title"><i class="fa-solid fa-list"></i> Menu</div>
+      <label class="icon-btn" for="catDrawerToggle" aria-label="Close"><i class="fa-solid fa-xmark"></i></label>
+    </div>
+    <nav class="cat-nav">
+      <a class="cat-link" href="products.html">All Products</a>
+      <a class="cat-link" href="category-flower.html">Flower</a>
+      <a class="cat-link" href="category-concentrates.html">Concentrates</a>
+      <a class="cat-link" href="category-edibles.html">Edibles</a>
+      <a class="cat-link" href="category-vape.html">Vape</a>
+      <a class="cat-link" href="category-cbd.html">CBD</a>
+      <div class="cat-sep"></div>
+      <a class="cat-link" href="checkout.html">Checkout</a>
+    </nav>
+  </aside>
+
+  <main class="section">
+    <div class="container">
+      <div class="cart-layout">
+        <section class="card">
+          <h1 class="block__title" style="margin:0 0 10px;">Cart items</h1>
+          <div id="cartItems"></div>
+          <p class="muted" id="emptyCartMsg" style="display:none; margin:10px 0 0;">
+            Your cart is empty. <a href="products.html" style="text-decoration:underline; font-weight:900;">Shop products</a>
+          </p>
+        </section>
+
+        <aside class="card">
+          <h2 class="block__title" style="margin:0 0 8px;">Summary</h2>
+          <div class="summary-row"><span>Subtotal</span> <strong id="subtotal">$0.00</strong></div>
+          <div class="summary-row"><span>Shipping</span> <strong id="shipping">$0.00</strong></div>
+          <div class="hr"></div>
+          <div class="summary-row"><span>Total</span> <strong id="total">$0.00</strong></div>
+          <p class="muted" style="margin:8px 0 12px;">Final total confirmed at checkout.</p>
+
+          <a class="btn btn--solid btn--full" href="checkout.html">Checkout</a>
+          <a class="btn btn--outline btn--full" href="products.html" style="margin-top:10px;">Continue shopping</a>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const PS = { currency:"CAD", cartKey:"ps_cart_v1", freeShipOver:150, flatShip:15 };
+    const $ = (s, el=document) => el.querySelector(s);
+    const $$ = (s, el=document) => Array.from(el.querySelectorAll(s));
+    const money = (n) => new Intl.NumberFormat("en-CA",{style:"currency",currency:PS.currency}).format(n);
+
+    function readCart(){ try{return JSON.parse(localStorage.getItem(PS.cartKey)||"{}");}catch{return {};} }
+    function writeCart(cart){ localStorage.setItem(PS.cartKey, JSON.stringify(cart)); }
+    function cartCount(cart){ return Object.values(cart).reduce((s,i)=>s+(i.qty||0),0); }
+    function updateBadges(){ const c=cartCount(readCart()); $$(".js-cart-count").forEach(el=>el.textContent=String(c)); }
+
+    function calc(cart){
+      const items = Object.values(cart);
+      const subtotal = items.reduce((s,i)=> s + (i.price*i.qty), 0);
+      const shipping = subtotal >= PS.freeShipOver ? 0 : (items.length ? PS.flatShip : 0);
+      const total = subtotal + shipping;
+      return { subtotal, shipping, total, items };
+    }
+
+    function render(){
+      const cart = readCart();
+      updateBadges();
+
+      const wrap = $("#cartItems");
+      const empty = $("#emptyCartMsg");
+
+      const { subtotal, shipping, total, items } = calc(cart);
+
+      $("#subtotal").textContent = money(subtotal);
+      $("#shipping").textContent = money(shipping);
+      $("#total").textContent = money(total);
+
+      if(!items.length){
+        wrap.innerHTML = "";
+        empty.style.display = "block";
+        return;
+      }
+      empty.style.display = "none";
+
+      wrap.innerHTML = items.map(i => `
+        <div class="cart-item" data-id="${i.id}">
+          <div class="cart-thumb" aria-hidden="true"></div>
+          <div class="cart-meta">
+            <h3>${i.name}</h3>
+            <div class="meta">${i.category} • ${i.tier} • ${i.type}</div>
+
+            <div class="cart-actions">
+              <div class="qty">
+                <span>Qty</span>
+                <div class="qty-stepper">
+                  <button class="qty-btn js-minus" type="button">−</button>
+                  <input class="qty-input js-qty" type="number" min="1" value="${i.qty}">
+                  <button class="qty-btn js-plus" type="button">+</button>
+                </div>
+              </div>
+
+              <div class="muted"><strong>${money(i.price)}</strong> each</div>
+              <button class="link-danger js-remove" type="button">Remove</button>
+            </div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    document.addEventListener("click", (e)=>{
+      const row = e.target.closest(".cart-item");
+      if(!row) return;
+      const id = row.dataset.id;
+      const cart = readCart();
+      const item = cart[id];
+      if(!item) return;
+
+      if(e.target.closest(".js-plus")){
+        item.qty = Math.max(1, (item.qty||1) + 1);
+        writeCart(cart); render();
+      }
+      if(e.target.closest(".js-minus")){
+        item.qty = Math.max(1, (item.qty||1) - 1);
+        writeCart(cart); render();
+      }
+      if(e.target.closest(".js-remove")){
+        delete cart[id];
+        writeCart(cart); render();
+      }
+    });
+
+    document.addEventListener("change", (e)=>{
+      const input = e.target.closest(".js-qty");
+      if(!input) return;
+      const row = e.target.closest(".cart-item");
+      const id = row.dataset.id;
+      const cart = readCart();
+      if(!cart[id]) return;
+      cart[id].qty = Math.max(1, Number(input.value||1));
+      writeCart(cart);
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>
