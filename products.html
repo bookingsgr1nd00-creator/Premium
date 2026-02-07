@@ -3,60 +3,42 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Premium Supply — All Products (High → Low)</title>
+  <title>Premium Supply — All Products</title>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="styles.css" />
 </head>
 
-<body>
-  <!-- NO-JS toggles -->
-  <input class="toggle" type="checkbox" id="promoToggle" checked>
+<body data-page="listing" data-category="all">
+  <!-- Toggles -->
   <input class="toggle" type="checkbox" id="catDrawerToggle">
   <input class="toggle" type="checkbox" id="searchToggle">
-
-  <!-- Promo popup -->
-  <div class="promo-modal" role="dialog" aria-modal="true" aria-labelledby="promoTitle">
-    <label for="promoToggle" class="promo-modal__overlay" aria-hidden="true"></label>
-    <div class="promo-modal__panel">
-      <div class="promo-modal__head">
-        <div class="promo-modal__badge"><i class="fa-solid fa-maple-leaf"></i> Proudly Canadian</div>
-        <label for="promoToggle" class="promo-modal__close" aria-label="Close"><i class="fa-solid fa-xmark"></i></label>
-      </div>
-      <h2 id="promoTitle" class="promo-modal__title">Welcome to Premium Supply 🇨🇦</h2>
-      <p class="promo-modal__text">Limited promo: <strong>Free express shipping in Canada</strong> on qualifying orders.</p>
-      <div class="promo-modal__cta">
-        <a class="btn btn--solid" href="#catalog">Shop now</a>
-        <label for="promoToggle" class="btn btn--outline">Continue</label>
-      </div>
-      <p class="promo-modal__fineprint">Payment via Interac e‑Transfer after order confirmation.</p>
-    </div>
-  </div>
 
   <!-- Search modal -->
   <div class="search-modal" role="dialog" aria-modal="true" aria-labelledby="searchTitle">
     <label for="searchToggle" class="search-modal__overlay" aria-hidden="true"></label>
     <div class="search-modal__panel">
       <div class="search-modal__head">
-        <h2 class="search-modal__title" id="searchTitle">Search</h2>
+        <h2 class="search-modal__title" id="searchTitle">Search products</h2>
         <label class="icon-btn" for="searchToggle" aria-label="Close search"><i class="fa-solid fa-xmark"></i></label>
       </div>
 
-      <!-- NO-JS “site search” using DuckDuckGo -->
-      <form class="search-form" action="https://duckduckgo.com/" method="get" target="_blank">
-        <label class="sr-only" for="q">Search</label>
+      <div class="search-box">
+        <label class="sr-only" for="searchInput">Search</label>
+        <input id="searchInput" type="search" placeholder="Search by name, category, notes…" autocomplete="off">
+        <button class="btn btn--outline" type="button" id="clearSearch">Clear</button>
+      </div>
 
-        <!-- IMPORTANT: replace premiumsupply.ca with your real domain -->
-        <input id="q" name="q" type="search" value="site:premiumsupply.ca " placeholder="Search products…">
+      <div class="sort-row">
+        <span class="muted">Sort:</span>
+        <select id="sortSelect" aria-label="Sort products">
+          <option value="price_desc" selected>Price: High → Low</option>
+          <option value="price_asc">Price: Low → High</option>
+          <option value="rating_desc">Rating: High → Low</option>
+        </select>
+      </div>
 
-        <button class="btn btn--solid" type="submit">
-          Search <i class="fa-solid fa-magnifying-glass"></i>
-        </button>
-      </form>
-
-      <p class="muted" style="margin:10px 0 0;">
-        Tip: Keep <span class="mono">site:premiumsupply.ca</span> and type your keywords after it.
-      </p>
+      <p class="muted" style="margin:10px 0 0;">Tip: “gas”, “citrus”, “craft”, etc. works if it’s in Notes/Tag.</p>
     </div>
   </div>
 
@@ -64,17 +46,15 @@
   <div class="topbar">
     <div class="container topbar__inner">
       <span class="topbar__badge"><i class="fa-solid fa-maple-leaf"></i> 100% Canadian</span>
-      <p class="topbar__text">Shop all products • Sorted High → Low</p>
-      <a class="topbar__link" href="category-flower.html">Shop by category</a>
+      <p class="topbar__text">All Products</p>
+      <a class="topbar__link" href="cart.html">Cart</a>
     </div>
   </div>
 
   <!-- Header -->
-  <header class="header" role="banner">
+  <header class="header">
     <div class="container header__inner">
-      <label class="icon-btn" for="catDrawerToggle" aria-label="Open categories">
-        <i class="fa-solid fa-bars"></i>
-      </label>
+      <label class="icon-btn" for="catDrawerToggle" aria-label="Open categories"><i class="fa-solid fa-bars"></i></label>
 
       <a class="brand" href="index.html" aria-label="Premium Supply home">
         <svg class="brand__logo" viewBox="0 0 64 64" aria-hidden="true">
@@ -91,26 +71,22 @@
 
         <span class="brand__text">
           <span class="brand__name">Premium Supply</span>
-          <span class="brand__tag">All Products</span>
+          <span class="brand__tag">Shop</span>
         </span>
       </a>
 
       <div class="header__right">
-        <!-- search icon top-right -->
-        <label class="icon-btn" for="searchToggle" aria-label="Search">
-          <i class="fa-solid fa-magnifying-glass"></i>
-        </label>
+        <label class="icon-btn" for="searchToggle" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></label>
 
-        <!-- optional bag icon -->
-        <a class="icon-btn cart-btn" href="#how" aria-label="How to buy">
+        <a class="icon-btn cart-btn" href="cart.html" aria-label="Cart">
           <i class="fa-solid fa-bag-shopping"></i>
-          <span class="cart-badge">0</span>
+          <span class="cart-badge js-cart-count">0</span>
         </a>
       </div>
     </div>
   </header>
 
-  <!-- Drawer backdrop + drawer -->
+  <!-- Drawer -->
   <label for="catDrawerToggle" class="drawer-backdrop" aria-hidden="true"></label>
   <aside class="drawer" aria-label="Shop by category">
     <div class="drawer__head">
@@ -119,7 +95,7 @@
     </div>
 
     <nav class="cat-nav">
-      <a class="cat-link" href="products.html">All Products (High → Low)</a>
+      <a class="cat-link" href="products.html">All Products</a>
       <div class="cat-sep"></div>
       <a class="cat-link" href="category-flower.html">Flower</a>
       <a class="cat-link" href="category-concentrates.html">Concentrates</a>
@@ -127,180 +103,260 @@
       <a class="cat-link" href="category-vape.html">Vape</a>
       <a class="cat-link" href="category-cbd.html">CBD</a>
       <div class="cat-sep"></div>
-      <a class="cat-link" href="#how">How to buy</a>
+      <a class="cat-link" href="cart.html">Cart</a>
+      <a class="cat-link" href="checkout.html">Checkout</a>
     </nav>
   </aside>
 
   <main class="section">
     <div class="container">
-      <label class="cat-cta" for="catDrawerToggle"><i class="fa-solid fa-list"></i> SHOP BY CATEGORY</label>
-
-      <section class="block" id="catalog">
+      <section class="block">
         <div class="block__head">
           <h1 class="block__title">All Products</h1>
-          <p class="block__sub">Sorted High → Low (manual ordering — no JS needed).</p>
+          <p class="block__sub">Choose quantity → Buy → review cart → checkout.</p>
         </div>
 
-        <div class="products-grid">
-          <!-- High → Low: put your highest priced items first -->
-
-          <article class="product-tile">
-            <div class="product-tile__media">
-              <span class="sale-bubble">Sale!</span>
-              <ul class="tag-stack">
-                <li class="tagchip tagchip--black">Elite</li>
-                <li class="tagchip tagchip--purple">Deep</li>
-                <li class="tagchip tagchip--yellow">Bright</li>
-              </ul>
-              <div class="img-square img-square--gold" aria-hidden="true"></div>
-              <div class="type-strip type-strip--indica">Indica</div>
-            </div>
-
-            <div class="product-tile__body">
-              <div class="pill-row">
-                <span class="pill pill--tier">AAAA+ • Premium</span>
-                <span class="pill pill--craft">Craft</span>
-              </div>
-
-              <h2 class="product-tile__title">Arctic Vault Bundle | Premium</h2>
-
-              <div class="rating">
-                <div class="stars" aria-label="4.8 stars">
-                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
-                </div>
-                <div class="reviews">47 reviews</div>
-              </div>
-
-              <div class="price"><span class="price__was">$1,050.00</span><span class="price__now price--green">$925.00 CAD</span></div>
-              <div class="stock in-stock"><i class="fa-solid fa-circle-check"></i> In stock</div>
-
-              <!-- Buy Now + Quantity (no JS) -->
-              <form class="buy-form"
-                action="mailto:orders@premiumsupply.ca?subject=Premium%20Supply%20Order%20-%20PS-ALL-001"
-                method="post" enctype="text/plain">
-                <input type="hidden" name="SKU" value="PS-ALL-001">
-                <input type="hidden" name="Product" value="Arctic Vault Bundle | Premium">
-                <label class="qty">
-                  <span>Quantity</span>
-                  <input type="number" name="Quantity" min="1" value="1">
-                </label>
-                <button class="btn btn--solid btn--full" type="submit">Buy Now</button>
-                <p class="hint">Payment via Interac e‑Transfer after confirmation.</p>
-              </form>
-            </div>
-          </article>
-
-          <article class="product-tile">
-            <div class="product-tile__media">
-              <ul class="tag-stack">
-                <li class="tagchip tagchip--red">Bold</li>
-                <li class="tagchip tagchip--teal">Fresh</li>
-                <li class="tagchip tagchip--pink">Berry</li>
-              </ul>
-              <div class="img-square img-square--alt" aria-hidden="true"></div>
-              <div class="type-strip type-strip--hybrid">Hybrid</div>
-            </div>
-
-            <div class="product-tile__body">
-              <div class="pill-row">
-                <span class="pill pill--tier">AAAA • Top Shelf</span>
-                <span class="pill pill--craft">Small Batch</span>
-              </div>
-
-              <h2 class="product-tile__title">Nova Reserve Pack | Top Shelf</h2>
-
-              <div class="rating">
-                <div class="stars" aria-label="5 stars">
-                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                </div>
-                <div class="reviews">31 reviews</div>
-              </div>
-
-              <div class="price price--green">$299.00 – $820.00 CAD</div>
-
-              <form class="buy-form"
-                action="mailto:orders@premiumsupply.ca?subject=Premium%20Supply%20Order%20-%20PS-ALL-002"
-                method="post" enctype="text/plain">
-                <input type="hidden" name="SKU" value="PS-ALL-002">
-                <input type="hidden" name="Product" value="Nova Reserve Pack | Top Shelf">
-                <label class="qty">
-                  <span>Quantity</span>
-                  <input type="number" name="Quantity" min="1" value="1">
-                </label>
-                <button class="btn btn--solid btn--full" type="submit">Buy Now</button>
-                <p class="hint">Payment via Interac e‑Transfer after confirmation.</p>
-              </form>
-            </div>
-          </article>
-
-          <article class="product-tile">
-            <div class="product-tile__media">
-              <span class="sale-bubble">Sale!</span>
-              <div class="img-square" aria-hidden="true"></div>
-              <div class="type-strip type-strip--sativa">Sativa</div>
-            </div>
-
-            <div class="product-tile__body">
-              <div class="pill-row">
-                <span class="pill pill--tier">AAA • Value</span>
-                <span class="pill pill--limited">Limited</span>
-              </div>
-
-              <h2 class="product-tile__title">Coastal Spark | Value Deal</h2>
-
-              <div class="rating">
-                <div class="stars" aria-label="4.6 stars">
-                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i>
-                </div>
-                <div class="reviews">18 reviews</div>
-              </div>
-
-              <div class="price"><span class="price__was">$175.00</span><span class="price__now price--green">$148.75 CAD</span></div>
-
-              <form class="buy-form"
-                action="mailto:orders@premiumsupply.ca?subject=Premium%20Supply%20Order%20-%20PS-ALL-003"
-                method="post" enctype="text/plain">
-                <input type="hidden" name="SKU" value="PS-ALL-003">
-                <input type="hidden" name="Product" value="Coastal Spark | Value Deal">
-                <label class="qty">
-                  <span>Quantity</span>
-                  <input type="number" name="Quantity" min="1" value="1">
-                </label>
-                <button class="btn btn--solid btn--full" type="submit">Buy Now</button>
-                <p class="hint">Payment via Interac e‑Transfer after confirmation.</p>
-              </form>
-            </div>
-          </article>
-        </div>
+        <div class="products-grid" id="productGrid" aria-live="polite"></div>
       </section>
 
-      <section class="block" id="how">
-        <div class="block__head">
-          <h2 class="block__title">How to buy</h2>
-          <p class="block__sub">No processor — we confirm your order then you pay via Interac e‑Transfer.</p>
-        </div>
-
-        <div class="notice">
-          <strong>Note:</strong> “Buy Now” opens your email app with the order details (no JS / no backend required).
-        </div>
-      </section>
-
-      <footer class="footer">
-        <div class="footer__inner">
-          <div>
-            <h3>Premium Supply</h3>
-            <p>Canada-first storefront • Interac e‑Transfer workflow</p>
-          </div>
-          <div class="footer__links">
-            <a href="products.html">All Products</a>
-            <a href="category-flower.html">Flower</a>
-            <a href="category-concentrates.html">Concentrates</a>
-            <a href="category-edibles.html">Edibles</a>
-          </div>
-          <p class="footer__fineprint">© 2026 Premium Supply. All rights reserved.</p>
-        </div>
+      <footer class="block muted">
+        <p style="margin:0;">© 2026 Premium Supply • Proudly Canadian</p>
       </footer>
     </div>
   </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <span id="toastText">Added to cart.</span>
+    <a href="cart.html">View cart</a>
+  </div>
+
+  <!-- Inline JS (cart + render + search + sort) -->
+  <script>
+    const PS = {
+      currency: "CAD",
+      cartKey: "ps_cart_v1"
+    };
+
+    const $ = (s, el=document) => el.querySelector(s);
+    const $$ = (s, el=document) => Array.from(el.querySelectorAll(s));
+
+    const money = (n) => new Intl.NumberFormat("en-CA", { style:"currency", currency: PS.currency }).format(n);
+
+    function readCart(){
+      try { return JSON.parse(localStorage.getItem(PS.cartKey) || "{}"); }
+      catch { return {}; }
+    }
+    function writeCart(cart){
+      localStorage.setItem(PS.cartKey, JSON.stringify(cart));
+    }
+    function cartCount(cart){
+      return Object.values(cart).reduce((sum, item) => sum + (item.qty || 0), 0);
+    }
+    function updateBadges(){
+      const cart = readCart();
+      const count = cartCount(cart);
+      $$(".js-cart-count").forEach(el => el.textContent = String(count));
+    }
+
+    function toStarHTML(rating){
+      const r = Math.round((Number(rating)||0) * 2) / 2;
+      const full = Math.floor(r);
+      const half = (r - full) >= 0.5;
+      let html = "";
+      for(let i=0;i<full;i++) html += '<i class="fa-solid fa-star"></i>';
+      if(half) html += '<i class="fa-solid fa-star-half-stroke"></i>';
+      const empty = 5 - full - (half ? 1 : 0);
+      for(let i=0;i<empty;i++) html += '<i class="fa-regular fa-star"></i>';
+      return html;
+    }
+
+    function typeClass(type){
+      const t = (type||"").toLowerCase();
+      if(t.includes("indica")) return "type-strip--indica";
+      if(t.includes("hybrid")) return "type-strip--hybrid";
+      if(t.includes("sativa")) return "type-strip--sativa";
+      return "type-strip--other";
+    }
+
+    function noteColorClass(note){
+      const n = (note||"").toLowerCase();
+      if(n.includes("bold") || n.includes("fire")) return "tagchip--red";
+      if(n.includes("citrus") || n.includes("gas") || n.includes("bright")) return "tagchip--yellow";
+      if(n.includes("deep") || n.includes("dank") || n.includes("smooth")) return "tagchip--purple";
+      if(n.includes("fresh") || n.includes("clean") || n.includes("sticky")) return "tagchip--teal";
+      if(n.includes("rich") || n.includes("skunk")) return "tagchip--black";
+      if(n.includes("berry") || n.includes("sweet")) return "tagchip--pink";
+      return "tagchip--green";
+    }
+
+    function productCard(p){
+      const badges = (p.badges || []);
+      const notes = (p.notes || []).slice(0,4);
+      const sale = badges.map(b => String(b).toLowerCase()).includes("sale");
+
+      const notesHTML = notes.length
+        ? `<ul class="tag-stack">${notes.map(n => `<li class="tagchip ${noteColorClass(n)}">${n}</li>`).join("")}</ul>`
+        : "";
+
+      const media = p.image
+        ? `<img class="img-square" src="${p.image}" alt="${p.name}">`
+        : `<div class="img-square" aria-hidden="true"></div>`;
+
+      return `
+        <article class="product-tile" data-id="${p.id}">
+          <div class="product-tile__media">
+            ${sale ? `<span class="sale-bubble">Sale!</span>` : ""}
+            ${notesHTML}
+            ${media}
+            <div class="type-strip ${typeClass(p.type)}">${p.type || "—"}</div>
+          </div>
+
+          <div class="product-tile__body">
+            <div class="pill-row">
+              <span class="pill pill--tier">${p.tier || "Premium"}</span>
+              <span class="pill pill--tag">${p.tag || p.category}</span>
+            </div>
+
+            <h2 class="product-tile__title">${p.name}</h2>
+
+            <div class="rating">
+              <div class="stars" aria-label="${p.rating} stars">${toStarHTML(p.rating)}</div>
+              <div class="reviews">${Number(p.reviews||0)} reviews</div>
+            </div>
+
+            <div class="price">${money(Number(p.price||0))} ${PS.currency}</div>
+
+            <div class="buy-row">
+              <div class="qty">
+                <span>Quantity</span>
+                <div class="qty-stepper">
+                  <button class="qty-btn js-minus" type="button" data-id="${p.id}">−</button>
+                  <input class="qty-input js-qty" type="number" min="1" value="1" data-id="${p.id}">
+                  <button class="qty-btn js-plus" type="button" data-id="${p.id}">+</button>
+                </div>
+              </div>
+
+              <button class="btn btn--solid btn--full js-buy" type="button" data-id="${p.id}">
+                Buy
+              </button>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function showToast(msg){
+      const toast = $("#toast");
+      $("#toastText").textContent = msg;
+      toast.classList.add("toast--show");
+      window.clearTimeout(showToast._t);
+      showToast._t = window.setTimeout(() => toast.classList.remove("toast--show"), 2200);
+    }
+
+    async function loadCatalog(){
+      const res = await fetch("catalog.json", { cache: "no-store" });
+      if(!res.ok) throw new Error("Could not load catalog.json");
+      return await res.json();
+    }
+
+    (async function initListing(){
+      updateBadges();
+
+      const grid = $("#productGrid");
+      const searchInput = $("#searchInput");
+      const clearSearch = $("#clearSearch");
+      const sortSelect = $("#sortSelect");
+      const pageCategory = (document.body.dataset.category || "all").toLowerCase();
+
+      let catalog = await loadCatalog();
+
+      function filterAndSort(){
+        const q = (searchInput.value || "").trim().toLowerCase();
+        const sort = sortSelect.value;
+
+        let list = catalog.slice();
+
+        if(pageCategory !== "all"){
+          list = list.filter(p => String(p.category||"").toLowerCase() === pageCategory);
+        }
+
+        if(q){
+          list = list.filter(p => {
+            const blob = [
+              p.name, p.category, p.type, p.tier, p.tag,
+              ...(p.notes||[]), ...(p.badges||[])
+            ].join(" ").toLowerCase();
+            return blob.includes(q);
+          });
+        }
+
+        list.sort((a,b) => {
+          if(sort === "price_asc") return (a.price||0) - (b.price||0);
+          if(sort === "rating_desc") return (b.rating||0) - (a.rating||0);
+          return (b.price||0) - (a.price||0); // price_desc
+        });
+
+        return list;
+      }
+
+      function render(){
+        const list = filterAndSort();
+        grid.innerHTML = list.map(productCard).join("");
+      }
+
+      // Events
+      clearSearch.addEventListener("click", () => { searchInput.value = ""; render(); });
+
+      sortSelect.addEventListener("change", render);
+      searchInput.addEventListener("input", render);
+
+      document.addEventListener("click", (e) => {
+        const plus = e.target.closest(".js-plus");
+        const minus = e.target.closest(".js-minus");
+        const buy = e.target.closest(".js-buy");
+
+        if(plus){
+          const id = plus.dataset.id;
+          const input = document.querySelector(`.js-qty[data-id="${id}"]`);
+          input.value = String(Math.max(1, (Number(input.value)||1) + 1));
+        }
+        if(minus){
+          const id = minus.dataset.id;
+          const input = document.querySelector(`.js-qty[data-id="${id}"]`);
+          input.value = String(Math.max(1, (Number(input.value)||1) - 1));
+        }
+        if(buy){
+          const id = buy.dataset.id;
+          const p = catalog.find(x => x.id === id);
+          const qtyInput = document.querySelector(`.js-qty[data-id="${id}"]`);
+          const qty = Math.max(1, Number(qtyInput?.value || 1));
+
+          const cart = readCart();
+          if(cart[id]){
+            cart[id].qty += qty;
+          } else {
+            cart[id] = {
+              id: p.id,
+              name: p.name,
+              price: Number(p.price||0),
+              category: p.category,
+              type: p.type,
+              tier: p.tier,
+              qty: qty
+            };
+          }
+          writeCart(cart);
+          updateBadges();
+          showToast(`Added ${qty} × ${p.name}`);
+        }
+      });
+
+      render();
+    })().catch(err => {
+      console.error(err);
+      document.querySelector("#productGrid").innerHTML =
+        `<div class="card"><strong>Catalog failed to load.</strong><p class="muted">Make sure <span class="mono">catalog.json</span> is in the same folder as this page.</p></div>`;
+    });
+  </script>
 </body>
 </html>
