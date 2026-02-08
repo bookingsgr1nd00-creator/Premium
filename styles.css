@@ -773,3 +773,55 @@ img{ max-width:100%; display:block; }
   white-space: normal;
   overflow-wrap: anywhere;
 }
+/* ==========================================
+   HOTFIX: Size + Buy alignment (cards + product page)
+========================================== */
+
+/* Product cards: make Size + Buy same height */
+.product-tile .buy-row{
+  grid-template-columns: 1fr 1fr;
+  align-items: stretch;
+}
+@media (max-width: 380px){
+  .product-tile .buy-row{ grid-template-columns: 1fr; }
+}
+
+.product-tile .variant{
+  height: 54px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.product-tile .variant > span{ display:none; } /* hide "Size" label on cards only */
+
+.product-tile .variant-select{
+  height: 54px;
+  border: none;            /* prevents double borders */
+  background: transparent; /* uses the neon container background */
+  padding: 0 40px 0 10px;
+}
+
+.product-tile .js-buy{
+  height: 54px;
+}
+
+/* Product page: same clean alignment */
+#detailsCard .variant{
+  height: 54px;
+  padding: 0 10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+#detailsCard .variant > span{ display:none; } /* hide label here too (select already has aria-label) */
+
+#detailsCard .variant-select{
+  height: 54px;
+  border: none;
+  background: transparent;
+  padding: 0 40px 0 10px;
+}
+#detailsCard #buyBtn{
+  height: 54px;
+}
