@@ -10,7 +10,6 @@
 </head>
 
 <body>
-  <!-- Toggles (must be first for CSS ~ selectors) -->
   <input class="toggle" type="checkbox" id="catDrawerToggle">
   <input class="toggle" type="checkbox" id="searchToggle">
 
@@ -37,10 +36,6 @@
           <option value="rating_desc">Rating: High → Low</option>
         </select>
       </div>
-
-      <p class="muted" style="margin:10px 0 0;">
-        Tip: tap a product image or title to open the product page.
-      </p>
     </div>
   </div>
 
@@ -68,7 +63,6 @@
 
       <div class="header__right">
         <label class="icon-btn" for="searchToggle" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></label>
-
         <a class="icon-btn cart-btn" href="cart.html" aria-label="Cart">
           <i class="fa-solid fa-bag-shopping"></i>
           <span class="cart-badge js-cart-count">0</span>
@@ -105,14 +99,14 @@
       <section class="hero">
         <div class="hero__inner">
           <h1 class="hero__title">Futuristic deals, proudly Canadian.</h1>
-          <p class="hero__sub">Neon‑clean storefront • Fast browsing • Simple checkout</p>
+          <p class="hero__sub">Pick your size • Add to cart • Simple checkout</p>
 
           <div class="hero__meta">
             <span class="pill pill--gold"><i class="fa-solid fa-truck-fast"></i> Free shipping $250+</span>
             <span class="pill pill--mint"><i class="fa-solid fa-circle-check"></i> Min order $75</span>
           </div>
 
-          <div class="cat-pills" aria-label="Quick categories">
+          <div class="cat-pills">
             <a class="cat-pill" href="category.html?c=Flower">Flower</a>
             <a class="cat-pill" href="category.html?c=Concentrates">Concentrates</a>
             <a class="cat-pill" href="category.html?c=Edibles">Edibles</a>
@@ -143,43 +137,11 @@
     <a href="cart.html">View cart</a>
   </div>
 
-  <!-- Promo popup -->
-  <div class="promo-modal" id="promoModal" aria-hidden="true">
-    <div class="promo-modal__overlay" data-close></div>
-    <div class="promo-modal__panel">
-      <div class="promo-head">
-        <h3 class="promo-title">Welcome to Premium Supply ✨</h3>
-        <button class="icon-btn" type="button" id="promoClose" aria-label="Close promo"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-
-      <p class="muted" style="margin:10px 0 0;">
-        Quick reminder:
-      </p>
-      <div class="hero__meta" style="margin-top:10px;">
-        <span class="pill pill--mint"><i class="fa-solid fa-circle-check"></i> Minimum order $75</span>
-        <span class="pill pill--gold"><i class="fa-solid fa-truck-fast"></i> Free shipping $250+</span>
-        <span class="pill"><i class="fa-solid fa-maple-leaf"></i> 100% Canadian</span>
-      </div>
-
-      <div class="promo-actions">
-        <button class="btn btn--solid" type="button" id="promoContinue">Shop now</button>
-        <button class="btn" type="button" id="promoDontShow">Don’t show again</button>
-      </div>
-    </div>
-  </div>
-
   <script>
-    // ===== Config =====
-    const PS = {
-      currency: "CAD",
-      cartKey: "ps_cart_v1",
-      promoKey: "ps_promo_dismissed_v1"
-    };
-
-    // ===== Helpers =====
-    const $ = (s, el=document) => el.querySelector(s);
-    const $$ = (s, el=document) => Array.from(el.querySelectorAll(s));
-    const money = (n) => new Intl.NumberFormat("en-CA", { style:"currency", currency: PS.currency }).format(n);
+    const PS = { currency:"CAD", cartKey:"ps_cart_v1" };
+    const $ = (s, el=document)=>el.querySelector(s);
+    const $$ = (s, el=document)=>Array.from(el.querySelectorAll(s));
+    const money = (n)=> new Intl.NumberFormat("en-CA",{style:"currency",currency:PS.currency}).format(n);
 
     function typeClass(type){
       const t = String(type||"").toLowerCase();
@@ -188,7 +150,6 @@
       if(t.includes("sativa")) return "type-strip--sativa";
       return "type-strip--other";
     }
-
     function toStarHTML(rating){
       const r = Math.round((Number(rating)||0) * 2) / 2;
       const full = Math.floor(r);
@@ -204,11 +165,7 @@
     function readCart(){ try { return JSON.parse(localStorage.getItem(PS.cartKey) || "{}"); } catch { return {}; } }
     function writeCart(cart){ localStorage.setItem(PS.cartKey, JSON.stringify(cart)); }
     function cartCount(cart){ return Object.values(cart).reduce((s,i)=> s+(i.qty||0), 0); }
-    function updateBadges(){
-      const c = cartCount(readCart());
-      $$(".js-cart-count").forEach(el => el.textContent = String(c));
-    }
-
+    function updateBadges(){ $$(".js-cart-count").forEach(el => el.textContent = String(cartCount(readCart()))); }
     function showToast(msg){
       $("#toastText").textContent = msg;
       $("#toast").classList.add("toast--show");
@@ -222,8 +179,36 @@
       return await res.json();
     }
 
+    function variantList(p){
+      if(Array.isArray(p.variants) && p.variants.length) return p.variants;
+      // fallback (if you forgot variants)
+      if(typeof p.price === "number") return [{ label:"3.5g", price: p.price }];
+      return [{ label:"3.5g", price: 0 }];
+    }
+    function defaultVariantLabel(p){
+      const list = variantList(p);
+      const preferred = list.find(v => v.label === "3.5g");
+      return (preferred || list[0]).label;
+    }
+    function variantPrice(p, label){
+      const v = variantList(p).find(x => x.label === label);
+      return Number(v?.price ?? 0);
+    }
+
+    function variantSelectHTML(p){
+      const list = variantList(p);
+      const selected = defaultVariantLabel(p);
+      return `
+        <select class="variant-select js-variant" data-id="${p.id}" aria-label="Select size">
+          ${list.map(v => `<option value="${v.label}" ${v.label===selected ? "selected":""}>${v.label}</option>`).join("")}
+        </select>
+      `;
+    }
+
     function productCard(p){
       const sale = (p.badges || []).map(b => String(b).toLowerCase()).includes("sale");
+      const selected = defaultVariantLabel(p);
+      const unitPrice = variantPrice(p, selected);
 
       const mediaHTML = p.image
         ? `<div class="media-square"><img src="${p.image}" alt="${p.name}"></div>`
@@ -233,7 +218,6 @@
         <article class="product-tile" data-id="${p.id}">
           <div class="product-tile__media">
             ${sale ? `<span class="sale-bubble">Sale!</span>` : ""}
-
             <a class="product-link" href="product.html?id=${encodeURIComponent(p.id)}" aria-label="View ${p.name}">
               ${mediaHTML}
               <div class="type-strip ${typeClass(p.type)}">${p.type || "—"}</div>
@@ -253,44 +237,25 @@
               <div class="reviews">${Number(p.reviews||0)} reviews</div>
             </div>
 
-            <div class="price">${money(Number(p.price||0))} ${PS.currency}</div>
+            <div class="price"><span class="js-price" data-id="${p.id}">${money(unitPrice)}</span> <span class="muted">CAD</span></div>
 
             <div class="buy-row">
-              <div class="qty">
-                <span>Quantity</span>
-                <div class="qty-stepper">
-                  <button class="qty-btn js-minus" type="button" data-id="${p.id}">−</button>
-                  <input class="qty-input js-qty" type="number" min="1" value="1" data-id="${p.id}">
-                  <button class="qty-btn js-plus" type="button" data-id="${p.id}">+</button>
-                </div>
+              <div class="variant">
+                <span>Size</span>
+                ${variantSelectHTML(p)}
               </div>
 
-              <button class="btn btn--solid btn--full js-buy" type="button" data-id="${p.id}">Buy</button>
+              <button class="btn btn--solid btn--full js-buy" type="button" data-id="${p.id}">
+                Buy
+              </button>
             </div>
           </div>
         </article>
       `;
     }
 
-    // ===== Promo popup =====
-    function initPromo(){
-      const modal = $("#promoModal");
-      const dismissed = localStorage.getItem(PS.promoKey) === "1";
-      if(dismissed) return;
-
-      modal.classList.add("promo-modal--show");
-
-      const close = () => modal.classList.remove("promo-modal--show");
-      $("#promoClose").onclick = close;
-      $("#promoContinue").onclick = close;
-      $("#promoDontShow").onclick = () => { localStorage.setItem(PS.promoKey, "1"); close(); };
-      modal.querySelector("[data-close]").onclick = close;
-    }
-
-    // ===== Main =====
     (async function init(){
       updateBadges();
-      initPromo();
 
       const catalog = await loadCatalog();
 
@@ -299,30 +264,29 @@
       const clearBtn = $("#clearBtn");
       const grid = $("#grid");
 
-      function getFiltered(){
+      function filtered(){
         const query = (q.value || "").trim().toLowerCase();
         const mode = sort.value;
 
         let list = catalog.slice();
 
         if(query){
-          list = list.filter(p => {
-            const blob = [p.name, p.category, p.type, p.tier, p.tag].join(" ").toLowerCase();
-            return blob.includes(query);
-          });
+          list = list.filter(p => ([p.name,p.category,p.type,p.tier,p.tag].join(" ").toLowerCase()).includes(query));
         }
 
         list.sort((a,b) => {
-          if(mode === "price_asc") return (a.price||0) - (b.price||0);
+          const ap = variantPrice(a, defaultVariantLabel(a));
+          const bp = variantPrice(b, defaultVariantLabel(b));
+          if(mode === "price_asc") return ap - bp;
           if(mode === "rating_desc") return (b.rating||0) - (a.rating||0);
-          return (b.price||0) - (a.price||0); // price_desc default
+          return bp - ap; // price_desc
         });
 
         return list;
       }
 
       function render(){
-        const list = getFiltered();
+        const list = filtered();
         if(!list.length){
           grid.innerHTML = `<div class="card" style="grid-column:1/-1;"><strong>No results.</strong><p class="muted" style="margin:.5rem 0 0;">Try another search.</p></div>`;
           return;
@@ -332,46 +296,48 @@
 
       q.addEventListener("input", render);
       sort.addEventListener("change", render);
-      clearBtn.addEventListener("click", () => { q.value=""; render(); });
+      clearBtn.addEventListener("click", ()=>{ q.value=""; render(); });
 
+      // Update price when size changes
+      document.addEventListener("change", (e) => {
+        const sel = e.target.closest(".js-variant");
+        if(!sel) return;
+        const id = sel.dataset.id;
+        const p = catalog.find(x => x.id === id);
+        if(!p) return;
+        const priceEl = document.querySelector(`.js-price[data-id="${id}"]`);
+        if(!priceEl) return;
+        priceEl.textContent = money(variantPrice(p, sel.value));
+      });
+
+      // Buy adds 1 unit of chosen size (units can be increased in cart)
       document.addEventListener("click", (e) => {
-        const plus = e.target.closest(".js-plus");
-        const minus = e.target.closest(".js-minus");
-        const buy = e.target.closest(".js-buy");
+        const btn = e.target.closest(".js-buy");
+        if(!btn) return;
 
-        if(plus){
-          const id = plus.dataset.id;
-          const input = document.querySelector(`.js-qty[data-id="${id}"]`);
-          input.value = String(Math.max(1, (Number(input.value)||1) + 1));
-        }
+        const id = btn.dataset.id;
+        const p = catalog.find(x => x.id === id);
+        if(!p) return;
 
-        if(minus){
-          const id = minus.dataset.id;
-          const input = document.querySelector(`.js-qty[data-id="${id}"]`);
-          input.value = String(Math.max(1, (Number(input.value)||1) - 1));
-        }
+        const sel = document.querySelector(`.js-variant[data-id="${id}"]`);
+        const size = sel ? sel.value : defaultVariantLabel(p);
+        const unitPrice = variantPrice(p, size);
 
-        if(buy){
-          const id = buy.dataset.id;
-          const qtyInput = document.querySelector(`.js-qty[data-id="${id}"]`);
-          const qty = Math.max(1, Number(qtyInput?.value || 1));
-          const p = catalog.find(x => x.id === id);
-          if(!p) return;
+        const lineKey = `${id}::${size}`;
+        const cart = readCart();
 
-          const cart = readCart();
-          if(cart[id]) cart[id].qty += qty;
-          else cart[id] = { ...p, qty };
+        if(cart[lineKey]) cart[lineKey].qty += 1;
+        else cart[lineKey] = { ...p, variant: size, price: unitPrice, qty: 1 };
 
-          writeCart(cart);
-          updateBadges();
-          showToast(`Added ${qty} × ${p.name}`);
-        }
+        writeCart(cart);
+        updateBadges();
+        showToast(`Added 1 × ${p.name} (${size})`);
       });
 
       render();
     })().catch(err => {
       console.error(err);
-      $("#grid").innerHTML = `<div class="card" style="grid-column:1/-1;"><strong>Catalog failed to load.</strong><p class="muted" style="margin:.5rem 0 0;">Make sure <span style="text-decoration:underline;">catalog.json</span> is in the same folder.</p></div>`;
+      $("#grid").innerHTML = `<div class="card" style="grid-column:1/-1;"><strong>Catalog failed to load.</strong><p class="muted" style="margin:.5rem 0 0;">Make sure <b>catalog.json</b> exists and you are viewing via GitHub Pages.</p></div>`;
     });
   </script>
 </body>
