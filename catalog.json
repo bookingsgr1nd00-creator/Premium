@@ -1,16 +1,24 @@
 [
   {
-    "id": "ps-fl-aurora",
+    "id": "ps-fl-aurora-reserve",
     "name": "Aurora Reserve",
     "category": "Flower",
     "type": "Indica",
     "tier": "Top Shelf",
     "tag": "Small Batch",
-    "price": 149.99,
     "rating": 4.8,
     "reviews": 22,
     "badges": [],
-    "image": "assets/products/ps-fl-aurora.webp"
+    "image": "assets/products/ps-fl-aurora-reserve.webp",
+    "variants": [
+      { "label": "3.5g", "price": 39.99 },
+      { "label": "7g", "price": 74.99 },
+      { "label": "1 Oz", "price": 199.99 },
+      { "label": "1½ Oz", "price": 279.99 },
+      { "label": "¼ pound", "price": 699.99 },
+      { "label": "½ pound", "price": 1299.99 },
+      { "label": "1 pound", "price": 2399.99 }
+    ]
   },
   {
     "id": "ps-fl-northern-mint",
@@ -19,11 +27,19 @@
     "type": "Hybrid",
     "tier": "Premium",
     "tag": "Fresh Drop",
-    "price": 129.99,
     "rating": 4.7,
     "reviews": 31,
     "badges": ["Sale"],
-    "image": "assets/products/ps-fl-northern-mint.webp"
+    "image": "assets/products/ps-fl-northern-mint.webp",
+    "variants": [
+      { "label": "3.5g", "price": 34.99 },
+      { "label": "7g", "price": 64.99 },
+      { "label": "1 Oz", "price": 179.99 },
+      { "label": "1½ Oz", "price": 249.99 },
+      { "label": "¼ pound", "price": 639.99 },
+      { "label": "½ pound", "price": 1199.99 },
+      { "label": "1 pound", "price": 2199.99 }
+    ]
   },
   {
     "id": "ps-con-nebula-shatter",
@@ -32,11 +48,15 @@
     "type": "Hybrid",
     "tier": "Premium",
     "tag": "Glass Clean",
-    "price": 34.99,
     "rating": 4.6,
     "reviews": 18,
     "badges": [],
-    "image": "assets/products/ps-con-nebula-shatter.webp"
+    "image": "assets/products/ps-con-nebula-shatter.webp",
+    "variants": [
+      { "label": "1g", "price": 34.99 },
+      { "label": "2g", "price": 64.99 },
+      { "label": "3.5g", "price": 109.99 }
+    ]
   },
   {
     "id": "ps-ed-maple-bites",
@@ -45,11 +65,14 @@
     "type": "—",
     "tier": "Premium",
     "tag": "Canadian Classic",
-    "price": 18.0,
     "rating": 4.9,
     "reviews": 44,
     "badges": [],
-    "image": "assets/products/ps-ed-maple-bites.webp"
+    "image": "assets/products/ps-ed-maple-bites.webp",
+    "variants": [
+      { "label": "10 pack", "price": 18.0 },
+      { "label": "20 pack", "price": 32.0 }
+    ]
   },
   {
     "id": "ps-vapes-starlight-cart",
@@ -58,11 +81,14 @@
     "type": "Sativa",
     "tier": "Premium",
     "tag": "Smooth Pull",
-    "price": 42.0,
     "rating": 4.5,
     "reviews": 27,
     "badges": [],
-    "image": "assets/products/ps-vapes-starlight-cart.webp"
+    "image": "assets/products/ps-vapes-starlight-cart.webp",
+    "variants": [
+      { "label": "0.5g", "price": 29.99 },
+      { "label": "1g", "price": 42.0 }
+    ]
   },
   {
     "id": "ps-cbd-calm-drops",
@@ -71,11 +97,14 @@
     "type": "—",
     "tier": "Premium",
     "tag": "Daily Balance",
-    "price": 59.0,
     "rating": 4.8,
     "reviews": 19,
     "badges": [],
-    "image": "assets/products/ps-cbd-calm-drops.webp"
+    "image": "assets/products/ps-cbd-calm-drops.webp",
+    "variants": [
+      { "label": "15ml", "price": 39.0 },
+      { "label": "30ml", "price": 59.0 }
+    ]
   },
   {
     "id": "ps-me-night-drive",
@@ -84,10 +113,13 @@
     "type": "—",
     "tier": "Premium",
     "tag": "Discreet",
-    "price": 89.99,
     "rating": 4.7,
     "reviews": 12,
     "badges": [],
-    "image": "assets/products/ps-me-night-drive.webp"
+    "image": "assets/products/ps-me-night-drive.webp",
+    "variants": [
+      { "label": "1 pack", "price": 49.99 },
+      { "label": "3 pack", "price": 129.99 }
+    ]
   }
 ]
