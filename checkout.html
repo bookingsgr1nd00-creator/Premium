@@ -9,12 +9,12 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 
-<body>
+<body data-page="checkout">
   <input class="toggle" type="checkbox" id="catDrawerToggle">
 
   <div class="topbar">
     <div class="container topbar__inner">
-      <span class="topbar__badge"><i class="fa-solid fa-maple-leaf"></i> 100% Canadian</span>
+      <span class="topbar__badge" id="topbarLeft"><i class="fa-solid fa-maple-leaf"></i> 100% Canadian</span>
       <p class="topbar__text">Checkout</p>
       <a class="topbar__link" href="cart.html">Back</a>
     </div>
@@ -24,16 +24,15 @@
     <div class="container header__inner">
       <label class="icon-btn" for="catDrawerToggle" aria-label="Open categories"><i class="fa-solid fa-bars"></i></label>
 
-      <a class="brand" href="products.html" aria-label="All products">
-        <img class="brand__logo-img" src="assets/brand/logo-planet.png" alt="Premium Supply">
+      <a class="brand" href="products.html">
+        <img class="brand__logo-img js-brand-logo" src="assets/brand/logo-planet.png" alt="Premium Supply">
         <span class="brand__text">
-          <span class="brand__name">Premium Supply</span>
-          <span class="brand__tag">Checkout</span>
+          <span class="brand__name js-brand-name">Premium Supply</span>
+          <span class="brand__tag js-brand-tag">Space Store</span>
         </span>
       </a>
 
       <div class="header__right">
-        <a class="icon-btn" href="products.html" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></a>
         <a class="icon-btn cart-btn" href="cart.html" aria-label="Cart">
           <i class="fa-solid fa-bag-shopping"></i>
           <span class="cart-badge js-cart-count">0</span>
@@ -43,21 +42,16 @@
   </header>
 
   <label for="catDrawerToggle" class="drawer-backdrop" aria-hidden="true"></label>
-  <aside class="drawer" aria-label="Shop by category">
+  <aside class="drawer">
     <div class="drawer__head">
       <div class="drawer__title"><i class="fa-solid fa-list"></i> Shop by category</div>
-      <label class="icon-btn" for="catDrawerToggle" aria-label="Close"><i class="fa-solid fa-xmark"></i></label>
+      <label class="icon-btn" for="catDrawerToggle"><i class="fa-solid fa-xmark"></i></label>
     </div>
 
     <nav class="cat-nav">
       <a class="cat-link" href="products.html">All Products</a>
       <div class="cat-sep"></div>
-      <a class="cat-link" href="category.html?c=Flower">Flower</a>
-      <a class="cat-link" href="category.html?c=Concentrates">Concentrates</a>
-      <a class="cat-link" href="category.html?c=Edibles">Edibles</a>
-      <a class="cat-link" href="category.html?c=Vapes">Vapes</a>
-      <a class="cat-link" href="category.html?c=CBD">CBD</a>
-      <a class="cat-link" href="category.html?c=Male%20Enhancers">Male Enhancers</a>
+      <div id="drawerCats"></div>
       <div class="cat-sep"></div>
       <a class="cat-link" href="cart.html">Cart</a>
     </nav>
@@ -66,27 +60,16 @@
   <main class="section">
     <div class="container">
       <div class="cart-layout">
-        <!-- LEFT -->
         <section class="card">
           <h1 class="block__title" style="margin:0 0 8px;">Place order</h1>
-
-          <p class="muted" style="margin:0 0 10px;">
-            No external services. When you click <strong>Place order</strong>, an Order ID + payment instructions will be shown on-screen.
-          </p>
-
-          <div class="pill-row" style="margin-bottom:10px;">
-            <span class="pill pill--mint"><i class="fa-solid fa-circle-check"></i> Min order $75</span>
-            <span class="pill pill--gold"><i class="fa-solid fa-truck-fast"></i> Free ship $250+</span>
-          </div>
+          <p class="muted" style="margin:0 0 10px;">No external services. We generate an Order ID + summary on-screen.</p>
 
           <div id="minAlert" class="alert-danger" style="display:none; margin-bottom:10px;">
-            Minimum order is <strong>$75 CAD</strong> before shipping. Please add more items.
+            Minimum order is <strong id="minLabel">$75 CAD</strong> before shipping.
           </div>
 
           <button class="btn btn--solid btn--full" id="placeOrderBtn" type="button">Place order</button>
-          <a class="btn btn--full" href="products.html" style="margin-top:10px;">Continue shopping</a>
 
-          <!-- Confirmation -->
           <div id="confirmWrap" style="display:none; margin-top:14px;">
             <div class="alert-danger">
               If you don't pay in the next 24 hours for the order your account will be closed in 48 hours
@@ -105,7 +88,7 @@
               <p class="muted" style="margin:8px 0 0;">
                 Send <strong>Interac e‑Transfer</strong> to:<br>
                 <span style="text-decoration:underline; font-weight:950;" id="payEmail">payments@premiumsupply.ca</span><br><br>
-                Use this as the message/reference:<br>
+                Reference/message:<br>
                 <span style="text-decoration:underline; font-weight:950;" id="payRef">—</span>
               </p>
             </div>
@@ -119,14 +102,9 @@
               <button class="btn" type="button" id="restoreCartBtn">Restore cart</button>
               <a class="btn btn--solid" href="products.html">Done</a>
             </div>
-
-            <p class="muted" style="margin:10px 0 0;">
-              Tip: screenshot this page or download the summary for your records.
-            </p>
           </div>
         </section>
 
-        <!-- RIGHT -->
         <aside class="card">
           <h2 class="block__title" style="margin:0 0 8px;">Review</h2>
           <div id="reviewItems"></div>
@@ -135,216 +113,11 @@
           <div class="summary-row"><span>Subtotal</span> <strong id="subtotal">$0.00</strong></div>
           <div class="summary-row"><span>Shipping</span> <strong id="shipping">$0.00</strong></div>
           <div class="summary-row"><span>Total</span> <strong id="total">$0.00</strong></div>
-
-          <p class="muted" style="margin:10px 0 0;">
-            Want to edit items? <a href="cart.html" style="text-decoration:underline; font-weight:950;">Go back to cart</a>.
-          </p>
         </aside>
       </div>
     </div>
   </main>
 
-  <script>
-    const PS = {
-      currency: "CAD",
-      cartKey: "ps_cart_v1",
-      lastOrderKey: "ps_last_order_v1",
-
-      // CHANGE THIS to your real Interac email:
-      paymentEmail: "payments@premiumsupply.ca",
-
-      minOrder: 75,
-      freeShipOver: 250,
-      flatShip: 15
-    };
-
-    const $ = (s, el=document) => el.querySelector(s);
-    const $$ = (s, el=document) => Array.from(el.querySelectorAll(s));
-    const money = (n) => new Intl.NumberFormat("en-CA", { style:"currency", currency: PS.currency }).format(n);
-
-    function readCart(){ try { return JSON.parse(localStorage.getItem(PS.cartKey) || "{}"); } catch { return {}; } }
-    function writeCart(cart){ localStorage.setItem(PS.cartKey, JSON.stringify(cart)); }
-    function cartCount(cart){ return Object.values(cart).reduce((s,i)=> s+(i.qty||0), 0); }
-    function updateBadges(){
-      const c = cartCount(readCart());
-      $$(".js-cart-count").forEach(el => el.textContent = String(c));
-    }
-
-    function calc(cart){
-      const items = Object.values(cart);
-      const subtotal = items.reduce((s,i)=> s + (Number(i.price||0) * Number(i.qty||0)), 0);
-      const shipping = items.length ? (subtotal >= PS.freeShipOver ? 0 : PS.flatShip) : 0;
-      const total = subtotal + shipping;
-      return { items, subtotal, shipping, total };
-    }
-
-    function makeOrderId(){
-      const now = Date.now().toString(36).toUpperCase();
-      const rnd = Math.random().toString(36).slice(2,6).toUpperCase();
-      return `PS-${now}-${rnd}`;
-    }
-
-    function fmtDateTime(ms){
-      return new Intl.DateTimeFormat("en-CA", { dateStyle:"medium", timeStyle:"short" }).format(new Date(ms));
-    }
-    function fmtCountdown(msLeft){
-      const s = Math.max(0, Math.floor(msLeft/1000));
-      const h = Math.floor(s/3600);
-      const m = Math.floor((s%3600)/60);
-      const sec = s%60;
-      return `${h}h ${m}m ${sec}s`;
-    }
-
-    function readLastOrder(){ try { return JSON.parse(localStorage.getItem(PS.lastOrderKey) || "null"); } catch { return null; } }
-    function writeLastOrder(order){ localStorage.setItem(PS.lastOrderKey, JSON.stringify(order)); }
-
-    function buildSummary(order){
-      const lines = [];
-      lines.push(`Premium Supply — Order Summary`);
-      lines.push(`Order ID: ${order.orderId}`);
-      lines.push(`Created: ${fmtDateTime(order.createdAt)}`);
-      lines.push(`Pay by: ${fmtDateTime(order.payByAt)} (24 hours)`);
-      lines.push(`Account closure time: ${fmtDateTime(order.closeAt)} (48 hours)`);
-      lines.push("");
-      lines.push("Items:");
-      order.items.forEach(i => lines.push(`- ${i.qty} x ${i.name} @ ${money(i.price)} (${i.category || ""})`));
-      lines.push("");
-      lines.push(`Subtotal: ${money(order.subtotal)}`);
-      lines.push(`Shipping: ${money(order.shipping)}`);
-      lines.push(`Total: ${money(order.total)}`);
-      lines.push("");
-      lines.push(`Payment: Interac e‑Transfer to ${PS.paymentEmail}`);
-      lines.push(`Reference/Message: ${order.orderId}`);
-      return lines.join("\n");
-    }
-
-    function renderReview(){
-      const cart = readCart();
-      const totals = calc(cart);
-
-      updateBadges();
-
-      $("#subtotal").textContent = money(totals.subtotal);
-      $("#shipping").textContent = money(totals.shipping);
-      $("#total").textContent = money(totals.total);
-
-      const minOk = totals.subtotal >= PS.minOrder;
-      $("#minAlert").style.display = (!totals.items.length || minOk) ? "none" : "block";
-      $("#placeOrderBtn").disabled = (!totals.items.length || !minOk);
-      $("#placeOrderBtn").style.opacity = (!totals.items.length || !minOk) ? ".6" : "1";
-      $("#placeOrderBtn").style.cursor = (!totals.items.length || !minOk) ? "not-allowed" : "pointer";
-
-      if(!totals.items.length){
-        $("#reviewItems").innerHTML = `<p class="muted">Your cart is empty. <a href="products.html" style="text-decoration:underline; font-weight:950;">Shop products</a>.</p>`;
-        return;
-      }
-
-      $("#reviewItems").innerHTML = totals.items.map(i => `
-        <div class="cart-item" style="grid-template-columns: 60px 1fr;">
-          <div class="cart-thumb" style="width:60px;height:60px;">
-            ${i.image ? `<img src="${i.image}" alt="${i.name}">` : ``}
-          </div>
-          <div class="cart-meta">
-            <h3 style="margin:0; font-size:.98rem;">${i.name}</h3>
-            <div class="meta">${i.category || ""} • ${i.tier || ""} • ${i.type || ""}</div>
-            <div class="meta"><strong>${i.qty}</strong> × ${money(Number(i.price||0))}</div>
-          </div>
-        </div>
-      `).join("");
-    }
-
-    let countdownTimer = null;
-
-    function showConfirmation(order){
-      if(countdownTimer) clearInterval(countdownTimer);
-
-      $("#confirmWrap").style.display = "block";
-      $("#orderIdText").textContent = order.orderId;
-      $("#payByText").textContent = fmtDateTime(order.payByAt);
-      $("#payEmail").textContent = PS.paymentEmail;
-      $("#payRef").textContent = order.orderId;
-
-      const summary = buildSummary(order);
-      $("#summaryBox").textContent = summary;
-
-      function tick(){
-        $("#timeLeftText").textContent = fmtCountdown(order.payByAt - Date.now());
-      }
-      tick();
-      countdownTimer = setInterval(tick, 1000);
-
-      $("#copySummaryBtn").onclick = async () => {
-        try{
-          await navigator.clipboard.writeText(summary);
-          $("#copySummaryBtn").textContent = "Copied ✓";
-          setTimeout(()=> $("#copySummaryBtn").textContent="Copy summary", 1200);
-        }catch{
-          alert("Copy failed on this browser. Please select and copy manually.");
-        }
-      };
-
-      $("#downloadSummaryBtn").onclick = () => {
-        const blob = new Blob([summary], { type:"text/plain;charset=utf-8" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `${order.orderId}.txt`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
-      };
-
-      $("#restoreCartBtn").onclick = () => {
-        if(order.cartSnapshot){
-          writeCart(order.cartSnapshot);
-          location.href = "cart.html";
-        }
-      };
-    }
-
-    $("#placeOrderBtn").addEventListener("click", () => {
-      const cart = readCart();
-      const totals = calc(cart);
-
-      if(!totals.items.length){
-        alert("Your cart is empty.");
-        return;
-      }
-      if(totals.subtotal < PS.minOrder){
-        alert("Minimum order is $75 CAD before shipping.");
-        return;
-      }
-
-      const createdAt = Date.now();
-      const order = {
-        orderId: makeOrderId(),
-        createdAt,
-        payByAt: createdAt + 24 * 60 * 60 * 1000,
-        closeAt: createdAt + 48 * 60 * 60 * 1000,
-        items: totals.items,
-        subtotal: totals.subtotal,
-        shipping: totals.shipping,
-        total: totals.total,
-        cartSnapshot: cart
-      };
-
-      writeLastOrder(order);
-
-      // Typical checkout behavior: clear cart after placing order
-      writeCart({});
-      renderReview();
-      showConfirmation(order);
-      window.scrollTo({ top: 0, behavior:"smooth" });
-    });
-
-    // init
-    renderReview();
-
-    const last = readLastOrder();
-    if(last && last.orderId){
-      showConfirmation(last);
-    }
-  </script>
+  <script defer src="app.js"></script>
 </body>
 </html>
