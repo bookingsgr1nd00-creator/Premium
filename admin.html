@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Premium Supply — Admin (Offline Tool)</title>
+  <style>
+    :root{
+      --bg:#05020c;
+      --card: rgba(255,255,255,.06);
+      --border: rgba(255,255,255,.14);
+      --text:#f6f7fb;
+      --muted: rgba(246,247,251,.70);
+      --shadow: 0 18px 60px rgba(0,0,0,.45);
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 900px at 25% 15%, rgba(106,45,255,.26), transparent 60%),
+        radial-gradient(900px 700px at 82% 72%, rgba(217,181,107,.14), transparent 60%),
+        linear-gradient(180deg, #04010a, #0a0314 40%, #04010a);
+      min-height:100vh;
+      padding:18px;
+    }
+    .wrap{ max-width: 1200px; margin: 0 auto; }
+    .top{
+      display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+      padding:14px; border-radius:18px;
+      background: var(--card); border: 1px solid var(--border);
+      box-shadow: var(--shadow); backdrop-filter: blur(16px);
+    }
+    .badge{
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      font-weight:900;
+      font-size:.9rem;
+    }
+    .hint{ color: var(--muted); font-weight:700; }
+    .btn{
+      height:44px; padding:0 14px; border-radius:14px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      font-weight:900; cursor:pointer;
+      display:inline-flex; align-items:center; justify-content:center; gap:10px;
+    }
+    .btn--solid{
+      background: linear-gradient(135deg, rgba(217,181,107,1), rgba(110,231,183,1));
+      color:#0a0512;
+    }
+    .btn:disabled{ opacity:.6; cursor:not-allowed; }
+    input[type="file"]{ display:none; }
+    .grid{ display:grid; grid-template-columns: 1fr; gap:14px; margin-top:14px; }
+    @media (min-width: 980px){ .grid{ grid-template-columns: 420px 1fr; align-items:start; } }
+    .card{
+      padding:14px; border-radius:18px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+    .card h2{ margin:0 0 10px; font-size:1.05rem; }
+    .search{ display:flex; gap:10px; margin-bottom:10px; }
+    .search input{
+      flex:1; height:44px; border-radius:14px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.25); color: var(--text);
+      padding:0 12px; font-weight:800;
+    }
+    .list{ display:grid; gap:8px; max-height: 60vh; overflow:auto; padding-right:4px; }
+    .row{
+      display:flex; justify-content:space-between; gap:10px;
+      padding:12px; border-radius:16px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      cursor:pointer;
+    }
+    .row:hover{ background: rgba(255,255,255,.08); }
+    .row.active{ outline: 2px solid rgba(106,45,255,.65); }
+    .row strong{ font-weight:950; }
+    .meta{ color: var(--muted); font-weight:800; font-size:.88rem; margin-top:2px; }
+    .form{ display:grid; gap:12px; }
+    .fields{ display:grid; grid-template-columns: 1fr; gap:10px; }
+    @media (min-width: 760px){ .fields{ grid-template-columns: 1fr 1fr; } }
+    label{ display:grid; gap:6px; font-weight:900; }
+    input, select{
+      height:44px; border-radius:14px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.25);
+      color: var(--text);
+      padding:0 12px; font-weight:800; outline:none;
+    }
+    .small{ font-size:.86rem; color: var(--muted); font-weight:800; }
+    .hr{ height:1px; background:rgba(255,255,255,.10); margin:12px 0; }
+    .variants{ display:grid; gap:8px; }
+    .vrow{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr auto;
+      gap:10px; align-items:center;
+    }
+    .vrow input{ height:40px; border-radius:12px; }
+    .danger{
+      color: #ffd1dc;
+      background: rgba(251,113,133,.12);
+      border: 1px solid rgba(251,113,133,.30);
+      padding:10px 12px;
+      border-radius:16px;
+      font-weight:900;
+    }
+    .ok{
+      color: #c7ffe9;
+      background: rgba(110,231,183,.12);
+      border: 1px solid rgba(110,231,183,.30);
+      padding:10px 12px;
+      border-radius:16px;
+      font-weight:900;
+    }
+    .img-preview{
+      width:100%;
+      max-width: 280px;
+      aspect-ratio: 1/1;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.12);
+      overflow:hidden;
+      background: rgba(0,0,0,.25);
+      display:grid;
+      place-items:center;
+    }
+    .img-preview img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .two{ display:grid; grid-template-columns: 1fr; gap:10px; }
+    @media (min-width: 760px){ .two{ grid-template-columns: 1fr 1fr; } }
+    code{
+      background: rgba(0,0,0,.30);
+      border:1px solid rgba(255,255,255,.14);
+      padding:2px 6px;
+      border-radius:10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <div class="badge">Premium Supply Admin</div>
+        <div style="font-weight:950; font-size:1.05rem; margin-top:8px;">Offline content manager (no accounts needed during tests)</div>
+        <div class="hint">Load <code>catalog.json</code> + <code>site-config.json</code>, edit, then download updated files.</div>
+      </div>
+
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <label class="btn" for="loadCatalog">Load catalog.json</label>
+        <input id="loadCatalog" type="file" accept="application/json">
+
+        <label class="btn" for="loadConfig">Load site-config.json</label>
+        <input id="loadConfig" type="file" accept="application/json">
+
+        <button class="btn btn--solid" id="downloadCatalog" disabled>Download catalog.json</button>
+        <button class="btn btn--solid" id="downloadConfig" disabled>Download site-config.json</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <aside class="card">
+        <h2>Products</h2>
+        <div class="search">
+          <input id="filter" type="search" placeholder="Search products…" autocomplete="off">
+          <button class="btn" id="addProduct" type="button">+ Add</button>
+        </div>
+        <div class="list" id="productList"></div>
+
+        <div class="hr"></div>
+        <div class="small">
+          Images live in <code>assets/products/</code>. Use “Attach image” to rename & download the correct file, then upload it to your server/repo.
+        </div>
+      </aside>
+
+      <section class="card">
+        <h2>Editor</h2>
+
+        <div id="status" class="danger" style="margin-bottom:10px;">Load your JSON files to begin.</div>
+
+        <div class="form" id="editor" style="display:none;">
+          <div class="fields">
+            <label>Product Name <input id="p_name" type="text"></label>
+            <label>Category <select id="p_category"></select></label>
+            <label>Type (optional) <input id="p_type" type="text" placeholder="Indica / Sativa / Hybrid / —"></label>
+            <label>Tier (optional) <input id="p_tier" type="text" placeholder="Premium / Top Shelf"></label>
+            <label>Rating (0–5) <input id="p_rating" type="number" min="0" max="5" step="0.1"></label>
+            <label>Reviews count <input id="p_reviews" type="number" min="0" step="1"></label>
+            <label>
+              Image path
+              <input id="p_image" type="text" placeholder="assets/products/your-file.webp">
+              <div class="small">Keep images square when possible.</div>
+            </label>
+            <label>Badges (comma separated) <input id="p_badges" type="text" placeholder="Sale, New"></label>
+          </div>
+
+          <div class="two">
+            <div>
+              <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                <button class="btn" id="standardWeights" type="button">Load standard weights</button>
+                <button class="btn" id="addVariant" type="button">+ Variant</button>
+              </div>
+              <div class="small" style="margin-top:6px;">Standard weights: 3.5g, 7g, 1 Oz, 1½ Oz, ¼ pound, ½ pound, 1 pound</div>
+              <div class="variants" id="variants" style="margin-top:10px;"></div>
+            </div>
+
+            <div>
+              <div class="img-preview" id="imgPreview"><div class="small">No preview</div></div>
+              <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
+                <label class="btn" for="attachImage">Attach image</label>
+                <input id="attachImage" type="file" accept="image/*">
+                <button class="btn btn--solid" id="downloadImage" type="button" disabled>Download renamed image</button>
+              </div>
+              <div class="small" style="margin-top:8px;">
+                This tool does not upload automatically. It prepares the file so your employee can upload it to <code>assets/products/</code>.
+              </div>
+            </div>
+          </div>
+
+          <div class="hr"></div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn btn--solid" id="saveProduct" type="button">Save product</button>
+            <button class="btn" id="deleteProduct" type="button">Delete product</button>
+          </div>
+
+          <div class="hr"></div>
+
+          <h2 style="margin:0;">Store settings</h2>
+          <div class="fields">
+            <label>Interac payment email <input id="cfg_email" type="email"></label>
+            <label>Minimum order (CAD) <input id="cfg_min" type="number" min="0" step="1"></label>
+            <label>Free shipping over (CAD) <input id="cfg_free" type="number" min="0" step="1"></label>
+            <label>Flat shipping (CAD) <input id="cfg_ship" type="number" min="0" step="1"></label>
+            <label>Promo title <input id="cfg_promo_title" type="text"></label>
+            <label>Promo message <input id="cfg_promo_msg" type="text"></label>
+          </div>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
+            <button class="btn btn--solid" id="saveConfig" type="button">Save settings</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+<script>
+  const STANDARD_WEIGHTS = ["3.5g","7g","1 Oz","1½ Oz","¼ pound","½ pound","1 pound"];
+
+  let catalog = null;
+  let config = null;
+  let selectedIndex = -1;
+
+  let pendingImage = null; // {file, filename, objectURL}
+
+  const $ = (id) => document.getElementById(id);
+
+  function setStatus(type, text){
+    const el = $("status");
+    el.className = type === "ok" ? "ok" : "danger";
+    el.textContent = text;
+  }
+
+  function downloadJSON(filename, data){
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type:"application/json;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function slugify(str){
+    return String(str||"")
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g,"-")
+      .replace(/(^-|-$)/g,"");
+  }
+
+  function uniqueIdFromName(name){
+    const base = "ps-" + slugify(name);
+    let id = base;
+    let n = 2;
+    const ids = new Set((catalog||[]).map(p => p.id));
+    while(ids.has(id)){
+      id = `${base}-${n++}`;
+    }
+    return id;
+  }
+
+  function renderList(){
+    const list = $("productList");
+    const f = ($("filter").value||"").toLowerCase();
+    const items = (catalog||[]).map((p, idx) => ({p, idx}))
+      .filter(x => !f || (x.p.name||"").toLowerCase().includes(f) || (x.p.category||"").toLowerCase().includes(f));
+
+    list.innerHTML = items.map(({p, idx}) => {
+      const active = idx === selectedIndex ? "active" : "";
+      return `
+        <div class="row ${active}" data-idx="${idx}">
+          <div>
+            <strong>${p.name || "(Unnamed)"}</strong>
+            <div class="meta">${p.category || "Category"} • ${p.id || ""}</div>
+          </div>
+          <div class="meta">${(p.variants?.length||0)} sizes</div>
+        </div>
+      `;
+    }).join("");
+
+    list.querySelectorAll(".row").forEach(r => {
+      r.addEventListener("click", () => {
+        selectedIndex = Number(r.dataset.idx);
+        loadToForm();
+        renderList();
+      });
+    });
+  }
+
+  function fillCategoryOptions(){
+    const sel = $("p_category");
+    const cats = (config?.categories && config.categories.length) ? config.categories : ["Flower","Concentrates","Edibles","Vapes","CBD","Male Enhancers"];
+    sel.innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join("");
+  }
+
+  function variantRowsHTML(variants){
+    return (variants||[]).map((v, i) => `
+      <div class="vrow" data-i="${i}">
+        <input class="v_label" type="text" value="${v.label || ""}" placeholder="Label (e.g. 3.5g)">
+        <input class="v_price" type="number" min="0" step="0.01" value="${Number(v.price||0)}" placeholder="Price">
+        <button class="btn v_del" type="button">✕</button>
+      </div>
+    `).join("");
+  }
+
+  function renderVariants(){
+    const p = catalog[selectedIndex];
+    if(!p.variants) p.variants = [];
+    $("variants").innerHTML = variantRowsHTML(p.variants);
+
+    $("variants").querySelectorAll(".vrow").forEach(row => {
+      row.querySelector(".v_del").addEventListener("click", () => {
+        const i = Number(row.dataset.i);
+        p.variants.splice(i,1);
+        renderVariants();
+      });
+      row.querySelector(".v_label").addEventListener("input", (e) => {
+        const i = Number(row.dataset.i);
+        p.variants[i].label = e.target.value;
+      });
+      row.querySelector(".v_price").addEventListener("input", (e) => {
+        const i = Number(row.dataset.i);
+        p.variants[i].price = Number(e.target.value||0);
+      });
+    });
+  }
+
+  function loadToForm(){
+    if(selectedIndex < 0) return;
+    const p = catalog[selectedIndex];
+
+    $("editor").style.display = "block";
+    $("downloadCatalog").disabled = false;
+    $("downloadConfig").disabled = false;
+
+    $("p_name").value = p.name || "";
+    $("p_category").value = p.category || "Flower";
+    $("p_type").value = p.type || "";
+    $("p_tier").value = p.tier || "";
+    $("p_rating").value = Number(p.rating || 0);
+    $("p_reviews").value = Number(p.reviews || 0);
+    $("p_image").value = p.image || "";
+    $("p_badges").value = (p.badges || []).join(", ");
+
+    const prev = $("imgPreview");
+    prev.innerHTML = p.image ? `<img src="${p.image}" alt="preview" onerror="this.remove();">` : `<div class="small">No preview</div>`;
+
+    renderVariants();
+
+    $("cfg_email").value = config?.store?.paymentEmail || "";
+    $("cfg_min").value = Number(config?.store?.minOrder || 75);
+    $("cfg_free").value = Number(config?.store?.freeShippingOver || 250);
+    $("cfg_ship").value = Number(config?.store?.flatShipping || 15);
+    $("cfg_promo_title").value = config?.promo?.title || "";
+    $("cfg_promo_msg").value = config?.promo?.message || "";
+
+    setStatus("ok", "Editing loaded. Save + download JSON to publish.");
+  }
+
+  function saveFromForm(){
+    if(selectedIndex < 0) return;
+    const p = catalog[selectedIndex];
+
+    p.name = $("p_name").value.trim();
+    p.category = $("p_category").value;
+    p.type = $("p_type").value.trim() || "—";
+    p.tier = $("p_tier").value.trim() || "Premium";
+    p.rating = Number($("p_rating").value || 0);
+    p.reviews = Number($("p_reviews").value || 0);
+    p.image = $("p_image").value.trim();
+    p.badges = ($("p_badges").value || "").split(",").map(s => s.trim()).filter(Boolean);
+
+    if(!p.id || p.id === "temp"){
+      p.id = uniqueIdFromName(p.name);
+    }
+    if(!p.image){
+      p.image = `assets/products/${p.id}.webp`;
+      $("p_image").value = p.image;
+    }
+
+    renderList();
+    setStatus("ok", "Product saved locally. Download catalog.json to publish.");
+  }
+
+  function saveConfig(){
+    config.store = config.store || {};
+    config.promo = config.promo || {};
+    config.store.paymentEmail = $("cfg_email").value.trim();
+    config.store.minOrder = Number($("cfg_min").value || 75);
+    config.store.freeShippingOver = Number($("cfg_free").value || 250);
+    config.store.flatShipping = Number($("cfg_ship").value || 15);
+    config.promo.title = $("cfg_promo_title").value.trim();
+    config.promo.message = $("cfg_promo_msg").value.trim();
+    setStatus("ok", "Settings updated locally. Download site-config.json to publish.");
+  }
+
+  function standardWeights(){
+    if(selectedIndex < 0) return;
+    const p = catalog[selectedIndex];
+    p.variants = STANDARD_WEIGHTS.map(label => {
+      const existing = (p.variants||[]).find(v => v.label === label);
+      return { label, price: Number(existing?.price || 0) };
+    });
+    renderVariants();
+    setStatus("ok", "Standard weights loaded. Fill prices, then Save product.");
+  }
+
+  function addVariant(){
+    if(selectedIndex < 0) return;
+    const p = catalog[selectedIndex];
+    p.variants = p.variants || [];
+    p.variants.push({ label:"", price:0 });
+    renderVariants();
+  }
+
+  function addProduct(){
+    const p = {
+      id: "temp",
+      name: "New Product",
+      category: (config?.categories?.[0] || "Flower"),
+      type: "—",
+      tier: "Premium",
+      rating: 4.7,
+      reviews: 0,
+      badges: [],
+      image: "",
+      variants: STANDARD_WEIGHTS.map(label => ({ label, price: 0 }))
+    };
+    catalog.unshift(p);
+    selectedIndex = 0;
+    renderList();
+    loadToForm();
+  }
+
+  function deleteProduct(){
+    if(selectedIndex < 0) return;
+    const p = catalog[selectedIndex];
+    if(!confirm(`Delete "${p.name}"?`)) return;
+    catalog.splice(selectedIndex, 1);
+    selectedIndex = Math.min(selectedIndex, catalog.length - 1);
+    renderList();
+    if(selectedIndex >= 0) loadToForm();
+    else{
+      $("editor").style.display = "none";
+      setStatus("ok", "Deleted. Select another product.");
+    }
+  }
+
+  function attachImage(file){
+    if(selectedIndex < 0) return;
+    const p = catalog[selectedIndex];
+
+    const id = (p.id && p.id !== "temp") ? p.id : uniqueIdFromName(p.name);
+    const ext = (file.name.split(".").pop() || "png").toLowerCase();
+    const safeExt = ["png","jpg","jpeg","webp"].includes(ext) ? ext : "png";
+
+    const filename = `${id}.${safeExt}`;
+    const path = `assets/products/${filename}`;
+
+    if(pendingImage?.objectURL) URL.revokeObjectURL(pendingImage.objectURL);
+    const objectURL = URL.createObjectURL(file);
+
+    pendingImage = { file, filename, objectURL };
+
+    $("imgPreview").innerHTML = `<img src="${objectURL}" alt="preview">`;
+    $("downloadImage").disabled = false;
+
+    p.image = path;
+    $("p_image").value = path;
+
+    setStatus("ok", `Image attached. Download renamed image, then upload to assets/products/.`);
+  }
+
+  function downloadRenamedImage(){
+    if(!pendingImage) return;
+    const a = document.createElement("a");
+    a.href = pendingImage.objectURL;
+    a.download = pendingImage.filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+
+  function loadJSONFromFileInput(inputEl, callback){
+    const file = inputEl.files && inputEl.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try{
+        const data = JSON.parse(reader.result);
+        callback(data);
+      }catch{
+        setStatus("danger", "Invalid JSON file.");
+      }
+      inputEl.value = "";
+    };
+    reader.readAsText(file);
+  }
+
+  $("filter").addEventListener("input", renderList);
+  $("addProduct").addEventListener("click", addProduct);
+  $("saveProduct").addEventListener("click", saveFromForm);
+  $("deleteProduct").addEventListener("click", deleteProduct);
+  $("standardWeights").addEventListener("click", standardWeights);
+  $("addVariant").addEventListener("click", addVariant);
+  $("saveConfig").addEventListener("click", saveConfig);
+
+  $("downloadCatalog").addEventListener("click", () => downloadJSON("catalog.json", catalog));
+  $("downloadConfig").addEventListener("click", () => downloadJSON("site-config.json", config));
+
+  $("loadCatalog").addEventListener("change", () => {
+    loadJSONFromFileInput($("loadCatalog"), (data) => {
+      catalog = Array.isArray(data) ? data : [];
+      if(!config){
+        config = { categories:["Flower","Concentrates","Edibles","Vapes","CBD","Male Enhancers"], store:{}, promo:{} };
+      }
+      fillCategoryOptions();
+      renderList();
+      selectedIndex = catalog.length ? 0 : -1;
+      if(selectedIndex >= 0) loadToForm();
+      $("downloadCatalog").disabled = false;
+      setStatus("ok", "catalog.json loaded.");
+    });
+  });
+
+  $("loadConfig").addEventListener("change", () => {
+    loadJSONFromFileInput($("loadConfig"), (data) => {
+      config = data || {};
+      if(!config.categories) config.categories = ["Flower","Concentrates","Edibles","Vapes","CBD","Male Enhancers"];
+      if(!config.store) config.store = {};
+      if(!config.promo) config.promo = {};
+      fillCategoryOptions();
+      if(catalog){
+        renderList();
+        if(selectedIndex >= 0) loadToForm();
+      }
+      $("downloadConfig").disabled = false;
+      setStatus("ok", "site-config.json loaded.");
+    });
+  });
+
+  $("attachImage").addEventListener("change", () => {
+    const file = $("attachImage").files && $("attachImage").files[0];
+    if(!file) return;
+    attachImage(file);
+    $("attachImage").value = "";
+  });
+
+  $("downloadImage").addEventListener("click", downloadRenamedImage);
+</script>
+</body>
+</html>
