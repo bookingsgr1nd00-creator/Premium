@@ -1,8 +1,3 @@
-/* =========================
-   Premium Supply — Space Neon Store
-   styles.css (FULL)
-========================= */
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Space+Grotesk:wght@500;700&display=swap');
 
 :root{
@@ -21,7 +16,6 @@
   --danger:#fb7185;
 
   --shadow:0 18px 60px rgba(0,0,0,.45);
-  --r-lg:18px;
   --r-xl:22px;
 
   --container:1120px;
@@ -40,7 +34,6 @@ body{
   overflow-x:hidden;
 }
 
-/* Animated stars */
 body::before,
 body::after{
   content:"";
@@ -65,6 +58,11 @@ body::after{
 @keyframes starDrift{
   from{ transform:translate3d(0,0,0); }
   to{ transform:translate3d(-160px, 160px, 0); }
+}
+
+@media (prefers-reduced-motion: reduce){
+  body::before, body::after{ animation:none !important; }
+  .brand__logo-img{ animation:none !important; }
 }
 
 a{ color:inherit; text-decoration:none; }
@@ -277,7 +275,7 @@ img{ max-width:100%; display:block; }
 }
 .cat-link:hover{ background:rgba(255,255,255,.10); }
 
-/* Search modal (checkbox controlled) */
+/* Search modal */
 .search-modal{
   position:fixed;
   inset:0;
@@ -335,9 +333,10 @@ img{ max-width:100%; display:block; }
 }
 .search-box input::placeholder{ color:rgba(246,247,251,.55); }
 
-/* Hero */
+/* Layout */
 .section{ padding:18px 0 34px; }
 
+/* Hero */
 .hero{
   border-radius:24px;
   overflow:hidden;
@@ -348,20 +347,6 @@ img{ max-width:100%; display:block; }
     linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
   box-shadow: var(--shadow);
   position:relative;
-}
-.hero::after{
-  content:"";
-  position:absolute;
-  right:-60px;
-  top:-60px;
-  width:320px;
-  height:320px;
-  background-image: url("assets/brand/logo-planet.png");
-  background-size: cover;
-  background-position:center;
-  opacity:.22;
-  filter: saturate(1.2);
-  transform: rotate(-8deg);
 }
 .hero__inner{
   position:relative;
@@ -398,16 +383,10 @@ img{ max-width:100%; display:block; }
   font-weight:900;
   font-size:.86rem;
 }
-.pill--gold{
-  background:rgba(217,181,107,.16);
-  border-color:rgba(217,181,107,.34);
-}
-.pill--mint{
-  background:rgba(110,231,183,.12);
-  border-color:rgba(110,231,183,.28);
-}
+.pill--gold{ background:rgba(217,181,107,.16); border-color:rgba(217,181,107,.34); }
+.pill--mint{ background:rgba(110,231,183,.12); border-color:rgba(110,231,183,.28); }
 
-/* Category chips row */
+/* Category pills row */
 .cat-pills{
   display:flex;
   gap:10px;
@@ -445,7 +424,7 @@ img{ max-width:100%; display:block; }
   text-align:right;
 }
 
-/* Products grid */
+/* Grid */
 .products-grid{
   display:grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -477,7 +456,6 @@ img{ max-width:100%; display:block; }
   display:grid;
   gap:8px;
 }
-
 .sale-bubble{
   position:absolute;
   top:12px;
@@ -491,7 +469,7 @@ img{ max-width:100%; display:block; }
   backdrop-filter: blur(10px);
 }
 
-/* Strict square frame = fixes image overflow */
+/* FIXED frames everywhere */
 .media-square{
   position:relative;
   width:100%;
@@ -508,6 +486,7 @@ img{ max-width:100%; display:block; }
   width:100%;
   height:100%;
   object-fit:cover;
+  display:block;
 }
 .media-placeholder{
   background:
@@ -572,6 +551,42 @@ img{ max-width:100%; display:block; }
   letter-spacing:.2px;
 }
 
+/* Variant selector */
+.variant{
+  display:grid;
+  gap:8px;
+  padding:10px 12px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.14);
+  background: rgba(0,0,0,.20);
+  text-align:center;
+  align-content:center;
+  justify-items:center;
+}
+.variant span{
+  font-weight:900;
+  color:rgba(255,255,255,.86);
+}
+.variant-select{
+  width:100%;
+  height:42px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.16);
+  background: rgba(0,0,0,.25);
+  color: var(--text);
+  font-weight:950;
+  padding:0 40px 0 12px;
+  appearance:none;
+  outline:none;
+  cursor:pointer;
+  background-image:
+    linear-gradient(45deg, transparent 50%, rgba(246,247,251,.85) 50%),
+    linear-gradient(135deg, rgba(246,247,251,.85) 50%, transparent 50%);
+  background-position: calc(100% - 18px) 18px, calc(100% - 12px) 18px;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat:no-repeat;
+}
+
 /* Buttons */
 .btn{
   display:inline-flex;
@@ -594,47 +609,21 @@ img{ max-width:100%; display:block; }
 }
 .btn--full{ width:100%; }
 .btn:hover{ filter:brightness(1.03); }
+.btn:disabled{ opacity:.6; cursor:not-allowed; }
 
-/* Quantity */
+/* Buy layout */
 .buy-row{
   display:grid;
+  grid-template-columns:1fr;
   gap:10px;
 }
-.qty{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  padding:10px 12px;
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,.14);
-  background: rgba(0,0,0,.20);
+@media (min-width: 520px){
+  #detailsCard .buy-row{ grid-template-columns: 1fr 1fr; }
 }
-.qty span{ font-weight:900; color:rgba(255,255,255,.86); }
-.qty-stepper{
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-.qty-btn{
-  width:38px;
-  height:38px;
-  border-radius:12px;
-  border:1px solid rgba(255,255,255,.16);
-  background: rgba(255,255,255,.06);
-  color:var(--text);
-  font-weight:950;
-  cursor:pointer;
-}
-.qty-input{
-  width:54px;
-  height:38px;
-  border-radius:12px;
-  border:1px solid rgba(255,255,255,.16);
-  background: rgba(0,0,0,.25);
-  color:var(--text);
-  text-align:center;
-  font-weight:950;
+.product-tile .buy-row .btn,
+#detailsCard .buy-row .btn{
+  min-height:54px;
+  height:100%;
 }
 
 /* Toast */
@@ -673,28 +662,20 @@ img{ max-width:100%; display:block; }
   backdrop-filter: blur(16px);
 }
 .muted{ color:var(--muted); font-weight:800; }
-
 .hr{ height:1px; background:rgba(255,255,255,.10); margin:14px 0; }
 
-/* Product detail layout */
-.product-hero{
-  display:grid;
-  gap:14px;
-}
+/* Product detail */
+.product-hero{ display:grid; gap:14px; }
 @media (min-width: 920px){
   .product-hero{ grid-template-columns: 1fr 1fr; align-items:start; }
   .product-media-sticky{ position:sticky; top:96px; }
 }
 
-/* Cart / Checkout layouts */
-.cart-layout{
-  display:grid;
-  gap:14px;
-}
+/* Cart / Checkout */
+.cart-layout{ display:grid; gap:14px; }
 @media (min-width: 980px){
   .cart-layout{ grid-template-columns: 1.2fr .8fr; align-items:start; }
 }
-
 .cart-item{
   display:grid;
   grid-template-columns: 74px 1fr auto;
@@ -703,7 +684,12 @@ img{ max-width:100%; display:block; }
   padding:10px 0;
   border-bottom:1px solid rgba(255,255,255,.10);
 }
-.cart-thumb{ width:74px; height:74px; border-radius:16px; overflow:hidden; border:1px solid rgba(255,255,255,.12); }
+.cart-thumb{
+  width:74px; height:74px;
+  border-radius:16px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.12);
+}
 .cart-thumb img{ width:100%; height:100%; object-fit:cover; }
 .cart-meta h3{ margin:0; font-weight:950; }
 .cart-meta .meta{ color:var(--muted); font-weight:850; font-size:.92rem; margin-top:2px; }
@@ -739,17 +725,9 @@ img{ max-width:100%; display:block; }
 }
 
 /* Promo modal */
-.promo-modal{
-  position:fixed;
-  inset:0;
-  z-index:95;
-  display:none;
-}
+.promo-modal{ position:fixed; inset:0; z-index:95; display:none; }
 .promo-modal--show{ display:block; }
-.promo-modal__overlay{
-  position:absolute; inset:0;
-  background:rgba(0,0,0,.70);
-}
+.promo-modal__overlay{ position:absolute; inset:0; background:rgba(0,0,0,.70); }
 .promo-modal__panel{
   position:absolute;
   left:50%;
@@ -766,215 +744,9 @@ img{ max-width:100%; display:block; }
   box-shadow: var(--shadow);
   backdrop-filter: blur(18px);
 }
-.promo-head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-}
-.promo-title{
-  margin:0;
-  font-family:"Space Grotesk", Inter, sans-serif;
-  font-weight:950;
-}
-.promo-actions{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-top:12px;
-}
+.promo-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.promo-title{ margin:0; font-family:"Space Grotesk", Inter, sans-serif; font-weight:950; }
+.promo-actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
 
-/* HARD KILL any bubble/notes UI (if older code existed) */
+/* Kill any old “bubble” UI */
 .tag-stack, .tagchip, .bubble, .note-bubble { display:none !important; }
-/* =========================
-   Dynamic qty + buy layout
-   (prevents overflow, adapts to card width)
-========================= */
-
-/* Make the buy section responsive: row when possible, stack when needed */
-.buy-row{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-  align-items:stretch;
-}
-
-/* Quantity block grows, but can wrap */
-.buy-row .qty{
-  flex: 1 1 210px;     /* grows, but tries to stay wide */
-  min-width: 190px;    /* prevents ugly squish */
-}
-
-/* Buy button becomes a “column” next to qty, but can wrap */
-.buy-row > .btn{
-  flex: 1 1 140px;
-  min-width: 140px;
-
-  /* stretch to match qty height when side-by-side */
-  height: auto;
-  min-height: 46px;
-}
-
-/* On very small screens: stack both full width */
-@media (max-width: 420px){
-  .buy-row .qty,
-  .buy-row > .btn{
-    flex: 1 1 100%;
-    min-width: 100%;
-  }
-}
-
-/* Qty bar: allow wrap so text never forces overflow */
-.qty{
-  flex-wrap:wrap;
-  justify-content:space-between;
-  align-items:center;
-}
-
-/* Let label shrink nicely */
-.qty span{
-  flex: 1 1 90px;
-}
-
-/* Stepper stays together */
-.qty-stepper{
-  flex: 0 0 auto;
-}
-
-/* Make the number field responsive (not a hard fixed width) */
-.qty-input{
-  width: clamp(46px, 16vw, 58px);
-}
-/* =========================
-   PERFECT CENTERING (Product cards + Product page)
-   Does NOT affect cart rows
-========================= */
-
-/* Buy area: responsive + clean alignment */
-.product-tile .buy-row,
-#detailsCard .buy-row{
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
-  align-items: stretch;
-}
-
-/* When there is room, qty + buy sit side-by-side */
-@media (min-width: 520px){
-  #detailsCard .buy-row{
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-/* Center the qty content */
-.product-tile .qty,
-#detailsCard .qty{
-  display: grid;
-  gap: 8px;
-  justify-items: center;
-  align-content: center;
-  text-align: center;
-  padding: 12px;
-}
-
-/* Make the "Quantity" text truly centered */
-.product-tile .qty > span,
-#detailsCard .qty > span{
-  width: 100%;
-  text-align: center;
-  justify-self: center;
-}
-
-/* Center the stepper group */
-.product-tile .qty-stepper,
-#detailsCard .qty-stepper{
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-}
-
-/* Make Buy fill its grid cell and look aligned */
-.product-tile .buy-row > .btn,
-#detailsCard .buy-row > .btn{
-  width: 100%;
-  height: 100%;
-  min-height: 54px; /* matches qty block vibe */
-}
-
-/* Slightly balance the stepper sizing so it looks centered & premium */
-.product-tile .qty-btn,
-#detailsCard .qty-btn{
-  width: 42px;
-  height: 42px;
-  border-radius: 14px;
-}
-
-.product-tile .qty-input,
-#detailsCard .qty-input{
-  width: 60px;
-  height: 42px;
-  border-radius: 14px;
-}
-/* =========================
-   Variant (Size) selector UI
-========================= */
-.variant{
-  display:grid;
-  gap:8px;
-  padding:10px 12px;
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,.14);
-  background: rgba(0,0,0,.20);
-  text-align:center;
-  align-content:center;
-  justify-items:center;
-}
-
-.variant span{
-  font-weight:900;
-  color:rgba(255,255,255,.86);
-}
-
-.variant-select{
-  width:100%;
-  height:42px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,.16);
-  background: rgba(0,0,0,.25);
-  color: var(--text);
-  font-weight:950;
-  padding:0 40px 0 12px;
-  appearance:none;
-  outline:none;
-  cursor:pointer;
-
-  /* neon arrow */
-  background-image:
-    linear-gradient(45deg, transparent 50%, rgba(246,247,251,.85) 50%),
-    linear-gradient(135deg, rgba(246,247,251,.85) 50%, transparent 50%);
-  background-position: calc(100% - 18px) 18px, calc(100% - 12px) 18px;
-  background-size: 6px 6px, 6px 6px;
-  background-repeat:no-repeat;
-}
-
-/* Buy row layout (cards + product page) */
-.product-tile .buy-row{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:10px;
-}
-#detailsCard .buy-row{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:10px;
-}
-@media (min-width: 520px){
-  #detailsCard .buy-row{ grid-template-columns: 1fr 1fr; align-items:stretch; }
-}
-.product-tile .buy-row .btn,
-#detailsCard .buy-row .btn{
-  min-height:54px;
-  height:100%;
-}
