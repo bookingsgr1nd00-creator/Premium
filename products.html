@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 
-<body>
+<body data-page="products">
   <input class="toggle" type="checkbox" id="catDrawerToggle">
   <input class="toggle" type="checkbox" id="searchToggle">
 
@@ -39,30 +39,29 @@
     </div>
   </div>
 
-  <!-- Topbar -->
   <div class="topbar">
     <div class="container topbar__inner">
-      <span class="topbar__badge"><i class="fa-solid fa-maple-leaf"></i> 100% Canadian</span>
+      <span class="topbar__badge" id="topbarLeft"><i class="fa-solid fa-maple-leaf"></i> 100% Canadian</span>
       <p class="topbar__text">All Products</p>
       <a class="topbar__link" href="cart.html">Cart</a>
     </div>
   </div>
 
-  <!-- Header -->
   <header class="header">
     <div class="container header__inner">
       <label class="icon-btn" for="catDrawerToggle" aria-label="Open categories"><i class="fa-solid fa-bars"></i></label>
 
       <a class="brand" href="products.html" aria-label="Premium Supply home">
-        <img class="brand__logo-img" src="assets/brand/logo-planet.png" alt="Premium Supply">
+        <img class="brand__logo-img js-brand-logo" src="assets/brand/logo-planet.png" alt="Premium Supply">
         <span class="brand__text">
-          <span class="brand__name">Premium Supply</span>
-          <span class="brand__tag">Space Store</span>
+          <span class="brand__name js-brand-name">Premium Supply</span>
+          <span class="brand__tag js-brand-tag">Space Store</span>
         </span>
       </a>
 
       <div class="header__right">
         <label class="icon-btn" for="searchToggle" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></label>
+
         <a class="icon-btn cart-btn" href="cart.html" aria-label="Cart">
           <i class="fa-solid fa-bag-shopping"></i>
           <span class="cart-badge js-cart-count">0</span>
@@ -71,7 +70,6 @@
     </div>
   </header>
 
-  <!-- Drawer -->
   <label for="catDrawerToggle" class="drawer-backdrop" aria-hidden="true"></label>
   <aside class="drawer" aria-label="Shop by category">
     <div class="drawer__head">
@@ -82,12 +80,7 @@
     <nav class="cat-nav">
       <a class="cat-link" href="products.html">All Products</a>
       <div class="cat-sep"></div>
-      <a class="cat-link" href="category.html?c=Flower">Flower</a>
-      <a class="cat-link" href="category.html?c=Concentrates">Concentrates</a>
-      <a class="cat-link" href="category.html?c=Edibles">Edibles</a>
-      <a class="cat-link" href="category.html?c=Vapes">Vapes</a>
-      <a class="cat-link" href="category.html?c=CBD">CBD</a>
-      <a class="cat-link" href="category.html?c=Male%20Enhancers">Male Enhancers</a>
+      <div id="drawerCats"></div>
       <div class="cat-sep"></div>
       <a class="cat-link" href="cart.html">Cart</a>
       <a class="cat-link" href="checkout.html">Checkout</a>
@@ -96,38 +89,32 @@
 
   <main class="section">
     <div class="container">
+
       <section class="hero">
         <div class="hero__inner">
-          <h1 class="hero__title">Futuristic deals, proudly Canadian.</h1>
-          <p class="hero__sub">Pick your size • Add to cart • Simple checkout</p>
+          <h1 class="hero__title" id="heroTitle">Futuristic deals, proudly Canadian.</h1>
+          <p class="hero__sub" id="heroSubtitle">Pick your size • Add to cart • Simple checkout</p>
 
           <div class="hero__meta">
-            <span class="pill pill--gold"><i class="fa-solid fa-truck-fast"></i> Free shipping $250+</span>
-            <span class="pill pill--mint"><i class="fa-solid fa-circle-check"></i> Min order $75</span>
+            <span class="pill pill--gold"><i class="fa-solid fa-truck-fast"></i> <span id="freeShipText">Free shipping $250+</span></span>
+            <span class="pill pill--mint"><i class="fa-solid fa-circle-check"></i> <span id="minOrderText">Min order $75</span></span>
           </div>
 
-          <div class="cat-pills">
-            <a class="cat-pill" href="category.html?c=Flower">Flower</a>
-            <a class="cat-pill" href="category.html?c=Concentrates">Concentrates</a>
-            <a class="cat-pill" href="category.html?c=Edibles">Edibles</a>
-            <a class="cat-pill" href="category.html?c=Vapes">Vapes</a>
-            <a class="cat-pill" href="category.html?c=CBD">CBD</a>
-            <a class="cat-pill" href="category.html?c=Male%20Enhancers">Male Enhancers</a>
-          </div>
+          <div class="cat-pills" id="quickCats" aria-label="Quick categories"></div>
         </div>
       </section>
 
       <section class="block">
         <div class="block__head">
           <h2 class="block__title">All Products</h2>
-          <p class="block__sub">Tap 🔎 to search • Default: High → Low</p>
+          <p class="block__sub">Pick a size • Buy • Checkout</p>
         </div>
 
-        <div class="products-grid" id="grid"></div>
+        <div class="products-grid" id="grid" aria-live="polite"></div>
       </section>
 
       <footer class="block muted">
-        <p style="margin:0;">© 2026 Premium Supply • Proudly Canadian</p>
+        <p style="margin:0;">© 2026 <span class="js-brand-name">Premium Supply</span> • Proudly Canadian</p>
       </footer>
     </div>
   </main>
@@ -137,208 +124,24 @@
     <a href="cart.html">View cart</a>
   </div>
 
-  <script>
-    const PS = { currency:"CAD", cartKey:"ps_cart_v1" };
-    const $ = (s, el=document)=>el.querySelector(s);
-    const $$ = (s, el=document)=>Array.from(el.querySelectorAll(s));
-    const money = (n)=> new Intl.NumberFormat("en-CA",{style:"currency",currency:PS.currency}).format(n);
+  <!-- Promo popup -->
+  <div class="promo-modal" id="promoModal" aria-hidden="true">
+    <div class="promo-modal__overlay" data-close></div>
+    <div class="promo-modal__panel">
+      <div class="promo-head">
+        <h3 class="promo-title" id="promoTitle">Welcome ✨</h3>
+        <button class="icon-btn" type="button" id="promoClose" aria-label="Close promo"><i class="fa-solid fa-xmark"></i></button>
+      </div>
 
-    function typeClass(type){
-      const t = String(type||"").toLowerCase();
-      if(t.includes("indica")) return "type-strip--indica";
-      if(t.includes("hybrid")) return "type-strip--hybrid";
-      if(t.includes("sativa")) return "type-strip--sativa";
-      return "type-strip--other";
-    }
-    function toStarHTML(rating){
-      const r = Math.round((Number(rating)||0) * 2) / 2;
-      const full = Math.floor(r);
-      const half = (r - full) >= 0.5;
-      let html = "";
-      for(let i=0;i<full;i++) html += '<i class="fa-solid fa-star"></i>';
-      if(half) html += '<i class="fa-solid fa-star-half-stroke"></i>';
-      const empty = 5 - full - (half ? 1 : 0);
-      for(let i=0;i<empty;i++) html += '<i class="fa-regular fa-star"></i>';
-      return html;
-    }
+      <p class="muted" id="promoMsg" style="margin:10px 0 0;">Promo text…</p>
 
-    function readCart(){ try { return JSON.parse(localStorage.getItem(PS.cartKey) || "{}"); } catch { return {}; } }
-    function writeCart(cart){ localStorage.setItem(PS.cartKey, JSON.stringify(cart)); }
-    function cartCount(cart){ return Object.values(cart).reduce((s,i)=> s+(i.qty||0), 0); }
-    function updateBadges(){ $$(".js-cart-count").forEach(el => el.textContent = String(cartCount(readCart()))); }
-    function showToast(msg){
-      $("#toastText").textContent = msg;
-      $("#toast").classList.add("toast--show");
-      clearTimeout(showToast._t);
-      showToast._t = setTimeout(()=> $("#toast").classList.remove("toast--show"), 2200);
-    }
+      <div class="promo-actions">
+        <button class="btn btn--solid" type="button" id="promoContinue">Shop now</button>
+        <button class="btn" type="button" id="promoDontShow">Don’t show again</button>
+      </div>
+    </div>
+  </div>
 
-    async function loadCatalog(){
-      const res = await fetch("catalog.json", { cache:"no-store" });
-      if(!res.ok) throw new Error("catalog.json missing");
-      return await res.json();
-    }
-
-    function variantList(p){
-      if(Array.isArray(p.variants) && p.variants.length) return p.variants;
-      // fallback (if you forgot variants)
-      if(typeof p.price === "number") return [{ label:"3.5g", price: p.price }];
-      return [{ label:"3.5g", price: 0 }];
-    }
-    function defaultVariantLabel(p){
-      const list = variantList(p);
-      const preferred = list.find(v => v.label === "3.5g");
-      return (preferred || list[0]).label;
-    }
-    function variantPrice(p, label){
-      const v = variantList(p).find(x => x.label === label);
-      return Number(v?.price ?? 0);
-    }
-
-    function variantSelectHTML(p){
-      const list = variantList(p);
-      const selected = defaultVariantLabel(p);
-      return `
-        <select class="variant-select js-variant" data-id="${p.id}" aria-label="Select size">
-          ${list.map(v => `<option value="${v.label}" ${v.label===selected ? "selected":""}>${v.label}</option>`).join("")}
-        </select>
-      `;
-    }
-
-    function productCard(p){
-      const sale = (p.badges || []).map(b => String(b).toLowerCase()).includes("sale");
-      const selected = defaultVariantLabel(p);
-      const unitPrice = variantPrice(p, selected);
-
-      const mediaHTML = p.image
-        ? `<div class="media-square"><img src="${p.image}" alt="${p.name}"></div>`
-        : `<div class="media-square"><div class="media-placeholder" aria-hidden="true"></div></div>`;
-
-      return `
-        <article class="product-tile" data-id="${p.id}">
-          <div class="product-tile__media">
-            ${sale ? `<span class="sale-bubble">Sale!</span>` : ""}
-            <a class="product-link" href="product.html?id=${encodeURIComponent(p.id)}" aria-label="View ${p.name}">
-              ${mediaHTML}
-              <div class="type-strip ${typeClass(p.type)}">${p.type || "—"}</div>
-            </a>
-          </div>
-
-          <div class="product-tile__body">
-            <div class="pill-row">
-              <span class="pill pill--tier">${p.tier || "Premium"}</span>
-              <span class="pill pill--tag">${p.category || "Category"}</span>
-            </div>
-
-            <a class="product-title-link" href="product.html?id=${encodeURIComponent(p.id)}">${p.name}</a>
-
-            <div class="rating">
-              <div class="stars">${toStarHTML(p.rating)}</div>
-              <div class="reviews">${Number(p.reviews||0)} reviews</div>
-            </div>
-
-            <div class="price"><span class="js-price" data-id="${p.id}">${money(unitPrice)}</span> <span class="muted">CAD</span></div>
-
-            <div class="buy-row">
-              <div class="variant">
-                <span>Size</span>
-                ${variantSelectHTML(p)}
-              </div>
-
-              <button class="btn btn--solid btn--full js-buy" type="button" data-id="${p.id}">
-                Buy
-              </button>
-            </div>
-          </div>
-        </article>
-      `;
-    }
-
-    (async function init(){
-      updateBadges();
-
-      const catalog = await loadCatalog();
-
-      const q = $("#q");
-      const sort = $("#sort");
-      const clearBtn = $("#clearBtn");
-      const grid = $("#grid");
-
-      function filtered(){
-        const query = (q.value || "").trim().toLowerCase();
-        const mode = sort.value;
-
-        let list = catalog.slice();
-
-        if(query){
-          list = list.filter(p => ([p.name,p.category,p.type,p.tier,p.tag].join(" ").toLowerCase()).includes(query));
-        }
-
-        list.sort((a,b) => {
-          const ap = variantPrice(a, defaultVariantLabel(a));
-          const bp = variantPrice(b, defaultVariantLabel(b));
-          if(mode === "price_asc") return ap - bp;
-          if(mode === "rating_desc") return (b.rating||0) - (a.rating||0);
-          return bp - ap; // price_desc
-        });
-
-        return list;
-      }
-
-      function render(){
-        const list = filtered();
-        if(!list.length){
-          grid.innerHTML = `<div class="card" style="grid-column:1/-1;"><strong>No results.</strong><p class="muted" style="margin:.5rem 0 0;">Try another search.</p></div>`;
-          return;
-        }
-        grid.innerHTML = list.map(productCard).join("");
-      }
-
-      q.addEventListener("input", render);
-      sort.addEventListener("change", render);
-      clearBtn.addEventListener("click", ()=>{ q.value=""; render(); });
-
-      // Update price when size changes
-      document.addEventListener("change", (e) => {
-        const sel = e.target.closest(".js-variant");
-        if(!sel) return;
-        const id = sel.dataset.id;
-        const p = catalog.find(x => x.id === id);
-        if(!p) return;
-        const priceEl = document.querySelector(`.js-price[data-id="${id}"]`);
-        if(!priceEl) return;
-        priceEl.textContent = money(variantPrice(p, sel.value));
-      });
-
-      // Buy adds 1 unit of chosen size (units can be increased in cart)
-      document.addEventListener("click", (e) => {
-        const btn = e.target.closest(".js-buy");
-        if(!btn) return;
-
-        const id = btn.dataset.id;
-        const p = catalog.find(x => x.id === id);
-        if(!p) return;
-
-        const sel = document.querySelector(`.js-variant[data-id="${id}"]`);
-        const size = sel ? sel.value : defaultVariantLabel(p);
-        const unitPrice = variantPrice(p, size);
-
-        const lineKey = `${id}::${size}`;
-        const cart = readCart();
-
-        if(cart[lineKey]) cart[lineKey].qty += 1;
-        else cart[lineKey] = { ...p, variant: size, price: unitPrice, qty: 1 };
-
-        writeCart(cart);
-        updateBadges();
-        showToast(`Added 1 × ${p.name} (${size})`);
-      });
-
-      render();
-    })().catch(err => {
-      console.error(err);
-      $("#grid").innerHTML = `<div class="card" style="grid-column:1/-1;"><strong>Catalog failed to load.</strong><p class="muted" style="margin:.5rem 0 0;">Make sure <b>catalog.json</b> exists and you are viewing via GitHub Pages.</p></div>`;
-    });
-  </script>
+  <script defer src="app.js"></script>
 </body>
 </html>
