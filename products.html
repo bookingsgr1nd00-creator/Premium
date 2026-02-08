@@ -104,11 +104,17 @@
         </div>
       </section>
 
-      <section class="block">
-        <div class="block__head">
-          <h2 class="block__title">All Products</h2>
-          <p class="block__sub">Pick a size • Buy • Checkout</p>
-        </div>
+      <div class="block__head block__head--filters">
+  <div>
+    <h2 class="block__title">All Products</h2>
+    <p class="muted" style="margin:.35rem 0 0;">Pick a quantity • Buy • Checkout</p>
+  </div>
+
+       <div class="category-jump">
+    <label class="sr-only" for="categorySelect">Shop by category</label>
+    <select id="categorySelect" class="category-select" aria-label="Shop by category"></select>
+  </div>
+</div>
 
         <div class="products-grid" id="grid" aria-live="polite"></div>
       </section>
