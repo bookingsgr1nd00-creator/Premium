@@ -2,7 +2,7 @@
   const PS_DEFAULT = {
     brand: { name:"Premium Supply", tagline:"Space Store", logo:"assets/brand/logo-planet.png" },
     store: { currency:"CAD", minOrder:75, freeShippingOver:250, flatShipping:15, paymentEmail:"payments@premiumsupply.ca" },
-    ui: { topbarLeft:"100% Canadian", heroTitle:"Futuristic deals, proudly Canadian.", heroSubtitle:"Pick your size • Add to cart • Simple checkout" },
+    ui: { topbarLeft:"CANADA WIDE DELIVERY", heroTitle:"DAILY OUT OF SPACE DEALS, SPACESHIP FAST DELIVERY🚀", heroSubtitle:"Pick your size • Add to cart • Simple checkout" },
     promo: { enabled:true, showOnce:true, title:"Welcome to Premium Supply ✨", message:"Minimum order $75 • Free shipping $250+", ctaText:"Shop now", dontShowText:"Don’t show again" },
     categories: ["Flower","Concentrates","Edibles","Vapes","CBD","Male Enhancers"]
   };
