@@ -154,62 +154,69 @@
   }
 
   function productCard(p){
-    const sale = (p.badges || []).map(b => String(b).toLowerCase()).includes("sale");
-    const list = variantList(p);
-    const selected = defaultVariantLabel(p);
-    const unitPrice = selected ? variantPrice(p, selected) : 0;
+  const sale = (p.badges || []).map(b => String(b).toLowerCase()).includes("sale");
+  const list = Array.isArray(p.variants) ? p.variants : [];
+  const selected = defaultVariantLabel(p);
+  const unitPrice = selected ? variantPrice(p, selected) : 0;
 
-    const mediaHTML = p.image
-      ? `<div class="media-square">
-           <img src="${p.image}" alt="${p.name}" loading="lazy" decoding="async">
-         </div>`
-      : `<div class="media-square"><div class="media-placeholder" aria-hidden="true"></div></div>`;
+  const mediaHTML = p.image
+    ? `<div class="media-square">
+         <img src="${p.image}" alt="${p.name}" loading="lazy" decoding="async">
+       </div>`
+    : `<div class="media-square"><div class="media-placeholder" aria-hidden="true"></div></div>`;
 
-    const selector = list.length
-      ? `<div class="variant">
-           <span>Size</span>
+  const selector = list.length
+    ? `<div class="qty-block">
+         <div class="qty-block__label">Quantity</div>
+         <div class="qty-block__selectwrap">
            <select class="variant-select js-variant" data-id="${p.id}">
              ${list.map(v => `<option value="${v.label}" ${v.label===selected ? "selected":""}>${v.label}</option>`).join("")}
            </select>
-         </div>`
-      : `<div class="variant"><span>Size</span><span class="muted">Not set</span></div>`;
+         </div>
+       </div>`
+    : `<div class="qty-block">
+         <div class="qty-block__label">Quantity</div>
+         <div class="qty-block__selectwrap">
+           <span class="muted">Not set</span>
+         </div>
+       </div>`;
 
-    return `
-      <article class="product-tile" data-id="${p.id}">
-        <div class="product-tile__media">
-          ${sale ? `<span class="sale-bubble">Sale!</span>` : ""}
-          <a class="product-link" href="product.html?id=${encodeURIComponent(p.id)}" aria-label="View ${p.name}">
-            ${mediaHTML}
-            <div class="type-strip ${typeClass(p.type)}">${p.type || "—"}</div>
-          </a>
+  return `
+    <article class="product-tile" data-id="${p.id}">
+      <div class="product-tile__media">
+        ${sale ? `<span class="sale-bubble">Sale!</span>` : ""}
+        <a class="product-link" href="product.html?id=${encodeURIComponent(p.id)}" aria-label="View ${p.name}">
+          ${mediaHTML}
+          <div class="type-strip ${typeClass(p.type)}">${p.type || "—"}</div>
+        </a>
+      </div>
+
+      <div class="product-tile__body">
+        <div class="pill-row">
+          <span class="pill pill--tier">${p.tier || "Premium"}</span>
+          <span class="pill pill--tag">${p.category || "Category"}</span>
         </div>
 
-        <div class="product-tile__body">
-          <div class="pill-row">
-            <span class="pill pill--tier">${p.tier || "Premium"}</span>
-            <span class="pill pill--tag">${p.category || "Category"}</span>
-          </div>
+        <a class="product-title-link" href="product.html?id=${encodeURIComponent(p.id)}">${p.name}</a>
 
-          <a class="product-title-link" href="product.html?id=${encodeURIComponent(p.id)}">${p.name}</a>
-
-          <div class="rating">
-            <div class="stars">${toStarHTML(p.rating)}</div>
-            <div class="reviews">${Number(p.reviews||0)} reviews</div>
-          </div>
-
-          <div class="price">
-            <span class="js-price" data-id="${p.id}">${money(unitPrice)}</span>
-            <span class="muted">${PS.config.store.currency}</span>
-          </div>
-
-          <div class="buy-row">
-            ${selector}
-            <button class="btn btn--solid btn--full js-buy" type="button" data-id="${p.id}" ${list.length ? "" : "disabled"}>Buy</button>
-          </div>
+        <div class="rating">
+          <div class="stars">${toStarHTML(p.rating)}</div>
+          <div class="reviews">${Number(p.reviews||0)} reviews</div>
         </div>
-      </article>
-    `;
-  }
+
+        <div class="price">
+          <span class="js-price" data-id="${p.id}">${money(unitPrice)}</span>
+          <span class="muted">${PS.config.store.currency}</span>
+        </div>
+
+        <div class="buy-row">
+          ${selector}
+          <button class="btn btn--solid btn--full js-buy" type="button" data-id="${p.id}" ${list.length ? "" : "disabled"}>Buy</button>
+        </div>
+      </div>
+    </article>
+  `;
+}
 
   function bindCatalogInteractions(catalog){
     // Update price on variant change
