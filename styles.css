@@ -825,3 +825,25 @@ img{ max-width:100%; display:block; }
 #detailsCard #buyBtn{
   height: 54px;
 }
+/* =========================
+   FIX: Category overflow
+========================= */
+.cat-pills{
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 10px; /* prevents clipping */
+}
+.cat-pills::-webkit-scrollbar{ display:none; }
+.cat-pill{ white-space: nowrap; }
+
+/* Drawer should scroll if long */
+.drawer{
+  overflow: auto;
+  padding-bottom: 24px;
+}
+.cat-link{
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
