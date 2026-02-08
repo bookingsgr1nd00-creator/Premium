@@ -9,12 +9,12 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 
-<body>
+<body data-page="product">
   <input class="toggle" type="checkbox" id="catDrawerToggle">
 
   <div class="topbar">
     <div class="container topbar__inner">
-      <span class="topbar__badge"><i class="fa-solid fa-maple-leaf"></i> 100% Canadian</span>
+      <span class="topbar__badge" id="topbarLeft"><i class="fa-solid fa-maple-leaf"></i> 100% Canadian</span>
       <p class="topbar__text">Product</p>
       <a class="topbar__link" href="cart.html">Cart</a>
     </div>
@@ -25,10 +25,10 @@
       <label class="icon-btn" for="catDrawerToggle" aria-label="Open categories"><i class="fa-solid fa-bars"></i></label>
 
       <a class="brand" href="products.html">
-        <img class="brand__logo-img" src="assets/brand/logo-planet.png" alt="Premium Supply">
+        <img class="brand__logo-img js-brand-logo" src="assets/brand/logo-planet.png" alt="Premium Supply">
         <span class="brand__text">
-          <span class="brand__name">Premium Supply</span>
-          <span class="brand__tag">Product</span>
+          <span class="brand__name js-brand-name">Premium Supply</span>
+          <span class="brand__tag js-brand-tag">Space Store</span>
         </span>
       </a>
 
@@ -48,15 +48,11 @@
       <div class="drawer__title"><i class="fa-solid fa-list"></i> Shop by category</div>
       <label class="icon-btn" for="catDrawerToggle"><i class="fa-solid fa-xmark"></i></label>
     </div>
+
     <nav class="cat-nav">
       <a class="cat-link" href="products.html">All Products</a>
       <div class="cat-sep"></div>
-      <a class="cat-link" href="category.html?c=Flower">Flower</a>
-      <a class="cat-link" href="category.html?c=Concentrates">Concentrates</a>
-      <a class="cat-link" href="category.html?c=Edibles">Edibles</a>
-      <a class="cat-link" href="category.html?c=Vapes">Vapes</a>
-      <a class="cat-link" href="category.html?c=CBD">CBD</a>
-      <a class="cat-link" href="category.html?c=Male%20Enhancers">Male Enhancers</a>
+      <div id="drawerCats"></div>
       <div class="cat-sep"></div>
       <a class="cat-link" href="cart.html">Cart</a>
       <a class="cat-link" href="checkout.html">Checkout</a>
@@ -86,7 +82,7 @@
           <div class="pill-row" style="margin-top:10px;">
             <span class="pill pill--tier" id="tier">—</span>
             <span class="pill pill--tag" id="category">—</span>
-            <span class="pill" id="typePill"><i class="fa-solid fa-wand-magic-sparkles"></i> <span id="type">—</span></span>
+            <span class="pill"><i class="fa-solid fa-wand-magic-sparkles"></i> <span id="type">—</span></span>
           </div>
 
           <div class="rating" style="margin-top:10px;">
@@ -95,7 +91,7 @@
           </div>
 
           <div class="price" style="font-size:1.15rem; margin-top:6px;">
-            <span id="price">$0.00</span> <span class="muted">CAD</span>
+            <span id="price">$0.00</span> <span class="muted" id="currency">CAD</span>
           </div>
 
           <div class="buy-row" style="margin-top:12px;">
@@ -112,8 +108,8 @@
           <div class="card" style="padding:12px;">
             <strong>Store notes</strong>
             <ul class="muted" style="margin:8px 0 0; padding-left:18px;">
-              <li>Minimum order: <strong>$75 CAD</strong></li>
-              <li>Free shipping: <strong>$250+ CAD</strong></li>
+              <li>Minimum order: <strong id="noteMin">$75 CAD</strong></li>
+              <li>Free shipping: <strong id="noteShip">$250+ CAD</strong></li>
               <li>Proudly Canadian</li>
             </ul>
           </div>
@@ -127,124 +123,6 @@
     <a href="cart.html">View cart</a>
   </div>
 
-  <script>
-    const PS = { currency:"CAD", cartKey:"ps_cart_v1" };
-    const $ = (s, el=document)=>el.querySelector(s);
-    const $$ = (s, el=document)=>Array.from(el.querySelectorAll(s));
-    const money = (n)=> new Intl.NumberFormat("en-CA",{style:"currency",currency:PS.currency}).format(n);
-
-    function getParam(name){ return new URLSearchParams(location.search).get(name); }
-
-    function toStarHTML(rating){
-      const r = Math.round((Number(rating)||0) * 2) / 2;
-      const full = Math.floor(r);
-      const half = (r - full) >= 0.5;
-      let html = "";
-      for(let i=0;i<full;i++) html += '<i class="fa-solid fa-star"></i>';
-      if(half) html += '<i class="fa-solid fa-star-half-stroke"></i>';
-      const empty = 5 - full - (half ? 1 : 0);
-      for(let i=0;i<empty;i++) html += '<i class="fa-regular fa-star"></i>';
-      return html;
-    }
-
-    function readCart(){ try { return JSON.parse(localStorage.getItem(PS.cartKey) || "{}"); } catch { return {}; } }
-    function writeCart(cart){ localStorage.setItem(PS.cartKey, JSON.stringify(cart)); }
-    function cartCount(cart){ return Object.values(cart).reduce((s,i)=> s+(i.qty||0), 0); }
-    function updateBadges(){ $$(".js-cart-count").forEach(el => el.textContent = String(cartCount(readCart()))); }
-    function showToast(msg){
-      $("#toastText").textContent = msg;
-      $("#toast").classList.add("toast--show");
-      clearTimeout(showToast._t);
-      showToast._t = setTimeout(()=> $("#toast").classList.remove("toast--show"), 2200);
-    }
-
-    async function loadCatalog(){
-      const res = await fetch("catalog.json", { cache:"no-store" });
-      if(!res.ok) throw new Error("catalog.json missing");
-      return await res.json();
-    }
-
-    function variantList(p){
-      if(Array.isArray(p.variants) && p.variants.length) return p.variants;
-      if(typeof p.price === "number") return [{ label:"3.5g", price: p.price }];
-      return [{ label:"3.5g", price: 0 }];
-    }
-    function variantPrice(p, label){
-      const v = variantList(p).find(x => x.label === label);
-      return Number(v?.price ?? 0);
-    }
-
-    (async function init(){
-      updateBadges();
-
-      const id = getParam("id");
-      const vParam = getParam("v"); // optional from cart links
-      if(!id){
-        $("#detailsCard").innerHTML = `<strong>Missing product ID.</strong><p class="muted">Open from the product list.</p>`;
-        return;
-      }
-
-      const catalog = await loadCatalog();
-      const p = catalog.find(x => x.id === id);
-
-      if(!p){
-        $("#detailsCard").innerHTML = `<strong>Product not found.</strong><p class="muted">This item may have been removed from catalog.json.</p>`;
-        return;
-      }
-
-      document.title = `Premium Supply — ${p.name}`;
-
-      $("#name").textContent = p.name;
-      $("#tier").textContent = p.tier || "Premium";
-      $("#category").textContent = p.category || "Category";
-      $("#type").textContent = p.type || "—";
-      $("#reviews").textContent = String(Number(p.reviews||0));
-      $("#stars").innerHTML = toStarHTML(p.rating);
-
-      if(p.category){
-        const a = $("#backToCategory");
-        a.style.display = "inline";
-        a.href = `category.html?c=${encodeURIComponent(p.category)}`;
-        a.textContent = `Back to ${p.category}`;
-      }
-
-      if(p.image){
-        $("#mediaSquare").innerHTML = `<img src="${p.image}" alt="${p.name}">`;
-      }
-
-      // Build variant select
-      const list = variantList(p);
-      const select = $("#variantSelect");
-      select.innerHTML = list.map(v => `<option value="${v.label}">${v.label}</option>`).join("");
-
-      // Select preferred variant
-      const defaultLabel = (vParam && list.some(x => x.label === vParam)) ? vParam : (list.find(x => x.label === "3.5g")?.label || list[0].label);
-      select.value = defaultLabel;
-
-      function updatePrice(){
-        $("#price").textContent = money(variantPrice(p, select.value));
-      }
-      updatePrice();
-      select.addEventListener("change", updatePrice);
-
-      $("#buyBtn").addEventListener("click", () => {
-        const size = select.value;
-        const unitPrice = variantPrice(p, size);
-
-        const lineKey = `${p.id}::${size}`;
-        const cart = readCart();
-
-        if(cart[lineKey]) cart[lineKey].qty += 1;
-        else cart[lineKey] = { ...p, variant: size, price: unitPrice, qty: 1 };
-
-        writeCart(cart);
-        updateBadges();
-        showToast(`Added 1 × ${p.name} (${size})`);
-      });
-    })().catch(err => {
-      console.error(err);
-      $("#detailsCard").innerHTML = `<strong>Could not load product.</strong><p class="muted">Make sure catalog.json exists and you are viewing via GitHub Pages.</p>`;
-    });
-  </script>
+  <script defer src="app.js"></script>
 </body>
 </html>
