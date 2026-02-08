@@ -12,7 +12,6 @@
 <body>
   <input class="toggle" type="checkbox" id="catDrawerToggle">
 
-  <!-- Topbar -->
   <div class="topbar">
     <div class="container topbar__inner">
       <span class="topbar__badge"><i class="fa-solid fa-maple-leaf"></i> 100% Canadian</span>
@@ -21,12 +20,11 @@
     </div>
   </div>
 
-  <!-- Header -->
   <header class="header">
     <div class="container header__inner">
       <label class="icon-btn" for="catDrawerToggle" aria-label="Open categories"><i class="fa-solid fa-bars"></i></label>
 
-      <a class="brand" href="products.html" aria-label="Premium Supply home">
+      <a class="brand" href="products.html">
         <img class="brand__logo-img" src="assets/brand/logo-planet.png" alt="Premium Supply">
         <span class="brand__text">
           <span class="brand__name">Premium Supply</span>
@@ -36,7 +34,6 @@
 
       <div class="header__right">
         <a class="icon-btn" href="products.html" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></a>
-
         <a class="icon-btn cart-btn" href="cart.html" aria-label="Cart">
           <i class="fa-solid fa-bag-shopping"></i>
           <span class="cart-badge js-cart-count">0</span>
@@ -45,14 +42,12 @@
     </div>
   </header>
 
-  <!-- Drawer -->
   <label for="catDrawerToggle" class="drawer-backdrop" aria-hidden="true"></label>
-  <aside class="drawer" aria-label="Shop by category">
+  <aside class="drawer">
     <div class="drawer__head">
       <div class="drawer__title"><i class="fa-solid fa-list"></i> Shop by category</div>
-      <label class="icon-btn" for="catDrawerToggle" aria-label="Close"><i class="fa-solid fa-xmark"></i></label>
+      <label class="icon-btn" for="catDrawerToggle"><i class="fa-solid fa-xmark"></i></label>
     </div>
-
     <nav class="cat-nav">
       <a class="cat-link" href="products.html">All Products</a>
       <div class="cat-sep"></div>
@@ -71,16 +66,14 @@
   <main class="section">
     <div class="container">
       <div class="product-hero">
-        <!-- Left: Image -->
         <div class="product-media-sticky">
-          <div class="card" id="mediaCard">
+          <div class="card">
             <div class="media-square" id="mediaSquare">
               <div class="media-placeholder" aria-hidden="true"></div>
             </div>
           </div>
         </div>
 
-        <!-- Right: Details -->
         <section class="card" id="detailsCard">
           <p class="muted" style="margin:0 0 10px;">
             <a href="products.html" style="text-decoration:underline; text-underline-offset:3px; font-weight:950;">← Back to All Products</a>
@@ -105,23 +98,13 @@
             <span id="price">$0.00</span> <span class="muted">CAD</span>
           </div>
 
-          <p class="muted" id="desc" style="margin:10px 0 0;">
-            Premium-grade selection with a clean space-store vibe. (Replace this text if you want a custom description per item.)
-          </p>
-
           <div class="buy-row" style="margin-top:12px;">
-            <div class="qty">
-              <span>Quantity</span>
-              <div class="qty-stepper">
-                <button class="qty-btn" id="minus" type="button">−</button>
-                <input class="qty-input" id="qty" type="number" min="1" value="1">
-                <button class="qty-btn" id="plus" type="button">+</button>
-              </div>
+            <div class="variant">
+              <span>Size</span>
+              <select class="variant-select" id="variantSelect" aria-label="Select size"></select>
             </div>
 
-            <button class="btn btn--solid btn--full" id="buyBtn" type="button">
-              Buy
-            </button>
+            <button class="btn btn--solid btn--full" id="buyBtn" type="button">Buy</button>
           </div>
 
           <div class="hr"></div>
@@ -146,9 +129,9 @@
 
   <script>
     const PS = { currency:"CAD", cartKey:"ps_cart_v1" };
-    const $ = (s, el=document) => el.querySelector(s);
-    const $$ = (s, el=document) => Array.from(el.querySelectorAll(s));
-    const money = (n) => new Intl.NumberFormat("en-CA",{style:"currency",currency:PS.currency}).format(n);
+    const $ = (s, el=document)=>el.querySelector(s);
+    const $$ = (s, el=document)=>Array.from(el.querySelectorAll(s));
+    const money = (n)=> new Intl.NumberFormat("en-CA",{style:"currency",currency:PS.currency}).format(n);
 
     function getParam(name){ return new URLSearchParams(location.search).get(name); }
 
@@ -166,11 +149,8 @@
 
     function readCart(){ try { return JSON.parse(localStorage.getItem(PS.cartKey) || "{}"); } catch { return {}; } }
     function writeCart(cart){ localStorage.setItem(PS.cartKey, JSON.stringify(cart)); }
-    function cartCount(cart){ return Object.values(cart).reduce((s,i)=> s + (i.qty||0), 0); }
-    function updateBadges(){
-      const count = cartCount(readCart());
-      $$(".js-cart-count").forEach(el => el.textContent = String(count));
-    }
+    function cartCount(cart){ return Object.values(cart).reduce((s,i)=> s+(i.qty||0), 0); }
+    function updateBadges(){ $$(".js-cart-count").forEach(el => el.textContent = String(cartCount(readCart()))); }
     function showToast(msg){
       $("#toastText").textContent = msg;
       $("#toast").classList.add("toast--show");
@@ -184,10 +164,21 @@
       return await res.json();
     }
 
+    function variantList(p){
+      if(Array.isArray(p.variants) && p.variants.length) return p.variants;
+      if(typeof p.price === "number") return [{ label:"3.5g", price: p.price }];
+      return [{ label:"3.5g", price: 0 }];
+    }
+    function variantPrice(p, label){
+      const v = variantList(p).find(x => x.label === label);
+      return Number(v?.price ?? 0);
+    }
+
     (async function init(){
       updateBadges();
 
       const id = getParam("id");
+      const vParam = getParam("v"); // optional from cart links
       if(!id){
         $("#detailsCard").innerHTML = `<strong>Missing product ID.</strong><p class="muted">Open from the product list.</p>`;
         return;
@@ -209,9 +200,7 @@
       $("#type").textContent = p.type || "—";
       $("#reviews").textContent = String(Number(p.reviews||0));
       $("#stars").innerHTML = toStarHTML(p.rating);
-      $("#price").textContent = money(Number(p.price||0));
 
-      // back to category link
       if(p.category){
         const a = $("#backToCategory");
         a.style.display = "inline";
@@ -219,25 +208,39 @@
         a.textContent = `Back to ${p.category}`;
       }
 
-      // image
       if(p.image){
         $("#mediaSquare").innerHTML = `<img src="${p.image}" alt="${p.name}">`;
       }
 
-      // qty controls
-      const qtyInput = $("#qty");
-      $("#plus").onclick = () => qtyInput.value = String(Math.max(1, (Number(qtyInput.value)||1) + 1));
-      $("#minus").onclick = () => qtyInput.value = String(Math.max(1, (Number(qtyInput.value)||1) - 1));
+      // Build variant select
+      const list = variantList(p);
+      const select = $("#variantSelect");
+      select.innerHTML = list.map(v => `<option value="${v.label}">${v.label}</option>`).join("");
 
-      $("#buyBtn").onclick = () => {
-        const qty = Math.max(1, Number(qtyInput.value || 1));
+      // Select preferred variant
+      const defaultLabel = (vParam && list.some(x => x.label === vParam)) ? vParam : (list.find(x => x.label === "3.5g")?.label || list[0].label);
+      select.value = defaultLabel;
+
+      function updatePrice(){
+        $("#price").textContent = money(variantPrice(p, select.value));
+      }
+      updatePrice();
+      select.addEventListener("change", updatePrice);
+
+      $("#buyBtn").addEventListener("click", () => {
+        const size = select.value;
+        const unitPrice = variantPrice(p, size);
+
+        const lineKey = `${p.id}::${size}`;
         const cart = readCart();
-        if(cart[p.id]) cart[p.id].qty += qty;
-        else cart[p.id] = { ...p, qty };
+
+        if(cart[lineKey]) cart[lineKey].qty += 1;
+        else cart[lineKey] = { ...p, variant: size, price: unitPrice, qty: 1 };
+
         writeCart(cart);
         updateBadges();
-        showToast(`Added ${qty} × ${p.name}`);
-      };
+        showToast(`Added 1 × ${p.name} (${size})`);
+      });
     })().catch(err => {
       console.error(err);
       $("#detailsCard").innerHTML = `<strong>Could not load product.</strong><p class="muted">Make sure catalog.json exists and you are viewing via GitHub Pages.</p>`;
