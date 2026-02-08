@@ -49,6 +49,43 @@
     return await res.json();
   }
 
+  function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, (m) => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#039;"
+  }[m]));
+}
+
+function initCategoryDropdown(currentCategory){
+  const sel = document.getElementById("categorySelect");
+  if(!sel) return;
+
+  const cats = PS.config.categories || [];
+
+  sel.innerHTML =
+    `<option value="__all__">All Products</option>` +
+    cats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
+
+  // Preselect current
+  if(currentCategory && cats.includes(currentCategory)){
+    sel.value = currentCategory;
+  } else {
+    sel.value = "__all__";
+  }
+
+  sel.addEventListener("change", () => {
+    const val = sel.value;
+    if(val === "__all__"){
+      window.location.href = "products.html";
+    } else {
+      window.location.href = `category.html?c=${encodeURIComponent(val)}`;
+    }
+  });
+}
+
   function money(n){
     const cur = PS.config?.store?.currency || "CAD";
     return new Intl.NumberFormat("en-CA", { style:"currency", currency:cur }).format(Number(n||0));
