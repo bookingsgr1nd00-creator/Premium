@@ -4,117 +4,37 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Premium Supply — Checkout</title>
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
-
 <body data-page="checkout">
-  <input class="toggle" type="checkbox" id="catDrawerToggle">
-
   <div class="topbar">
     <div class="container topbar__inner">
-      <span class="topbar__badge" id="topbarLeft"><i class="fa-solid fa-maple-leaf"></i> 100% Canadian</span>
-      <p class="topbar__text">Checkout</p>
-      <a class="topbar__link" href="cart.html">Back</a>
+      <span class="topbar__badge" id="topbarLeft">100% Canadian</span>
+      <p class="topbar__text" id="topbarTitle">Checkout</p>
+      <a class="topbar__link" href="cart.html">Cart</a>
     </div>
   </div>
 
   <header class="header">
     <div class="container header__inner">
-      <label class="icon-btn" for="catDrawerToggle" aria-label="Open categories"><i class="fa-solid fa-bars"></i></label>
-
-      <a class="brand" href="products.html">
-        <img class="brand__logo-img js-brand-logo" src="assets/brand/logo-planet.png" alt="Premium Supply">
+      <a class="icon-btn" href="cart.html" aria-label="Back to cart"><i class="fa-solid fa-arrow-left"></i></a>
+      <a class="brand" href="index.html">
+        <img class="brand__logo-img" src="assets/brand/logo-planet.png" alt="Premium Supply">
         <span class="brand__text">
-          <span class="brand__name js-brand-name">Premium Supply</span>
-          <span class="brand__tag js-brand-tag">Space Store</span>
+          <span class="brand__name" id="brandName">Premium Supply</span>
+          <span class="brand__tag" id="brandTag">Space Store</span>
         </span>
       </a>
-
-      <div class="header__right">
-        <a class="icon-btn cart-btn" href="cart.html" aria-label="Cart">
-          <i class="fa-solid fa-bag-shopping"></i>
-          <span class="cart-badge js-cart-count">0</span>
-        </a>
-      </div>
+      <span class="icon-btn" style="opacity:.0; pointer-events:none;"><i class="fa-solid fa-bag-shopping"></i></span>
     </div>
   </header>
 
-  <label for="catDrawerToggle" class="drawer-backdrop" aria-hidden="true"></label>
-  <aside class="drawer">
-    <div class="drawer__head">
-      <div class="drawer__title"><i class="fa-solid fa-list"></i> Shop by category</div>
-      <label class="icon-btn" for="catDrawerToggle"><i class="fa-solid fa-xmark"></i></label>
-    </div>
-
-    <nav class="cat-nav">
-      <a class="cat-link" href="products.html">All Products</a>
-      <div class="cat-sep"></div>
-      <div id="drawerCats"></div>
-      <div class="cat-sep"></div>
-      <a class="cat-link" href="cart.html">Cart</a>
-    </nav>
-  </aside>
-
   <main class="section">
     <div class="container">
-      <div class="cart-layout">
-        <section class="card">
-          <h1 class="block__title" style="margin:0 0 8px;">Place order</h1>
-          <p class="muted" style="margin:0 0 10px;">No external services. We generate an Order ID + summary on-screen.</p>
-
-          <div id="minAlert" class="alert-danger" style="display:none; margin-bottom:10px;">
-            Minimum order is <strong id="minLabel">$75 CAD</strong> before shipping.
-          </div>
-
-          <button class="btn btn--solid btn--full" id="placeOrderBtn" type="button">Place order</button>
-
-          <div id="confirmWrap" style="display:none; margin-top:14px;">
-            <div class="alert-danger">
-              If you don't pay in the next 24 hours for the order your account will be closed in 48 hours
-            </div>
-
-            <div class="hr"></div>
-
-            <div class="pill-row" style="gap:10px;">
-              <span class="pill"><i class="fa-solid fa-hashtag"></i> <span id="orderIdText">—</span></span>
-              <span class="pill"><i class="fa-solid fa-clock"></i> Pay by: <span id="payByText">—</span></span>
-              <span class="pill"><i class="fa-solid fa-hourglass-half"></i> Time left: <span id="timeLeftText">—</span></span>
-            </div>
-
-            <div class="card" style="margin-top:12px; padding:12px;">
-              <strong>Payment instructions</strong>
-              <p class="muted" style="margin:8px 0 0;">
-                Send <strong>Interac e‑Transfer</strong> to:<br>
-                <span style="text-decoration:underline; font-weight:950;" id="payEmail">payments@premiumsupply.ca</span><br><br>
-                Reference/message:<br>
-                <span style="text-decoration:underline; font-weight:950;" id="payRef">—</span>
-              </p>
-            </div>
-
-            <h3 class="block__title" style="margin:14px 0 8px; font-size:1.05rem;">Order summary</h3>
-            <div class="codebox" id="summaryBox">—</div>
-
-            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
-              <button class="btn" type="button" id="copySummaryBtn">Copy summary</button>
-              <button class="btn" type="button" id="downloadSummaryBtn">Download</button>
-              <button class="btn" type="button" id="restoreCartBtn">Restore cart</button>
-              <a class="btn btn--solid" href="products.html">Done</a>
-            </div>
-          </div>
-        </section>
-
-        <aside class="card">
-          <h2 class="block__title" style="margin:0 0 8px;">Review</h2>
-          <div id="reviewItems"></div>
-
-          <div class="hr"></div>
-          <div class="summary-row"><span>Subtotal</span> <strong id="subtotal">$0.00</strong></div>
-          <div class="summary-row"><span>Shipping</span> <strong id="shipping">$0.00</strong></div>
-          <div class="summary-row"><span>Total</span> <strong id="total">$0.00</strong></div>
-        </aside>
-      </div>
+      <section class="block">
+        <div id="checkoutRoot"></div>
+      </section>
     </div>
   </main>
 
