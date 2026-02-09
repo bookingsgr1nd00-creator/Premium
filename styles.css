@@ -942,3 +942,59 @@ img{ max-width:100%; display:block; }
   }
   .category-jump{ width: 100%; }
 }
+/* =========================
+   FIX: Drawer categories vertical (stacked)
+========================= */
+
+/* If anything inside the drawer is using the pill layout, kill it */
+.drawer .cat-pills { 
+  display: none !important; 
+}
+
+/* Make drawer nav a vertical stack */
+.drawer .cat-nav{
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* The dynamic category container becomes a vertical stack too */
+.drawer #drawerCats{
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Full-width “button” links */
+.drawer .cat-link{
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  padding: 18px 16px;
+  border-radius: 22px;
+
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(0,0,0,.22);
+  color: rgba(255,255,255,.92);
+  font-weight: 900;
+  letter-spacing: .2px;
+
+  /* prevent ugly word splitting */
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: keep-all;
+}
+
+/* Optional hover */
+.drawer .cat-link:hover{
+  border-color: rgba(255,255,255,.25);
+  background: rgba(0,0,0,.28);
+}
+
+/* separators don’t stretch weirdly */
+.drawer .cat-sep{
+  height: 1px;
+  background: rgba(255,255,255,.10);
+  margin: 4px 0;
+}
