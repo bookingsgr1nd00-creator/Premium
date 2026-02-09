@@ -155,12 +155,21 @@ function initCategoryDropdown(currentCategory){
     if(topLeft) topLeft.innerHTML = `<i class="fa-solid fa-maple-leaf"></i> ${cfg.ui?.topbarLeft || "100% Canadian"}`;
   }
 
-  function buildDrawerLinks(){
-    const cats = PS.config.categories || [];
-    const mount = $("#drawerCats");
-    if(mount){
-      mount.innerHTML = cats.map(c => `<a class="cat-link" href="category.html?c=${encodeURIComponent(c)}">${c}</a>`).join("");
-    }
+  function renderDrawerCategories(activeCategory){
+  const host = document.getElementById("drawerCats");
+  if(!host) return;
+
+  const cats = (PS.config.categories || []).filter(Boolean);
+
+  host.innerHTML = cats.map(c => {
+    const isActive = activeCategory && String(c).toLowerCase() === String(activeCategory).toLowerCase();
+    return `
+      <a class="cat-link" href="category.html?c=${encodeURIComponent(c)}" ${isActive ? 'aria-current="page"' : ""}>
+        ${escapeHtml(c)}
+      </a>
+    `;
+  }).join("");
+}
     const quick = $("#quickCats");
     if(quick){
       quick.innerHTML = cats.map(c=>`<a class="cat-pill" href="category.html?c=${encodeURIComponent(c)}">${c}</a>`).join("");
