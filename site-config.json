@@ -1,35 +1,33 @@
 {
-  "brand": {
-    "name": "Premium Supply",
-    "tagline": "Space Store",
-    "logo": "assets/brand/logo-planet.png"
-  },
   "store": {
+    "name": "Premium Supply",
+    "tagline": "Become a Member",
+    "countryBadge": "BEST BUDS",
     "currency": "CAD",
-    "minOrder": 75,
-    "freeShippingOver": 250,
-    "flatShipping": 15,
-    "paymentEmail": "payments@premiumsupply.ca"
-  },
-  "ui": {
-    "topbarLeft": "100% Canadian",
-    "heroTitle": "Futuristic deals, proudly Canadian.",
-    "heroSubtitle": "Pick your size • Add to cart • Simple checkout"
-  },
-  "promo": {
-    "enabled": true,
-    "showOnce": true,
-    "title": "Welcome to Premium Supply ✨",
-    "message": "Minimum order $75 • Free shipping $250+",
-    "ctaText": "Shop now",
-    "dontShowText": "Don’t show again"
+    "payment": {
+      "methodLabel": "Interac e‑Transfer",
+      "email": "payments@premium-supply.ca",
+      "note": "Include your order ID in the e‑Transfer message."
+    },
+    "rules": {
+      "MIN Order": 75,
+      "FREE Express Shipping Over": 250,
+      "Express Shipping": 25
+    },
+    "promo": {
+      "enabled": true,
+      "title": "Welcome to Premium Supply",
+      "message": "Free shipping on orders over $250",
+      "cta": "Shop now"
+    }
   },
   "categories": [
     "Flower",
-    "Concentrates",
     "Edibles",
-    "Vapes",
-    "CBD",
+    "Extracts",
+    "Mushrooms",
+    "Oils",
     "Male Enhancers"
-  ]
+  ],
+  "sortDefault": "price_desc"
 }
