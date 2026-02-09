@@ -3,10 +3,168 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Premium Supply</title>
-  <meta http-equiv="refresh" content="0; url=products.html">
+  <title>Premium Supply — Store</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
-<body>
-  <p>Redirecting… <a href="products.html">Open store</a></p>
+<body data-page="products">
+  <!-- Toggles -->
+  <input class="toggle" type="checkbox" id="catDrawerToggle">
+  <input class="toggle" type="checkbox" id="searchToggle">
+
+  <!-- Search modal -->
+  <div class="search-modal" role="dialog" aria-modal="true" aria-labelledby="searchTitle">
+    <label for="searchToggle" class="search-modal__overlay" aria-hidden="true"></label>
+    <div class="search-modal__panel">
+      <div class="search-modal__head">
+        <h2 class="search-modal__title" id="searchTitle">Search & sort</h2>
+        <label class="icon-btn" for="searchToggle" aria-label="Close search"><i class="fa-solid fa-xmark"></i></label>
+      </div>
+
+      <div class="search-box">
+        <input id="q" type="search" placeholder="Search products…" autocomplete="off">
+        <button class="btn" type="button" id="clearBtn">Clear</button>
+      </div>
+
+      <div class="search-box" style="margin-top:10px;">
+        <span class="pill"><i class="fa-solid fa-arrow-down-wide-short"></i> Sort</span>
+        <select id="sort" class="btn" style="flex:1; justify-content:flex-start;">
+          <option value="price_desc" selected>Price: High → Low</option>
+          <option value="price_asc">Price: Low → High</option>
+          <option value="rating_desc">Rating: High → Low</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="topbar">
+    <div class="container topbar__inner">
+      <span class="topbar__badge" id="topbarLeft">100% Canadian</span>
+      <p class="topbar__text" id="topbarTitle">All Products</p>
+      <a class="topbar__link" href="cart.html">Cart</a>
+    </div>
+  </div>
+
+  <header class="header">
+    <div class="container header__inner">
+      <label class="icon-btn" for="catDrawerToggle" aria-label="Open categories"><i class="fa-solid fa-bars"></i></label>
+
+      <a class="brand" href="index.html" aria-label="Premium Supply home">
+        <img class="brand__logo-img" id="brandLogo" src="assets/brand/logo-planet.png" alt="Premium Supply">
+        <span class="brand__text">
+          <span class="brand__name" id="brandName">Premium Supply</span>
+          <span class="brand__tag" id="brandTag">Space Store</span>
+        </span>
+      </a>
+
+      <div class="header__right">
+        <label class="icon-btn" for="searchToggle" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></label>
+
+        <a class="icon-btn cart-btn" href="cart.html" aria-label="Cart">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span class="cart-badge" id="cartCount">0</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Drawer -->
+  <label for="catDrawerToggle" class="drawer-backdrop" aria-hidden="true"></label>
+  <aside class="drawer" aria-label="Shop by category">
+    <div class="drawer__head">
+      <div class="drawer__title"><i class="fa-solid fa-list"></i> Shop by category</div>
+      <label class="icon-btn" for="catDrawerToggle" aria-label="Close"><i class="fa-solid fa-xmark"></i></label>
+    </div>
+
+    <nav class="cat-nav">
+      <a class="cat-link" href="products.html">All Products</a>
+      <div class="cat-sep"></div>
+
+      <div id="drawerCats"></div>
+
+      <div class="cat-sep"></div>
+      <a class="cat-link" href="cart.html">Cart</a>
+      <a class="cat-link" href="checkout.html">Checkout</a>
+    </nav>
+  </aside>
+
+  <main class="section">
+    <div class="container">
+
+      <section class="hero">
+        <div class="hero__inner">
+          <h1 class="hero__title" id="heroTitle">Premium Supply</h1>
+          <p class="hero__sub" id="heroSubtitle">Pick a quantity • Buy • Checkout</p>
+
+          <div class="hero__meta">
+            <span class="pill pill--gold" id="freeShipPill">Free shipping $250+</span>
+            <span class="pill pill--mint" id="minOrderPill">Min order $75</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="block">
+        <div class="block__head block__head--filters">
+          <div>
+            <h2 class="block__title">All Products</h2>
+            <p class="muted" style="margin:.35rem 0 0;">Pick a quantity • Buy • Checkout</p>
+          </div>
+
+          <div class="category-jump">
+            <select id="categorySelect" class="category-select" aria-label="Shop by category"></select>
+          </div>
+        </div>
+
+        <div class="notice" id="loadNotice" style="display:none;"></div>
+        <div class="products-grid" id="grid" aria-live="polite"></div>
+      </section>
+
+      <footer class="footer">
+        <p>© <span id="year"></span> <span id="brandNameFoot">Premium Supply</span> • Proudly Canadian</p>
+      </footer>
+    </div>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <span id="toastText">Added to cart.</span>
+    <a href="cart.html">View cart</a>
+  </div>
+
+  <!-- Promo modal -->
+  <div class="promo-modal" id="promoModal" aria-hidden="true">
+    <div class="promo-modal__overlay" data-close></div>
+    <div class="promo-modal__panel">
+      <div class="promo-head">
+        <h3 class="promo-title" id="promoTitle">Welcome</h3>
+        <button class="icon-btn" type="button" id="promoClose" aria-label="Close promo">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <p class="muted" id="promoMsg" style="margin:10px 0 0;"></p>
+      <div class="promo-actions">
+        <button class="btn btn--solid" type="button" id="promoContinue">Shop now</button>
+        <button class="btn" type="button" id="promoDontShow">Don’t show again</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Age gate -->
+  <div class="promo-modal" id="ageGate" aria-hidden="true">
+    <div class="promo-modal__overlay"></div>
+    <div class="promo-modal__panel">
+      <div class="promo-head">
+        <h3 class="promo-title">Age confirmation</h3>
+      </div>
+      <p class="muted" id="ageGateText" style="margin:10px 0 0;">
+        Please confirm you are of legal age in your province/territory to enter.
+      </p>
+      <div class="promo-actions">
+        <button class="btn btn--solid" type="button" id="ageYes">I’m of legal age</button>
+        <a class="btn" href="https://www.google.com">Leave</a>
+      </div>
+    </div>
+  </div>
+
+  <script defer src="app.js"></script>
 </body>
 </html>
