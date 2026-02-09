@@ -4,92 +4,37 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Premium Supply — Cart</title>
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
-
 <body data-page="cart">
-  <input class="toggle" type="checkbox" id="catDrawerToggle">
-
   <div class="topbar">
     <div class="container topbar__inner">
-      <span class="topbar__badge" id="topbarLeft"><i class="fa-solid fa-maple-leaf"></i> 100% Canadian</span>
-      <p class="topbar__text">Cart</p>
-      <a class="topbar__link" href="products.html">Shop</a>
+      <span class="topbar__badge" id="topbarLeft">100% Canadian</span>
+      <p class="topbar__text" id="topbarTitle">Cart</p>
+      <a class="topbar__link" href="checkout.html">Checkout</a>
     </div>
   </div>
 
   <header class="header">
     <div class="container header__inner">
-      <label class="icon-btn" for="catDrawerToggle" aria-label="Open categories"><i class="fa-solid fa-bars"></i></label>
-
-      <a class="brand" href="products.html">
-        <img class="brand__logo-img js-brand-logo" src="assets/brand/logo-planet.png" alt="Premium Supply">
+      <a class="icon-btn" href="index.html" aria-label="Back to shop"><i class="fa-solid fa-arrow-left"></i></a>
+      <a class="brand" href="index.html">
+        <img class="brand__logo-img" src="assets/brand/logo-planet.png" alt="Premium Supply">
         <span class="brand__text">
-          <span class="brand__name js-brand-name">Premium Supply</span>
-          <span class="brand__tag js-brand-tag">Space Store</span>
+          <span class="brand__name" id="brandName">Premium Supply</span>
+          <span class="brand__tag" id="brandTag">Space Store</span>
         </span>
       </a>
-
-      <div class="header__right">
-        <a class="icon-btn cart-btn" href="cart.html" aria-label="Cart">
-          <i class="fa-solid fa-bag-shopping"></i>
-          <span class="cart-badge js-cart-count">0</span>
-        </a>
-      </div>
+      <span class="icon-btn" style="opacity:.0; pointer-events:none;"><i class="fa-solid fa-bag-shopping"></i></span>
     </div>
   </header>
 
-  <label for="catDrawerToggle" class="drawer-backdrop" aria-hidden="true"></label>
-  <aside class="drawer">
-    <div class="drawer__head">
-      <div class="drawer__title"><i class="fa-solid fa-list"></i> Shop by category</div>
-      <label class="icon-btn" for="catDrawerToggle"><i class="fa-solid fa-xmark"></i></label>
-    </div>
-
-    <nav class="cat-nav">
-      <a class="cat-link" href="products.html">All Products</a>
-      <div class="cat-sep"></div>
-      <div id="drawerCats"></div>
-      <div class="cat-sep"></div>
-      <a class="cat-link" href="checkout.html">Checkout</a>
-    </nav>
-  </aside>
-
   <main class="section">
     <div class="container">
-      <div class="cart-layout">
-        <section class="card">
-          <h1 class="block__title" style="margin:0 0 8px;">Your cart</h1>
-          <p class="muted" style="margin:0 0 10px;">Quantities are units of the selected size.</p>
-          <div id="items"></div>
-
-          <div style="margin-top:12px;">
-            <a class="btn btn--full" href="products.html"><i class="fa-solid fa-arrow-left"></i> Continue shopping</a>
-          </div>
-        </section>
-
-        <aside class="card">
-          <h2 class="block__title" style="margin:0 0 8px;">Summary</h2>
-
-          <div class="summary-row"><span>Subtotal</span> <strong id="subtotal">$0.00</strong></div>
-          <div class="summary-row"><span>Shipping</span> <strong id="shipping">$0.00</strong></div>
-          <div class="summary-row"><span>Total</span> <strong id="total">$0.00</strong></div>
-
-          <div class="hr"></div>
-
-          <div id="minAlert" class="alert-danger" style="display:none; margin-bottom:10px;">
-            Minimum order is <strong id="minLabel">$75 CAD</strong> before shipping. Add more to continue.
-          </div>
-
-          <button class="btn btn--solid btn--full" id="checkoutBtn" type="button">Proceed to checkout</button>
-
-          <p class="muted" style="margin:10px 0 0;">
-            Free shipping at <strong id="shipLabel">$250+</strong>, otherwise <strong id="flatLabel">$15</strong>.
-          </p>
-        </aside>
-      </div>
+      <section class="block">
+        <div id="cartRoot"></div>
+      </section>
     </div>
   </main>
 
