@@ -1,30 +1,35 @@
 {
   "store": {
     "name": "Premium Supply",
-    "tagline": "Become a Member",
-    "countryBadge": "BEST BUDS",
+    "tagline": "Space Store",
+    "countryBadge": "🇨🇦",
     "currency": "CAD",
     "payment": {
       "methodLabel": "Interac e‑Transfer",
-      "email": "payments@premium-supply.ca",
-      "note": "Include your order ID in the e‑Transfer message."
+      "email": "payments@premium-supply.ca"
     },
     "rules": {
-      "MIN Order": 75,
-      "FREE Express Shipping Over": 250,
-      "Express Shipping": 25
+      "Order": $75,
+      "Free Express Shipping Over": $250,
+      "Express Shipping": $25
     },
     "promo": {
       "enabled": true,
       "title": "Welcome to Premium Supply",
-      "message": "Free shipping on orders over $250",
+      "message": "Minimum order $75 • Free shipping $250+ • Premium Quality.",
       "cta": "Shop now"
+    },
+    "ageGate": {
+      "enabled": true,
+      "text": "Please confirm you are of legal age in your province/territory to enter."
     }
   },
   "categories": [
     "Flower",
+    "Concentrates",
     "Edibles",
-    "Extracts",
+    "Vapes",
+    "CBD",
     "Mushrooms",
     "Oils",
     "Male Enhancers"
