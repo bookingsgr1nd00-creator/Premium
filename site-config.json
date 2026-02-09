@@ -9,9 +9,9 @@
       "email": "payments@premium-supply.ca"
     },
     "rules": {
-      "Order": $75,
-      "Free Express Shipping Over": $250,
-      "Express Shipping": $25
+      "Order": 75,
+      "Free Express Shipping Over": 250,
+      "Express Shipping": 25
     },
     "promo": {
       "enabled": true,
