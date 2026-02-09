@@ -998,3 +998,37 @@ img{ max-width:100%; display:block; }
   background: rgba(255,255,255,.10);
   margin: 4px 0;
 }
+/* =========================
+   FIX: Quantity + Buy centering (grid cards)
+========================= */
+
+/* Make the buy section a clean stacked layout on mobile */
+.product-tile .buy-row{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+/* Center everything inside the quantity block */
+.qty-block{
+  text-align: center;
+}
+
+/* Center the selected text inside the <select> */
+.variant-select{
+  text-align: center;
+  text-align-last: center; /* helps on some browsers */
+}
+
+/* Ensure options are centered in dropdown */
+.variant-select option{
+  text-align: center;
+}
+
+/* Buy button centered perfectly */
+.product-tile .js-buy{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
