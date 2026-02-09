@@ -1,21 +1,20 @@
 <!doctype html>
 <html lang="en-CA">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-5" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PREMIUM SUPPLY☄️ — Product</title>
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <title>Premium Supply — Product</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
-
 <body data-page="product">
   <input class="toggle" type="checkbox" id="catDrawerToggle">
+  <input class="toggle" type="checkbox" id="searchToggle">
 
   <div class="topbar">
     <div class="container topbar__inner">
-      <span class="topbar__badge" id="topbarLeft"><i class="fa-solid fa-maple-leaf"></i> 100% Canadian</span>
-      <p class="topbar__text">Product</p>
+      <span class="topbar__badge" id="topbarLeft">100% Canadian</span>
+      <p class="topbar__text" id="topbarTitle">Product</p>
       <a class="topbar__link" href="cart.html">Cart</a>
     </div>
   </div>
@@ -24,33 +23,32 @@
     <div class="container header__inner">
       <label class="icon-btn" for="catDrawerToggle" aria-label="Open categories"><i class="fa-solid fa-bars"></i></label>
 
-      <a class="brand" href="products.html">
-        <img class="brand__logo-img js-brand-logo" src="assets/brand/logo-planet.png" alt="Premium Supply">
+      <a class="brand" href="index.html" aria-label="Premium Supply home">
+        <img class="brand__logo-img" id="brandLogo" src="assets/brand/logo-planet.png" alt="Premium Supply">
         <span class="brand__text">
-          <span class="brand__name js-brand-name">Premium Supply</span>
-          <span class="brand__tag js-brand-tag">Space Store</span>
+          <span class="brand__name" id="brandName">Premium Supply</span>
+          <span class="brand__tag" id="brandTag">Space Store</span>
         </span>
       </a>
 
       <div class="header__right">
-        <a class="icon-btn" href="products.html" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></a>
         <a class="icon-btn cart-btn" href="cart.html" aria-label="Cart">
           <i class="fa-solid fa-bag-shopping"></i>
-          <span class="cart-badge js-cart-count">0</span>
+          <span class="cart-badge" id="cartCount">0</span>
         </a>
       </div>
     </div>
   </header>
 
   <label for="catDrawerToggle" class="drawer-backdrop" aria-hidden="true"></label>
-  <aside class="drawer">
+  <aside class="drawer" aria-label="Shop by category">
     <div class="drawer__head">
       <div class="drawer__title"><i class="fa-solid fa-list"></i> Shop by category</div>
-      <label class="icon-btn" for="catDrawerToggle"><i class="fa-solid fa-xmark"></i></label>
+      <label class="icon-btn" for="catDrawerToggle" aria-label="Close"><i class="fa-solid fa-xmark"></i></label>
     </div>
 
     <nav class="cat-nav">
-      <a class="cat-link" href="products.html">All Products</a>
+      <a class="cat-link" href="index.html">All Products</a>
       <div class="cat-sep"></div>
       <div id="drawerCats"></div>
       <div class="cat-sep"></div>
@@ -61,60 +59,10 @@
 
   <main class="section">
     <div class="container">
-      <div class="product-hero">
-        <div class="product-media-sticky">
-          <div class="card">
-            <div class="media-square" id="mediaSquare">
-              <div class="media-placeholder" aria-hidden="true"></div>
-            </div>
-          </div>
-        </div>
-
-        <section class="card" id="detailsCard">
-          <p class="muted" style="margin:0 0 10px;">
-            <a href="products.html" style="text-decoration:underline; text-underline-offset:3px; font-weight:950;">← Back to All Products</a>
-            <span class="muted"> • </span>
-            <a href="#" id="backToCategory" style="text-decoration:underline; text-underline-offset:3px; font-weight:950; display:none;">Back to category</a>
-          </p>
-
-          <h1 class="block__title" id="name" style="margin:0;">Loading…</h1>
-
-          <div class="pill-row" style="margin-top:10px;">
-            <span class="pill pill--tier" id="tier">—</span>
-            <span class="pill pill--tag" id="category">—</span>
-            <span class="pill"><i class="fa-solid fa-wand-magic-sparkles"></i> <span id="type">—</span></span>
-          </div>
-
-          <div class="rating" style="margin-top:10px;">
-            <div class="stars" id="stars"></div>
-            <div class="reviews"><span id="reviews">0</span> reviews</div>
-          </div>
-
-          <div class="price" style="font-size:1.15rem; margin-top:6px;">
-            <span id="price">$0.00</span> <span class="muted" id="currency">CAD</span>
-          </div>
-
-          <div class="buy-row" style="margin-top:12px;">
-            <div class="variant">
-              <span>Qty</span>
-              <select class="variant-select" id="variantSelect" aria-label="Select size"></select>
-            </div>
-
-            <button class="btn btn--solid btn--full" id="buyBtn" type="button">Buy</button>
-          </div>
-
-          <div class="hr"></div>
-
-          <div class="card" style="padding:12px;">
-            <strong>Store notes</strong>
-            <ul class="muted" style="margin:8px 0 0; padding-left:18px;">
-              <li>Minimum order: <strong id="noteMin">$75 CAD</strong></li>
-              <li>Free shipping: <strong id="noteShip">$250+ CAD</strong></li>
-              <li>Proudly Canadian</li>
-            </ul>
-          </div>
-        </section>
-      </div>
+      <section class="block">
+        <div class="notice" id="loadNotice" style="display:none;"></div>
+        <div id="productRoot"></div>
+      </section>
     </div>
   </main>
 
