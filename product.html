@@ -14,7 +14,7 @@
   <div class="topbar">
     <div class="container topbar__inner">
       <span class="topbar__badge" id="topbarLeft">100% Canadian</span>
-      <p class="topbar__text" id="topbarTitle">Product</p>
+      <p class="topbar__text">Product</p>
       <a class="topbar__link" href="cart.html">Cart</a>
     </div>
   </div>
@@ -23,24 +23,21 @@
     <div class="container header__inner">
       <label class="icon-btn" for="catDrawerToggle" aria-label="Open categories"><i class="fa-solid fa-bars"></i></label>
 
-      <a class="brand" href="index.html" aria-label="Premium Supply home">
-        <img class="brand__logo-img" id="brandLogo" src="assets/brand/logo-planet.png" alt="Premium Supply">
+      <a class="brand" href="index.html">
+        <img class="brand__logo-img" src="assets/brand/logo-planet.png" alt="Premium Supply">
         <span class="brand__text">
           <span class="brand__name" id="brandName">Premium Supply</span>
           <span class="brand__tag" id="brandTag">Space Store</span>
         </span>
       </a>
 
-      <div class="header__right">
-        <a class="icon-btn cart-btn" href="cart.html" aria-label="Cart">
-          <i class="fa-solid fa-bag-shopping"></i>
-          <span class="cart-badge" id="cartCount">0</span>
-        </a>
-      </div>
+      <a class="icon-btn cart-btn" href="cart.html" aria-label="Cart">
+        <i class="fa-solid fa-bag-shopping"></i>
+        <span class="cart-badge" id="cartCount">0</span>
+      </a>
     </div>
   </header>
 
-  <!-- ✅ Promo banner ONCE under header -->
   <div class="promo-strip" id="promoStrip" hidden>
     <div class="container promo-strip__inner">
       <span class="promo-strip__spark">✨</span>
@@ -78,6 +75,26 @@
   <div class="toast" id="toast" role="status" aria-live="polite">
     <span id="toastText">Added to cart.</span>
     <a href="cart.html">View cart</a>
+  </div>
+
+  <div class="reviews-modal" id="reviewsModal" aria-hidden="true">
+    <div class="reviews-modal__overlay" data-close></div>
+    <div class="reviews-modal__panel" role="dialog" aria-modal="true">
+      <div class="reviews-head">
+        <div>
+          <div class="reviews-title" id="reviewsTitle">Reviews</div>
+          <div class="reviews-sub" id="reviewsSub">Verified-style feedback</div>
+        </div>
+        <button class="icon-btn" type="button" id="reviewsClose" aria-label="Close reviews">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="reviews-summary" id="reviewsSummary"></div>
+      <div class="reviews-list" id="reviewsList"></div>
+
+      <button class="btn btn--solid" type="button" id="reviewsMore">Load more reviews</button>
+    </div>
   </div>
 
   <script defer src="app.js"></script>
