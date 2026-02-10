@@ -1,67 +1,351 @@
-[
-{"id":"aurora-frost-flower","name":"Aurora Frost","category":"Flower","type":"Indica","tier":"Premium","rating":4.3,"reviews":82,"image":"assets/products/flower/aurora-frost.jpg","badges":[],"variants":[{"label":"3.5g","price":43.44},{"label":"7g","price":81.46},{"label":"1 Oz","price":238.96},{"label":"1½ Oz","price":336.73},{"label":"¼ Pound","price":814.68},{"label":"½ Pound","price":1520.74},{"label":"1 Pound","price":2824.24}]},
-{"id":"stellar-citrus-flower","name":"Stellar Citrus","category":"Flower","type":"Sativa","tier":"Premium","rating":4.4,"reviews":38,"image":"assets/products/flower/stellar-citrus.jpg","badges":["New"],"variants":[{"label":"3.5g","price":39.34},{"label":"7g","price":73.77},{"label":"1 Oz","price":216.4},{"label":"1½ Oz","price":304.93},{"label":"¼ Pound","price":737.74},{"label":"½ Pound","price":1377.13},{"label":"1 Pound","price":2557.54}]},
-{"id":"lunar-lavender-flower","name":"Lunar Lavender","category":"Flower","type":"Hybrid","tier":"Premium","rating":4.8,"reviews":34,"image":"assets/products/flower/lunar-lavender.jpg","badges":[],"variants":[{"label":"3.5g","price":43.83},{"label":"7g","price":82.18},{"label":"1 Oz","price":241.1},{"label":"1½ Oz","price":339.73},{"label":"¼ Pound","price":821.95},{"label":"½ Pound","price":1534.31},{"label":"1 Pound","price":2849.44}]},
-{"id":"nebula-kush-flower","name":"Nebula Kush","category":"Flower","type":"Indica","tier":"Premium","rating":4.3,"reviews":35,"image":"assets/products/flower/nebula-kush.jpg","badges":[],"variants":[{"label":"3.5g","price":42.93},{"label":"7g","price":80.5},{"label":"1 Oz","price":236.17},{"label":"1½ Oz","price":332.78},{"label":"¼ Pound","price":805.14},{"label":"½ Pound","price":1502.93},{"label":"1 Pound","price":2791.16}]},
-{"id":"comet-candy-flower","name":"Comet Candy","category":"Flower","type":"Hybrid","tier":"Premium","rating":4.6,"reviews":18,"image":"assets/products/flower/comet-candy.jpg","badges":["Sale"],"variants":[{"label":"3.5g","price":39.06},{"label":"7g","price":73.25},{"label":"1 Oz","price":214.89},{"label":"1½ Oz","price":303.08},{"label":"¼ Pound","price":733.27},{"label":"½ Pound","price":1368.78},{"label":"1 Pound","price":2542.03}]},
-{"id":"cosmic-pine-flower","name":"Cosmic Pine","category":"Flower","type":"Sativa","tier":"Premium","rating":4.4,"reviews":72,"image":"assets/products/flower/cosmic-pine.jpg","badges":[],"variants":[{"label":"3.5g","price":45.67},{"label":"7g","price":85.79},{"label":"1 Oz","price":251.12},{"label":"1½ Oz","price":353.83},{"label":"¼ Pound","price":855.95},{"label":"½ Pound","price":1597.77},{"label":"1 Pound","price":2967.58}]},
-{"id":"polar-night-flower","name":"Polar Night","category":"Flower","type":"Indica","tier":"Premium","rating":4.8,"reviews":45,"image":"assets/products/flower/polar-night.jpg","badges":["New"],"variants":[{"label":"3.5g","price":41.12},{"label":"7g","price":77.11},{"label":"1 Oz","price":225.73},{"label":"1½ Oz","price":318.06},{"label":"¼ Pound","price":770.52},{"label":"½ Pound","price":1438.44},{"label":"1 Pound","price":2671.74}]},
-{"id":"galaxy-gelato-flower","name":"Galaxy Gelato","category":"Flower","type":"Hybrid","tier":"Premium","rating":4.6,"reviews":59,"image":"assets/products/flower/galaxy-gelato.jpg","badges":[],"variants":[{"label":"3.5g","price":44.38},{"label":"7g","price":83.39},{"label":"1 Oz","price":244.29},{"label":"1½ Oz","price":344.1},{"label":"¼ Pound","price":833.12},{"label":"½ Pound","price":1555.18},{"label":"1 Pound","price":2886.32}]},
-{"id":"starship-haze-flower","name":"Starship Haze","category":"Flower","type":"Sativa","tier":"Premium","rating":4.7,"reviews":64,"image":"assets/products/flower/starship-haze.jpg","badges":["Sale"],"variants":[{"label":"3.5g","price":45.44},{"label":"7g","price":85.36},{"label":"1 Oz","price":249.81},{"label":"1½ Oz","price":351.89},{"label":"¼ Pound","price":851.96},{"label":"½ Pound","price":1590.32},{"label":"1 Pound","price":2953.72}]},
-{"id":"midnight-mint-flower","name":"Midnight Mint","category":"Flower","type":"Hybrid","tier":"Premium","rating":4.4,"reviews":92,"image":"assets/products/flower/midnight-mint.jpg","badges":[],"variants":[{"label":"3.5g","price":42.36},{"label":"7g","price":79.41},{"label":"1 Oz","price":233.09},{"label":"1½ Oz","price":328.11},{"label":"¼ Pound","price":794.45},{"label":"½ Pound","price":1483.08},{"label":"1 Pound","price":2754.52}]},
+{
+  "brand": {
+    "name": "Premium Supply",
+    "tagline": "Top Quality • Canada",
+    "logo": "assets/brand/logo.png"
+  },
+  "rules": {
+    "minOrder": 75,
+    "freeShipping": 250,
+    "currency": "CAD"
+  },
+  "payment": {
+    "etransferEmail": "pay@premiumsupply.ca",
+    "etransferQaPool": [
+      { "q": "Which Canadian city is known as the “City of a Thousand Islands”?", "a": "Kingston" },
+      { "q": "Which province is home to Banff National Park?", "a": "Alberta" },
+      { "q": "Which Canadian city hosts the Stampede each summer?", "a": "Calgary" },
+      { "q": "Which province is known as “La Belle Province”?", "a": "Quebec" },
+      { "q": "Which Canadian city is nicknamed “The Peg”?", "a": "Winnipeg" },
+      { "q": "Which province has the capital Halifax?", "a": "Nova Scotia" }
+    ],
+    "cryptoWallets": {
+      "BTC": "bc1q-your-btc-address-here",
+      "ETH": "0x-your-eth-address-here",
+      "LTC": "ltc1-your-ltc-address-here",
+      "USDT": "your-usdt-address-here",
+      "DOGE": "D-your-doge-address-here"
+    }
+  },
+  "promotions": [
+    {
+      "title": "Weekly Drop",
+      "subtitle": "Fresh restocks with a premium edge.",
+      "image": "assets/promos/promo-1.jpg",
+      "ctaText": "Browse new arrivals",
+      "ctaLink": "shop.html"
+    },
+    {
+      "title": "Top‑Rated Picks",
+      "subtitle": "Customer favorites — rated & reviewed.",
+      "image": "assets/promos/promo-2.jpg",
+      "ctaText": "Explore top rated",
+      "ctaLink": "shop.html?sort=rating"
+    },
+    {
+      "title": "Free Shipping Zone",
+      "subtitle": "Free shipping automatically applies at $250+.",
+      "image": "assets/promos/promo-3.jpg",
+      "ctaText": "Start a cart",
+      "ctaLink": "shop.html"
+    }
+  ],
+  "categories": [
+    { "id": "flower", "name": "Flower", "hint": "Craft & premium buds" },
+    { "id": "concentrates", "name": "Concentrates", "hint": "Extracts & classics" },
+    { "id": "edibles", "name": "Edibles", "hint": "Candy, baked & more" },
+    { "id": "vapes", "name": "Vapes", "hint": "Smooth carts & disposables" },
+    { "id": "cbd", "name": "CBD", "hint": "Oils, drops & calm" },
+    { "id": "male-enhancers", "name": "Male Enhancers", "hint": "Discreet, premium packs" },
+    { "id": "mushrooms", "name": "Mushrooms", "hint": "Curated wellness picks" },
+    { "id": "oils", "name": "Oils", "hint": "Premium drops & blends" }
+  ],
+  "reviewPool": [
+    { "name": "A. Tremblay", "text": "Super clean product, premium feel from packaging to effect.", "rating": 5 },
+    { "name": "J. Nguyen", "text": "Fast, discreet, and the quality is exactly what I was hoping for.", "rating": 5 },
+    { "name": "M. Singh", "text": "Smooth experience — the product matched the description perfectly.", "rating": 5 },
+    { "name": "K. Martin", "text": "Top shelf. Great freshness and the results are consistent.", "rating": 5 },
+    { "name": "S. Wilson", "text": "You can tell it’s curated — no filler, just quality.", "rating": 5 },
+    { "name": "D. Roy", "text": "Premium store vibe and the product is even better in person.", "rating": 5 },
+    { "name": "L. Chen", "text": "Excellent value for the quality level. Would order again.", "rating": 5 },
+    { "name": "C. Bouchard", "text": "Clean, smooth, and strong. Exactly the kind of shop I trust.", "rating": 5 },
+    { "name": "N. Patel", "text": "The details are accurate and the quality is consistent.", "rating": 5 },
+    { "name": "R. Johnson", "text": "Very premium. Great selection and the checkout flow is easy.", "rating": 5 },
+    { "name": "P. Gagnon", "text": "Fresh and properly stored — that matters and it shows.", "rating": 5 },
+    { "name": "T. Anderson", "text": "Bought for the first time — impressed by the quality and clarity.", "rating": 5 }
+  ],
+  "products": [
+    {
+      "id": "ps-flower-aurora-frost",
+      "name": "Aurora Frost AAA+",
+      "categoryId": "flower",
+      "badges": ["AAA+", "Hybrid"],
+      "image": "assets/products/placeholder.jpg",
+      "rating": 4.8,
+      "reviewsCount": 122,
+      "variants": [
+        { "label": "3.5g", "price": 43.44 },
+        { "label": "7g", "price": 79.99 },
+        { "label": "1 Oz", "price": 159.99 },
+        { "label": "1½ Oz", "price": 219.99 },
+        { "label": "¼ Pound", "price": 349.99 },
+        { "label": "½ Pound", "price": 649.99 },
+        { "label": "1 Pound", "price": 1199.99 }
+      ],
+      "description": "A bright, premium-grade flower with a clean finish and a smooth profile."
+    },
+    {
+      "id": "ps-flower-mint-eclipse",
+      "name": "Mint Eclipse AAA",
+      "categoryId": "flower",
+      "badges": ["AAA", "Indica"],
+      "image": "assets/products/placeholder.jpg",
+      "rating": 4.7,
+      "reviewsCount": 88,
+      "variants": [
+        { "label": "3.5g", "price": 34.99 },
+        { "label": "7g", "price": 64.99 },
+        { "label": "1 Oz", "price": 139.99 },
+        { "label": "1½ Oz", "price": 199.99 },
+        { "label": "¼ Pound", "price": 319.99 },
+        { "label": "½ Pound", "price": 599.99 },
+        { "label": "1 Pound", "price": 1099.99 }
+      ],
+      "description": "A calm, premium indica option with a clean, classic finish."
+    },
+    {
+      "id": "ps-flower-neon-orchard",
+      "name": "Neon Orchard AA+",
+      "categoryId": "flower",
+      "badges": ["AA+", "Sativa"],
+      "image": "assets/products/placeholder.jpg",
+      "rating": 4.6,
+      "reviewsCount": 64,
+      "variants": [
+        { "label": "3.5g", "price": 29.99 },
+        { "label": "7g", "price": 54.99 },
+        { "label": "1 Oz", "price": 119.99 },
+        { "label": "1½ Oz", "price": 169.99 },
+        { "label": "¼ Pound", "price": 289.99 },
+        { "label": "½ Pound", "price": 539.99 },
+        { "label": "1 Pound", "price": 999.99 }
+      ],
+      "description": "Bright, crisp energy with a premium feel — clean and consistent."
+    },
 
-{"id":"galaxy-gummies-edibles","name":"Galaxy Gummies","category":"Edibles","type":"","tier":"Premium","rating":4.7,"reviews":177,"image":"assets/products/edibles/galaxy-gummies.jpg","badges":["New"],"variants":[{"label":"10 pack","price":24.02},{"label":"20 pack","price":42.66},{"label":"40 pack","price":75.86}]},
-{"id":"nebula-sour-squares-edibles","name":"Nebula Sour Squares","category":"Edibles","type":"","tier":"Premium","rating":4.5,"reviews":127,"image":"assets/products/edibles/nebula-sour-squares.jpg","badges":[],"variants":[{"label":"10 pack","price":23.74},{"label":"20 pack","price":42.17},{"label":"40 pack","price":74.98}]},
-{"id":"cosmic-chocolate-bar-edibles","name":"Cosmic Chocolate Bar","category":"Edibles","type":"","tier":"Premium","rating":4.7,"reviews":146,"image":"assets/products/edibles/cosmic-chocolate-bar.jpg","badges":[],"variants":[{"label":"10 pack","price":25.49},{"label":"20 pack","price":45.28},{"label":"40 pack","price":80.48}]},
-{"id":"stardust-cookies-edibles","name":"Stardust Cookies","category":"Edibles","type":"","tier":"Premium","rating":4.5,"reviews":121,"image":"assets/products/edibles/stardust-cookies.jpg","badges":[],"variants":[{"label":"10 pack","price":25.64},{"label":"20 pack","price":45.54},{"label":"40 pack","price":80.95}]},
-{"id":"meteor-mints-edibles","name":"Meteor Mints","category":"Edibles","type":"","tier":"Premium","rating":4.6,"reviews":111,"image":"assets/products/edibles/meteor-mints.jpg","badges":[],"variants":[{"label":"10 pack","price":26.45},{"label":"20 pack","price":46.98},{"label":"40 pack","price":83.49}]},
-{"id":"orbit-caramels-edibles","name":"Orbit Caramels","category":"Edibles","type":"","tier":"Premium","rating":4.4,"reviews":86,"image":"assets/products/edibles/orbit-caramels.jpg","badges":[],"variants":[{"label":"10 pack","price":25.6},{"label":"20 pack","price":45.48},{"label":"40 pack","price":80.85}]},
-{"id":"lunar-lollipops-edibles","name":"Lunar Lollipops","category":"Edibles","type":"","tier":"Premium","rating":4.8,"reviews":140,"image":"assets/products/edibles/lunar-lollipops.jpg","badges":[],"variants":[{"label":"10 pack","price":26.53},{"label":"20 pack","price":47.12},{"label":"40 pack","price":83.74}]},
-{"id":"aurora-fruit-chews-edibles","name":"Aurora Fruit Chews","category":"Edibles","type":"","tier":"Premium","rating":4.4,"reviews":88,"image":"assets/products/edibles/aurora-fruit-chews.jpg","badges":["New"],"variants":[{"label":"10 pack","price":24.95},{"label":"20 pack","price":44.29},{"label":"40 pack","price":78.72}]},
-{"id":"space-crunch-treats-edibles","name":"Space Crunch Treats","category":"Edibles","type":"","tier":"Premium","rating":4.6,"reviews":75,"image":"assets/products/edibles/space-crunch-treats.jpg","badges":[],"variants":[{"label":"10 pack","price":25.11},{"label":"20 pack","price":44.58},{"label":"40 pack","price":79.24}]},
-{"id":"midnight-brownie-bites-edibles","name":"Midnight Brownie Bites","category":"Edibles","type":"","tier":"Premium","rating":4.8,"reviews":102,"image":"assets/products/edibles/midnight-brownie-bites.jpg","badges":[],"variants":[{"label":"10 pack","price":23.39},{"label":"20 pack","price":41.55},{"label":"40 pack","price":73.87}]},
+    {
+      "id": "ps-conc-nebula-shatter",
+      "name": "Nebula Shatter",
+      "categoryId": "concentrates",
+      "badges": ["Premium", "Extract"],
+      "image": "assets/products/placeholder.jpg",
+      "rating": 4.8,
+      "reviewsCount": 180,
+      "variants": [
+        { "label": "1g", "price": 34.99 },
+        { "label": "3.5g", "price": 109.99 },
+        { "label": "7g", "price": 199.99 },
+        { "label": "14g", "price": 369.99 },
+        { "label": "28g", "price": 699.99 }
+      ],
+      "description": "A premium concentrate designed for a clean, strong finish."
+    },
+    {
+      "id": "ps-conc-lunar-hash",
+      "name": "Lunar Press Hash",
+      "categoryId": "concentrates",
+      "badges": ["Classic", "Smooth"],
+      "image": "assets/products/placeholder.jpg",
+      "rating": 4.7,
+      "reviewsCount": 97,
+      "variants": [
+        { "label": "1g", "price": 18.99 },
+        { "label": "3.5g", "price": 59.99 },
+        { "label": "7g", "price": 109.99 },
+        { "label": "14g", "price": 199.99 },
+        { "label": "28g", "price": 379.99 }
+      ],
+      "description": "Pressed, aromatic, and premium — a clean classic for your collection."
+    },
 
-{"id":"nebula-shatter-extracts","name":"Nebula Shatter","category":"Extracts","type":"Hybrid","tier":"Premium","rating":4.6,"reviews":141,"image":"assets/products/extracts/nebula-shatter.jpg","badges":[],"variants":[{"label":"1g","price":34.72},{"label":"2g","price":63.64},{"label":"3.5g","price":110.01},{"label":"7g","price":209.1},{"label":"14g","price":395.76},{"label":"28g","price":756.72}]},
-{"id":"quartz-budder-extracts","name":"Quartz Budder","category":"Extracts","type":"Indica","tier":"Premium","rating":4.7,"reviews":155,"image":"assets/products/extracts/quartz-budder.jpg","badges":[],"variants":[{"label":"1g","price":30.39},{"label":"2g","price":55.7},{"label":"3.5g","price":96.31},{"label":"7g","price":183.21},{"label":"14g","price":346.44},{"label":"28g","price":662.46}]},
-{"id":"orbit-live-resin-extracts","name":"Orbit Live Resin","category":"Extracts","type":"Sativa","tier":"Premium","rating":4.5,"reviews":61,"image":"assets/products/extracts/orbit-live-resin.jpg","badges":["Sale"],"variants":[{"label":"1g","price":35.24},{"label":"2g","price":64.59},{"label":"3.5g","price":111.66},{"label":"7g","price":212.24},{"label":"14g","price":401.7},{"label":"28g","price":768.07}]},
-{"id":"dark-matter-diamonds-extracts","name":"Dark Matter Diamonds","category":"Extracts","type":"Hybrid","tier":"Premium","rating":4.7,"reviews":148,"image":"assets/products/extracts/dark-matter-diamonds.jpg","badges":[],"variants":[{"label":"1g","price":31.85},{"label":"2g","price":58.37},{"label":"3.5g","price":100.93},{"label":"7g","price":192.05},{"label":"14g","price":363.15},{"label":"28g","price":694.71}]},
-{"id":"solar-wax-extracts","name":"Solar Wax","category":"Extracts","type":"Sativa","tier":"Premium","rating":4.4,"reviews":92,"image":"assets/products/extracts/solar-wax.jpg","badges":[],"variants":[{"label":"1g","price":34.23},{"label":"2g","price":62.73},{"label":"3.5g","price":108.46},{"label":"7g","price":206.13},{"label":"14g","price":390.01},{"label":"28g","price":746.18}]},
-{"id":"meteor-crumble-extracts","name":"Meteor Crumble","category":"Extracts","type":"Hybrid","tier":"Premium","rating":4.6,"reviews":69,"image":"assets/products/extracts/meteor-crumble.jpg","badges":["Sale"],"variants":[{"label":"1g","price":30.86},{"label":"2g","price":56.57},{"label":"3.5g","price":97.79},{"label":"7g","price":186.03},{"label":"14g","price":351.76},{"label":"28g","price":673.44}]},
-{"id":"lunar-hash-extracts","name":"Lunar Hash","category":"Extracts","type":"Indica","tier":"Premium","rating":4.7,"reviews":156,"image":"assets/products/extracts/lunar-hash.jpg","badges":[],"variants":[{"label":"1g","price":35.89},{"label":"2g","price":65.79},{"label":"3.5g","price":113.71},{"label":"7g","price":216.16},{"label":"14g","price":409.12},{"label":"28g","price":782.23}]},
-{"id":"starforge-rosin-extracts","name":"Starforge Rosin","category":"Extracts","type":"Hybrid","tier":"Premium","rating":4.6,"reviews":146,"image":"assets/products/extracts/starforge-rosin.jpg","badges":[],"variants":[{"label":"1g","price":31.41},{"label":"2g","price":57.56},{"label":"3.5g","price":99.54},{"label":"7g","price":189.4},{"label":"14g","price":357.9},{"label":"28g","price":684.58}]},
-{"id":"plasma-distillate-extracts","name":"Plasma Distillate","category":"Extracts","type":"","tier":"Premium","rating":4.4,"reviews":62,"image":"assets/products/extracts/plasma-distillate.jpg","badges":[],"variants":[{"label":"1g","price":33.67},{"label":"2g","price":61.71},{"label":"3.5g","price":106.68},{"label":"7g","price":202.76},{"label":"14g","price":383.63},{"label":"28g","price":734.0}]},
-{"id":"ion-kief-extracts","name":"Ion Kief","category":"Extracts","type":"","tier":"Premium","rating":4.7,"reviews":121,"image":"assets/products/extracts/ion-kief.jpg","badges":[],"variants":[{"label":"1g","price":32.2},{"label":"2g","price":59.02},{"label":"3.5g","price":102.08},{"label":"7g","price":194.02},{"label":"14g","price":366.69},{"label":"28g","price":701.57}]},
+    {
+      "id": "ps-edibles-astro-gummies",
+      "name": "Astro Gummies (10‑Pack)",
+      "categoryId": "edibles",
+      "badges": ["Popular", "Tasty"],
+      "image": "assets/products/placeholder.jpg",
+      "rating": 4.8,
+      "reviewsCount": 210,
+      "variants": [
+        { "label": "1 pack", "price": 18.0 },
+        { "label": "2 packs", "price": 34.0 },
+        { "label": "3 packs", "price": 49.0 }
+      ],
+      "description": "A clean, premium edible pack with smooth consistency."
+    },
+    {
+      "id": "ps-edibles-orbit-bites",
+      "name": "Orbit Bites (Rice Bar)",
+      "categoryId": "edibles",
+      "badges": ["Classic", "Strong"],
+      "image": "assets/products/placeholder.jpg",
+      "rating": 4.7,
+      "reviewsCount": 141,
+      "variants": [
+        { "label": "1 pack", "price": 18.0 },
+        { "label": "2 packs", "price": 34.0 },
+        { "label": "3 packs", "price": 49.0 }
+      ],
+      "description": "Premium, balanced, and consistent — a customer favorite."
+    },
 
-{"id":"lion-s-mane-focus-caps-mushrooms","name":"Lion's Mane Focus Caps","category":"Mushrooms","type":"","tier":"Premium","rating":4.6,"reviews":112,"image":"assets/products/mushrooms/lion-s-mane-focus-caps.jpg","badges":[],"variants":[{"label":"60 caps","price":33.6},{"label":"120 caps","price":57.55},{"label":"200g powder","price":48.37}]},
-{"id":"reishi-night-blend-mushrooms","name":"Reishi Night Blend","category":"Mushrooms","type":"","tier":"Premium","rating":4.4,"reviews":60,"image":"assets/products/mushrooms/reishi-night-blend.jpg","badges":[],"variants":[{"label":"60 caps","price":32.09},{"label":"120 caps","price":54.96},{"label":"200g powder","price":46.19}]},
-{"id":"cordyceps-energy-caps-mushrooms","name":"Cordyceps Energy Caps","category":"Mushrooms","type":"","tier":"Premium","rating":4.6,"reviews":78,"image":"assets/products/mushrooms/cordyceps-energy-caps.jpg","badges":[],"variants":[{"label":"60 caps","price":33.72},{"label":"120 caps","price":57.75},{"label":"200g powder","price":48.53}]},
-{"id":"chaga-immune-tea-mushrooms","name":"Chaga Immune Tea","category":"Mushrooms","type":"","tier":"Premium","rating":4.4,"reviews":86,"image":"assets/products/mushrooms/chaga-immune-tea.jpg","badges":["New"],"variants":[{"label":"60 caps","price":39.19},{"label":"120 caps","price":67.12},{"label":"200g powder","price":56.41}]},
-{"id":"turkey-tail-daily-caps-mushrooms","name":"Turkey Tail Daily Caps","category":"Mushrooms","type":"","tier":"Premium","rating":4.7,"reviews":176,"image":"assets/products/mushrooms/turkey-tail-daily-caps.jpg","badges":[],"variants":[{"label":"60 caps","price":33.03},{"label":"120 caps","price":56.56},{"label":"200g powder","price":47.54}]},
-{"id":"maitake-wellness-powder-mushrooms","name":"Maitake Wellness Powder","category":"Mushrooms","type":"","tier":"Premium","rating":4.8,"reviews":61,"image":"assets/products/mushrooms/maitake-wellness-powder.jpg","badges":[],"variants":[{"label":"60 caps","price":31.9},{"label":"120 caps","price":54.64},{"label":"200g powder","price":45.93}]},
-{"id":"shiitake-umami-boost-mushrooms","name":"Shiitake Umami Boost","category":"Mushrooms","type":"","tier":"Premium","rating":4.6,"reviews":171,"image":"assets/products/mushrooms/shiitake-umami-boost.jpg","badges":[],"variants":[{"label":"60 caps","price":36.06},{"label":"120 caps","price":61.74},{"label":"200g powder","price":51.89}]},
-{"id":"functional-mushroom-gummies-mushrooms","name":"Functional Mushroom Gummies","category":"Mushrooms","type":"","tier":"Premium","rating":4.7,"reviews":82,"image":"assets/products/mushrooms/functional-mushroom-gummies.jpg","badges":[],"variants":[{"label":"60 caps","price":38.19},{"label":"120 caps","price":65.39},{"label":"200g powder","price":54.96}]},
-{"id":"seven-mushroom-blend-powder-mushrooms","name":"Seven-Mushroom Blend Powder","category":"Mushrooms","type":"","tier":"Premium","rating":4.6,"reviews":137,"image":"assets/products/mushrooms/seven-mushroom-blend-powder.jpg","badges":["New"],"variants":[{"label":"60 caps","price":34.35},{"label":"120 caps","price":58.99},{"label":"200g powder","price":49.63}]},
-{"id":"coffee-mushroom-mix-mushrooms","name":"Coffee + Mushroom Mix","category":"Mushrooms","type":"","tier":"Premium","rating":4.7,"reviews":105,"image":"assets/products/mushrooms/coffee-mushroom-mix.jpg","badges":[],"variants":[{"label":"60 caps","price":33.92},{"label":"120 caps","price":58.1},{"label":"200g powder","price":48.83}]},
+    {
+      "id": "ps-vape-exhale-lumen",
+      "name": "Lumen Cart (1g)",
+      "categoryId": "vapes",
+      "badges": ["Smooth", "Premium"],
+      "image": "assets/products/placeholder.jpg",
+      "rating": 4.7,
+      "reviewsCount": 73,
+      "variants": [
+        { "label": "1 cart", "price": 39.99 },
+        { "label": "2 carts", "price": 74.99 },
+        { "label": "3 carts", "price": 109.99 }
+      ],
+      "description": "Premium vape experience with clean pull and consistent quality."
+    },
+    {
+      "id": "ps-vape-neon-disposable",
+      "name": "Neon Disposable (1g)",
+      "categoryId": "vapes",
+      "badges": ["Convenient", "Clean"],
+      "image": "assets/products/placeholder.jpg",
+      "rating": 4.6,
+      "reviewsCount": 52,
+      "variants": [
+        { "label": "1 pen", "price": 44.99 },
+        { "label": "2 pens", "price": 84.99 },
+        { "label": "3 pens", "price": 119.99 }
+      ],
+      "description": "Premium disposable vape with a clean, smooth profile."
+    },
 
-{"id":"night-drive-male-enhancers","name":"Night Drive","category":"Male Enhancers","type":"","tier":"Premium","rating":4.8,"reviews":79,"image":"assets/products/male-enhancers/night-drive.jpg","badges":[],"variants":[{"label":"1 pack","price":47.78},{"label":"3 pack","price":124.56},{"label":"5 pack","price":190.9}]},
-{"id":"iron-pulse-male-enhancers","name":"Iron Pulse","category":"Male Enhancers","type":"","tier":"Premium","rating":4.7,"reviews":43,"image":"assets/products/male-enhancers/iron-pulse.jpg","badges":["New"],"variants":[{"label":"1 pack","price":52.59},{"label":"3 pack","price":137.11},{"label":"5 pack","price":210.94}]},
-{"id":"arctic-boost-male-enhancers","name":"Arctic Boost","category":"Male Enhancers","type":"","tier":"Premium","rating":4.3,"reviews":44,"image":"assets/products/male-enhancers/arctic-boost.jpg","badges":[],"variants":[{"label":"1 pack","price":50.72},{"label":"3 pack","price":132.23},{"label":"5 pack","price":203.44}]},
-{"id":"neon-stamina-male-enhancers","name":"Neon Stamina","category":"Male Enhancers","type":"","tier":"Premium","rating":4.7,"reviews":153,"image":"assets/products/male-enhancers/neon-stamina.jpg","badges":[],"variants":[{"label":"1 pack","price":48.64},{"label":"3 pack","price":126.8},{"label":"5 pack","price":195.09}]},
-{"id":"orbit-confidence-male-enhancers","name":"Orbit Confidence","category":"Male Enhancers","type":"","tier":"Premium","rating":4.5,"reviews":102,"image":"assets/products/male-enhancers/orbit-confidence.jpg","badges":[],"variants":[{"label":"1 pack","price":48.58},{"label":"3 pack","price":126.64},{"label":"5 pack","price":194.85}]},
-{"id":"voltage-vitality-male-enhancers","name":"Voltage Vitality","category":"Male Enhancers","type":"","tier":"Premium","rating":4.3,"reviews":120,"image":"assets/products/male-enhancers/voltage-vitality.jpg","badges":[],"variants":[{"label":"1 pack","price":49.31},{"label":"3 pack","price":128.56},{"label":"5 pack","price":197.79}]},
-{"id":"afterglow-pack-male-enhancers","name":"Afterglow Pack","category":"Male Enhancers","type":"","tier":"Premium","rating":4.4,"reviews":123,"image":"assets/products/male-enhancers/afterglow-pack.jpg","badges":[],"variants":[{"label":"1 pack","price":52.65},{"label":"3 pack","price":137.26},{"label":"5 pack","price":211.17}]},
-{"id":"nova-performance-male-enhancers","name":"Nova Performance","category":"Male Enhancers","type":"","tier":"Premium","rating":4.7,"reviews":113,"image":"assets/products/male-enhancers/nova-performance.jpg","badges":[],"variants":[{"label":"1 pack","price":49.02},{"label":"3 pack","price":127.8},{"label":"5 pack","price":196.63}]},
-{"id":"midnight-momentum-male-enhancers","name":"Midnight Momentum","category":"Male Enhancers","type":"","tier":"Premium","rating":4.8,"reviews":116,"image":"assets/products/male-enhancers/midnight-momentum.jpg","badges":[],"variants":[{"label":"1 pack","price":52.24},{"label":"3 pack","price":136.19},{"label":"5 pack","price":209.53}]},
-{"id":"prime-power-male-enhancers","name":"Prime Power","category":"Male Enhancers","type":"","tier":"Premium","rating":4.6,"reviews":137,"image":"assets/products/male-enhancers/prime-power.jpg","badges":["New"],"variants":[{"label":"1 pack","price":52.35},{"label":"3 pack","price":136.47},{"label":"5 pack","price":209.96}]},
+    {
+      "id": "ps-cbd-calm-drops",
+      "name": "CBD Calm Drops (30ml)",
+      "categoryId": "cbd",
+      "badges": ["Calm", "Premium"],
+      "image": "assets/products/placeholder.jpg",
+      "rating": 4.8,
+      "reviewsCount": 119,
+      "variants": [
+        { "label": "30ml", "price": 49.99 },
+        { "label": "60ml", "price": 84.99 }
+      ],
+      "description": "A premium CBD blend designed for a calm, clean routine."
+    },
+    {
+      "id": "ps-cbd-night-oil",
+      "name": "CBD Night Oil (30ml)",
+      "categoryId": "cbd",
+      "badges": ["Night", "Smooth"],
+      "image": "assets/products/placeholder.jpg",
+      "rating": 4.7,
+      "reviewsCount": 86,
+      "variants": [
+        { "label": "30ml", "price": 54.99 },
+        { "label": "60ml", "price": 94.99 }
+      ],
+      "description": "Premium night-focused CBD oil with a smooth finish."
+    },
 
-{"id":"aurora-tincture-oil-oils","name":"Aurora Tincture Oil","category":"Oils","type":"","tier":"Premium","rating":4.8,"reviews":28,"image":"assets/products/oils/aurora-tincture-oil.jpg","badges":[],"variants":[{"label":"30ml","price":32.01},{"label":"60ml","price":54.23},{"label":"100ml","price":77.32}]},
-{"id":"midnight-relax-oil-oils","name":"Midnight Relax Oil","category":"Oils","type":"","tier":"Premium","rating":4.7,"reviews":73,"image":"assets/products/oils/midnight-relax-oil.jpg","badges":[],"variants":[{"label":"30ml","price":34.98},{"label":"60ml","price":59.26},{"label":"100ml","price":84.43}]},
-{"id":"cosmic-carrier-oil-oils","name":"Cosmic Carrier Oil","category":"Oils","type":"","tier":"Premium","rating":4.6,"reviews":150,"image":"assets/products/oils/cosmic-carrier-oil.jpg","badges":["Sale"],"variants":[{"label":"30ml","price":34.41},{"label":"60ml","price":58.29},{"label":"100ml","price":83.04}]},
-{"id":"stellar-balance-drops-oils","name":"Stellar Balance Drops","category":"Oils","type":"","tier":"Premium","rating":4.6,"reviews":72,"image":"assets/products/oils/stellar-balance-drops.jpg","badges":[],"variants":[{"label":"30ml","price":38.74},{"label":"60ml","price":65.62},{"label":"100ml","price":93.99}]},
-{"id":"lunar-calm-oil-oils","name":"Lunar Calm Oil","category":"Oils","type":"","tier":"Premium","rating":4.5,"reviews":57,"image":"assets/products/oils/lunar-calm-oil.jpg","badges":[],"variants":[{"label":"30ml","price":37.35},{"label":"60ml","price":63.27},{"label":"100ml","price":90.62}]},
-{"id":"orbit-recovery-oil-oils","name":"Orbit Recovery Oil","category":"Oils","type":"","tier":"Premium","rating":4.4,"reviews":42,"image":"assets/products/oils/orbit-recovery-oil.jpg","badges":[],"variants":[{"label":"30ml","price":35.77},{"label":"60ml","price":60.6},{"label":"100ml","price":86.8}]},
-{"id":"nebula-night-drops-oils","name":"Nebula Night Drops","category":"Oils","type":"","tier":"Premium","rating":4.5,"reviews":31,"image":"assets/products/oils/nebula-night-drops.jpg","badges":["Sale"],"variants":[{"label":"30ml","price":37.79},{"label":"60ml","price":64.02},{"label":"100ml","price":91.68}]},
-{"id":"sunrise-daily-oil-oils","name":"Sunrise Daily Oil","category":"Oils","type":"","tier":"Premium","rating":4.7,"reviews":103,"image":"assets/products/oils/sunrise-daily-oil.jpg","badges":[],"variants":[{"label":"30ml","price":34.8},{"label":"60ml","price":58.96},{"label":"100ml","price":84.0}]},
-{"id":"galaxy-blend-oil-oils","name":"Galaxy Blend Oil","category":"Oils","type":"","tier":"Premium","rating":4.3,"reviews":85,"image":"assets/products/oils/galaxy-blend-oil.jpg","badges":[],"variants":[{"label":"30ml","price":37.0},{"label":"60ml","price":62.69},{"label":"100ml","price":89.26}]},
-{"id":"deep-space-oil-oils","name":"Deep Space Oil","category":"Oils","type":"","tier":"Premium","rating":4.4,"reviews":52,"image":"assets/products/oils/deep-space-oil.jpg","badges":[],"variants":[{"label":"30ml","price":35.58},{"label":"60ml","price":60.27},{"label":"100ml","price":86.31}]}
-]
+    {
+      "id": "ps-male-afterglow-pack",
+      "name": "Afterglow Pack",
+      "categoryId": "male-enhancers",
+      "badges": ["Premium", "Discreet"],
+      "image": "assets/products/placeholder.jpg",
+      "rating": 4.6,
+      "reviewsCount": 123,
+      "variants": [
+        { "label": "1 pack", "price": 52.65 },
+        { "label": "2 packs", "price": 99.99 },
+        { "label": "3 packs", "price": 139.99 }
+      ],
+      "description": "A discreet premium pack — simple, clean, and consistent."
+    },
+    {
+      "id": "ps-male-night-drive",
+      "name": "Night Drive Pack",
+      "categoryId": "male-enhancers",
+      "badges": ["Premium", "Reliable"],
+      "image": "assets/products/placeholder.jpg",
+      "rating": 4.5,
+      "reviewsCount": 72,
+      "variants": [
+        { "label": "1 pack", "price": 49.99 },
+        { "label": "2 packs", "price": 94.99 },
+        { "label": "3 packs", "price": 134.99 }
+      ],
+      "description": "Premium and reliable — designed to fit a confident routine."
+    },
+
+    {
+      "id": "ps-mushrooms-stellar-caps",
+      "name": "Stellar Caps",
+      "categoryId": "mushrooms",
+      "badges": ["Curated", "Premium"],
+      "image": "assets/products/placeholder.jpg",
+      "rating": 4.7,
+      "reviewsCount": 58,
+      "variants": [
+        { "label": "1 pack", "price": 44.99 },
+        { "label": "2 packs", "price": 84.99 }
+      ],
+      "description": "Curated premium mushroom option with a clean presentation."
+    },
+    {
+      "id": "ps-mushrooms-aurora-gummies",
+      "name": "Aurora Mushroom Gummies",
+      "categoryId": "mushrooms",
+      "badges": ["Tasty", "Curated"],
+      "image": "assets/products/placeholder.jpg",
+      "rating": 4.6,
+      "reviewsCount": 41,
+      "variants": [
+        { "label": "1 pack", "price": 39.99 },
+        { "label": "2 packs", "price": 74.99 }
+      ],
+      "description": "A curated gummy pack with premium feel and consistent quality."
+    },
+
+    {
+      "id": "ps-oils-orbit-oil",
+      "name": "Orbit Oil (30ml)",
+      "categoryId": "oils",
+      "badges": ["Premium", "Clean"],
+      "image": "assets/products/placeholder.jpg",
+      "rating": 4.7,
+      "reviewsCount": 67,
+      "variants": [
+        { "label": "30ml", "price": 59.99 },
+        { "label": "60ml", "price": 99.99 }
+      ],
+      "description": "Premium oil with a clean finish — smooth and consistent."
+    },
+    {
+      "id": "ps-oils-luxe-blend",
+      "name": "Luxe Blend Oil (30ml)",
+      "categoryId": "oils",
+      "badges": ["Luxury", "Premium"],
+      "image": "assets/products/placeholder.jpg",
+      "rating": 4.8,
+      "reviewsCount": 74,
+      "variants": [
+        { "label": "30ml", "price": 64.99 },
+        { "label": "60ml", "price": 109.99 }
+      ],
+      "description": "A luxury oil blend with a premium feel and a clean finish."
+    }
+  ]
+}
