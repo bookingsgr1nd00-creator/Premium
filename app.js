@@ -5,10 +5,10 @@
     config: null,
     products: [],
     cacheBuster: Date.now(),
-    cartKey: "ps_cart_v4"
+    cartKey: "ps_cart_v5",
+    reviewsState: { productId: null, shown: 0 }
   };
 
-  // ---------- utils ----------
   const $ = (sel, root=document) => root.querySelector(sel);
   const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
 
@@ -41,7 +41,6 @@
     box.style.display = "block";
     box.textContent = msg;
   }
-
   function hideNotice(){
     const box = $("#loadNotice");
     if(!box) return;
@@ -49,7 +48,7 @@
     box.textContent = "";
   }
 
-  // ---------- cart ----------
+  // ---------------- Cart ----------------
   function getCart(){
     try{
       const raw = localStorage.getItem(PS.cartKey);
@@ -59,30 +58,17 @@
       return [];
     }
   }
-
   function setCart(cart){
     localStorage.setItem(PS.cartKey, JSON.stringify(cart));
     updateCartBadge();
   }
-
   function cartCount(){
     return getCart().reduce((sum, it) => sum + (Number(it.qty)||0), 0);
   }
-
   function updateCartBadge(){
     const el = $("#cartCount");
     if(el) el.textContent = String(cartCount());
   }
-
-  function addToCart(productId, variantLabel){
-    const cart = getCart();
-    const hit = cart.find(it => it.id === productId && it.variant === variantLabel);
-    if(hit) hit.qty += 1;
-    else cart.push({ id: productId, variant: variantLabel, qty: 1 });
-    setCart(cart);
-    toast("Added to cart.");
-  }
-
   function toast(msg){
     const t = $("#toast");
     const tt = $("#toastText");
@@ -92,21 +78,219 @@
     window.clearTimeout(toast._timer);
     toast._timer = window.setTimeout(() => t.classList.remove("show"), 2000);
   }
+  function addToCart(productId, variantLabel){
+    const cart = getCart();
+    const hit = cart.find(it => it.id === productId && it.variant === variantLabel);
+    if(hit) hit.qty += 1;
+    else cart.push({ id: productId, variant: variantLabel, qty: 1 });
+    setCart(cart);
+    toast("Added to cart.");
+  }
 
-  // ---------- rating ----------
+  // ---------------- Rating & Reviews ----------------
+  function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
+
   function stars(rating){
-    const r = Math.max(0, Math.min(5, Number(rating || 0)));
+    const r = clamp(Number(rating || 0), 0, 5);
     const full = Math.floor(r);
     const half = (r - full) >= 0.5 ? 1 : 0;
     const empty = 5 - full - half;
-    // We keep it simple visually (no half glyph), still looks good
     return "★".repeat(full + half) + "☆".repeat(empty);
   }
 
-  // ---------- config apply ----------
+  // Deterministic hash (for unique reviews that never repeat)
+  function hash32(str){
+    let h = 2166136261;
+    for(let i=0;i<str.length;i++){
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return h >>> 0;
+  }
+  function pick(seed, arr){
+    return arr[seed % arr.length];
+  }
+
+  const REVIEW_NAMES = [
+    "Alex M.","Jordan P.","Sam R.","Taylor K.","Chris L.","Morgan S.","Riley B.","Jamie T.","Casey N.","Avery D.",
+    "Skyler H.","Cameron V.","Parker J.","Quinn A.","Hayden W.","Reese G."
+  ];
+
+  const REVIEW_OPENERS = [
+    "Premium quality from start to finish.",
+    "This one exceeded my expectations.",
+    "Exactly the kind of top-shelf experience I wanted.",
+    "Super clean presentation and consistent quality.",
+    "Really impressed with the freshness and finish.",
+    "A+ quality, would reorder without hesitation."
+  ];
+
+  const REVIEW_DETAILS = [
+    "The look and packaging felt properly dialed in.",
+    "The batch felt consistent and well cared for.",
+    "Smooth experience and no harsh surprises.",
+    "Everything matched the description perfectly.",
+    "Quality was steady from the first to the last.",
+    "It delivered the premium vibe I was aiming for."
+  ];
+
+  const REVIEW_CLOSERS = [
+    "Definitely keeping this in the rotation.",
+    "Worth it — feels like a premium pick.",
+    "Would recommend to anyone who likes clean quality.",
+    "I’ll be back for another order.",
+    "Solid value for the quality level.",
+    "One of the best picks I’ve tried lately."
+  ];
+
+  function normalizeProduct(p){
+    const out = { ...p };
+    out.id = String(out.id || "").trim() || String(out.name || "").toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9\-]/g,"");
+    out.rating = Number(out.rating || 4.7);
+    out.reviews = Math.max(6, Number(out.reviews || 0));
+    out.variants = Array.isArray(out.variants) && out.variants.length ? out.variants : [{ label: "3.5g", price: 0 }];
+
+    // Ensure image always string
+    out.image = String(out.image || "");
+    out.category = String(out.category || "");
+    out.type = String(out.type || "—");
+    out.tier = String(out.tier || "Premium");
+    out.short = String(out.short || "Neon quality — space-store selection.");
+    out.description = String(out.description || "Premium selection with a clean, consistent finish. Rated and reviewed for confidence.");
+    return out;
+  }
+
+  function makeReview(product, index){
+    // Unique per product + per index
+    const base = (hash32(product.id) ^ (index * 2654435761)) >>> 0;
+
+    const name = pick(base, REVIEW_NAMES);
+    const opener = pick(base + 11, REVIEW_OPENERS);
+    const detail = pick(base + 37, REVIEW_DETAILS);
+    const closer = pick(base + 71, REVIEW_CLOSERS);
+
+    // Date spread in last ~180 days
+    const daysAgo = (base % 180) + 1;
+    const d = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000);
+    const date = d.toLocaleDateString("en-CA", { year:"numeric", month:"short", day:"2-digit" });
+
+    // Rating close to product rating, clamped 4.0–5.0
+    const jitter = ((base % 21) - 10) / 20; // -0.5..+0.5
+    const rating = clamp((Number(product.rating) + jitter), 4.0, 5.0);
+
+    const batch = 1000 + (base % 9000); // makes text never repeat
+    const text = `${opener} ${detail} ${closer} (Batch #${batch})`;
+
+    return { name, date, rating, text };
+  }
+
+  function openReviews(productId){
+    const modal = $("#reviewsModal");
+    if(!modal) return;
+
+    const p = PS.products.find(x => x.id === productId);
+    if(!p) return;
+
+    PS.reviewsState.productId = productId;
+    PS.reviewsState.shown = 0;
+
+    $("#reviewsTitle").textContent = `${p.name} — Reviews`;
+    $("#reviewsSub").textContent = `${p.reviews} reviews • ${stars(p.rating)} • Rated for confidence`;
+
+    $("#reviewsList").innerHTML = "";
+    renderMoreReviews(true);
+
+    modal.classList.add("show");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeReviews(){
+    const modal = $("#reviewsModal");
+    if(!modal) return;
+    modal.classList.remove("show");
+    modal.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+  }
+
+  function renderMoreReviews(first){
+    const productId = PS.reviewsState.productId;
+    const p = PS.products.find(x => x.id === productId);
+    if(!p) return;
+
+    const summary = $("#reviewsSummary");
+    const list = $("#reviewsList");
+    const moreBtn = $("#reviewsMore");
+
+    const total = p.reviews;
+    const chunk = 8;
+
+    const start = PS.reviewsState.shown;
+    const end = Math.min(total, start + chunk);
+
+    if(first){
+      summary.innerHTML = `
+        <div><strong>Average</strong> ${Number(p.rating).toFixed(1)} / 5</div>
+        <div><strong>Total</strong> ${total} reviews</div>
+        <div><strong>Note</strong> Reviews are unique per product.</div>
+      `;
+    }
+
+    for(let i=start; i<end; i++){
+      const r = makeReview(p, i);
+      const card = document.createElement("div");
+      card.className = "review-card";
+      card.innerHTML = `
+        <div class="review-top">
+          <div>
+            <div class="review-name">${escapeHtml(r.name)}</div>
+            <div class="review-date">${escapeHtml(r.date)}</div>
+          </div>
+          <div class="review-stars">${stars(r.rating)}</div>
+        </div>
+        <div class="review-text">${escapeHtml(r.text)}</div>
+      `;
+      list.appendChild(card);
+    }
+
+    PS.reviewsState.shown = end;
+
+    if(end >= total){
+      moreBtn.style.display = "none";
+    } else {
+      moreBtn.style.display = "inline-flex";
+      moreBtn.textContent = `Load more reviews (${end}/${total})`;
+    }
+  }
+
+  // Global click handlers for reviews modal
+  function initReviewsModal(){
+    const modal = $("#reviewsModal");
+    if(!modal) return;
+
+    $("#reviewsClose")?.addEventListener("click", closeReviews);
+    modal.addEventListener("click", (e) => {
+      const close = e.target?.closest("[data-close]");
+      if(close) closeReviews();
+    });
+    $("#reviewsMore")?.addEventListener("click", () => renderMoreReviews(false));
+
+    // Open reviews from anywhere
+    document.addEventListener("click", (e) => {
+      const t = e.target?.closest(".js-open-reviews");
+      if(!t) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      const id = t.getAttribute("data-id");
+      if(id) openReviews(id);
+    });
+  }
+
+  // ---------------- Config Apply ----------------
   function applyBrand(){
-    if(!PS.config) return;
-    const s = PS.config.store || {};
+    const s = PS.config?.store || {};
     const name = s.name || "Premium Supply";
     const tag = s.tagline || "Space Store";
     const badge = s.countryBadge || "100% Canadian";
@@ -118,7 +302,6 @@
     const year = $("#year"); if(year) year.textContent = String(new Date().getFullYear());
     const brandNameFoot = $("#brandNameFoot"); if(brandNameFoot) brandNameFoot.textContent = name;
 
-    // rules pills
     const rules = s.rules || {};
     const min = rules.minimumOrder ?? 75;
     const free = rules.freeShippingThreshold ?? 250;
@@ -127,12 +310,10 @@
     const freeP = $("#freeShipPill"); if(freeP) freeP.textContent = `Free shipping $${free}+`;
   }
 
-  // ---------- promo strip (single banner under header) ----------
   function initPromoStrip(){
     const strip = $("#promoStrip");
     const textEl = $("#promoStripText");
     const ctaEl = $("#promoStripCta");
-
     if(!strip || !textEl || !ctaEl) return;
 
     const ps = PS.config?.store?.promoStrip;
@@ -140,14 +321,13 @@
       strip.hidden = true;
       return;
     }
-
     textEl.textContent = ps.text || "";
     ctaEl.textContent = ps.ctaLabel || "Shop";
     ctaEl.href = ps.ctaHref || "shop.html";
     strip.hidden = false;
   }
 
-  // ---------- sidebar categories ----------
+  // ---------------- Categories ----------------
   function renderDrawerCategories(activeCategory){
     const host = $("#drawerCats");
     if(!host) return;
@@ -161,7 +341,6 @@
     }).join("");
   }
 
-  // ---------- category dropdown ----------
   function initCategoryDropdown(currentCategory){
     const sel = $("#categorySelect");
     if(!sel) return;
@@ -181,53 +360,50 @@
     });
   }
 
-  // ---------- pricing helpers ----------
+  // ---------------- Pricing ----------------
   function defaultVariantLabel(p){
     const v = Array.isArray(p.variants) ? p.variants : [];
     return v[0]?.label || "";
   }
-
   function variantPrice(p, label){
     const v = Array.isArray(p.variants) ? p.variants : [];
     const hit = v.find(x => x.label === label);
     return hit ? Number(hit.price) : Number(v[0]?.price || 0);
   }
-
   function basePrice(p){
     return variantPrice(p, defaultVariantLabel(p));
   }
 
-  // ---------- product card for GRID pages ----------
+  // ---------------- Product Cards ----------------
   function productCard(p){
     const list = Array.isArray(p.variants) ? p.variants : [];
     const selected = defaultVariantLabel(p);
     const price = variantPrice(p, selected);
 
-    const sale = (p.badges || []).map(b => String(b).toLowerCase()).includes("sale");
-
     return `
       <article class="product-tile" data-id="${escapeHtml(p.id)}">
         <div class="product-tile__media">
-          ${sale ? `<span class="sale-bubble">Sale!</span>` : ""}
           <a class="product-link" href="product.html?id=${encodeURIComponent(p.id)}" aria-label="View ${escapeHtml(p.name)}">
             <div class="media-square">
-              <img src="${escapeHtml(p.image || "")}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async">
+              <img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async">
             </div>
-            <div class="type-strip">${escapeHtml(p.type || "—")}</div>
+            <div class="type-strip">${escapeHtml(p.type)}</div>
           </a>
         </div>
 
         <div class="product-tile__body">
           <div class="pill-row">
-            <span class="pill-mini">${escapeHtml(p.tier || "Premium")}</span>
-            <span class="pill-mini">${escapeHtml(p.category || "")}</span>
+            <span class="pill-mini">${escapeHtml(p.tier)}</span>
+            <span class="pill-mini">${escapeHtml(p.category)}</span>
           </div>
 
           <a class="product-title-link" href="product.html?id=${encodeURIComponent(p.id)}">${escapeHtml(p.name)}</a>
 
           <div class="rating">
             <div class="stars">${stars(p.rating)}</div>
-            <div class="reviews">${Number(p.reviews||0)} reviews</div>
+            <button class="reviews-link js-open-reviews" type="button" data-id="${escapeHtml(p.id)}">
+              ${Number(p.reviews)} reviews
+            </button>
           </div>
 
           <div class="price">
@@ -257,7 +433,6 @@
     if(!grid) return;
     grid.innerHTML = list.map(productCard).join("");
 
-    // variant change updates price
     $$(".js-variant", grid).forEach(sel => {
       sel.addEventListener("change", () => {
         const id = sel.dataset.id;
@@ -269,7 +444,6 @@
       });
     });
 
-    // buy buttons
     $$(".js-buy", grid).forEach(btn => {
       btn.addEventListener("click", () => {
         const id = btn.dataset.id;
@@ -280,97 +454,130 @@
     });
   }
 
-  // ---------- HOME mini card + carousels ----------
-  function miniCard(p){
-    const price = basePrice(p);
-    return `
-      <div class="carousel__item">
-        <a class="mini-card" href="product.html?id=${encodeURIComponent(p.id)}" aria-label="View ${escapeHtml(p.name)}">
-          <div class="mini-card__media">
-            <div class="mini-card__frame">
-              <img src="${escapeHtml(p.image||"")}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async">
-            </div>
-            <div class="mini-card__tag">${escapeHtml(p.type || "—")}</div>
-          </div>
-
-          <div class="mini-card__body">
-            <div class="mini-card__name">${escapeHtml(p.name)}</div>
-
-            <div class="mini-card__meta">
-              <div class="mini-stars">${stars(p.rating)}</div>
-              <div class="mini-reviews">${Number(p.reviews||0)} reviews</div>
-            </div>
-
-            <div class="mini-card__price">
-              <span class="mini-money">${money(price)}</span>
-              <span class="muted">${escapeHtml(PS.config?.store?.currency || "CAD")}</span>
-            </div>
-          </div>
-        </a>
-      </div>
-    `;
+  // ---------------- Home Rendering ----------------
+  function iconForCategory(c){
+    const map = {
+      "Flower":"fa-seedling",
+      "Concentrates":"fa-droplet",
+      "Edibles":"fa-cookie-bite",
+      "Vapes":"fa-wind",
+      "CBD":"fa-leaf",
+      "Mushrooms":"fa-mug-hot",
+      "Oils":"fa-bottle-droplet",
+      "Male Enhancers":"fa-bolt"
+    };
+    return map[c] || "fa-star";
   }
 
   function renderHome(){
-    renderDrawerCategories(null);
-
-    // category chips
-    const chipHost = $("#homeCatChips");
     const cats = (PS.config?.categories || []).filter(Boolean);
 
-    if(chipHost){
-      chipHost.innerHTML = cats.map(c => {
-        const icon = ({
-          "Flower":"fa-seedling",
-          "Concentrates":"fa-droplet",
-          "Edibles":"fa-cookie-bite",
-          "Vapes":"fa-wind",
-          "CBD":"fa-leaf",
-          "Mushrooms":"fa-mug-hot",
-          "Oils":"fa-bottle-droplet",
-          "Male Enhancers":"fa-bolt"
-        })[c] || "fa-star";
+    // Drawer categories
+    renderDrawerCategories(null);
 
-        return `<a class="cat-chip" href="category.html?c=${encodeURIComponent(c)}">
-          <i class="fa-solid ${icon}"></i> ${escapeHtml(c)}
-        </a>`;
-      }).join("");
+    // Promo banners
+    const banners = PS.config?.store?.home?.banners || [];
+    const bannersHost = $("#homeBanners");
+    if(bannersHost){
+      bannersHost.innerHTML = banners.map(b => `
+        <a class="promo-banner" href="${escapeHtml(b.href || "shop.html")}">
+          <div class="promo-banner__bg" style="background-image:url('${escapeHtml(b.image || "")}')"></div>
+          <div class="promo-banner__shade"></div>
+          <div class="promo-banner__content">
+            <h3 class="promo-banner__title">${escapeHtml(b.title || "Promotion")}</h3>
+            <p class="promo-banner__text">${escapeHtml(b.text || "")}</p>
+            <span class="promo-banner__cta">${escapeHtml(b.ctaLabel || "Shop")} <i class="fa-solid fa-arrow-right"></i></span>
+          </div>
+        </a>
+      `).join("");
     }
 
-    // carousels by category
-    const host = $("#homeCarousels");
-    if(!host) return;
-
-    const count = Number(PS.config?.store?.home?.carouselCount ?? 10);
-
-    host.innerHTML = cats.map(cat => {
-      const items = PS.products
-        .filter(p => String(p.category) === String(cat))
-        .slice()
-        .sort((a,b) => (Number(b.rating||0) - Number(a.rating||0)) || (basePrice(b) - basePrice(a)))
-        .slice(0, count);
-
-      return `
-        <div class="home-row">
-          <div class="home-row__head">
-            <h3 class="home-row__title">${escapeHtml(cat)}</h3>
-            <a class="link" href="category.html?c=${encodeURIComponent(cat)}">View all</a>
+    // Category tiles
+    const catHost = $("#homeCategoryGrid");
+    if(catHost){
+      catHost.innerHTML = cats.map(c => `
+        <a class="category-tile" href="category.html?c=${encodeURIComponent(c)}">
+          <div class="category-tile__left">
+            <div class="category-tile__icon"><i class="fa-solid ${iconForCategory(c)}"></i></div>
+            <div>
+              <div class="category-tile__name">${escapeHtml(c)}</div>
+              <div class="category-tile__hint">Browse ${escapeHtml(c)} products</div>
+            </div>
           </div>
+          <div class="category-tile__arrow"><i class="fa-solid fa-chevron-right"></i></div>
+        </a>
+      `).join("");
+    }
 
-          <div class="carousel" aria-label="${escapeHtml(cat)} products">
-            ${items.map(miniCard).join("")}
+    // 3 products per category
+    const previewHost = $("#homeCategoryPreviews");
+    if(previewHost){
+      const perCat = Number(PS.config?.store?.home?.categoryPreviewCount ?? 3);
+
+      previewHost.innerHTML = cats.map(cat => {
+        const items = PS.products
+          .filter(p => String(p.category) === String(cat))
+          .slice()
+          .sort((a,b) => (basePrice(b) - basePrice(a))) // high -> low for premium feel
+          .slice(0, perCat);
+
+        // If less than 3, pad with placeholders (so it always shows 3)
+        while(items.length < perCat){
+          items.push({
+            id: `placeholder-${cat}-${items.length}`,
+            name: "Coming soon",
+            category: cat,
+            type: "—",
+            tier: "Premium",
+            rating: 5,
+            reviews: 6,
+            image: "assets/products/placeholder.jpg",
+            variants: [{ label:"3.5g", price: 0 }]
+          });
+        }
+
+        return `
+          <div class="preview-row">
+            <div class="preview-row__head">
+              <h3 class="preview-row__title">${escapeHtml(cat)}</h3>
+              <a class="link" href="category.html?c=${encodeURIComponent(cat)}">View all</a>
+            </div>
+            <div class="preview-row__grid">
+              ${items.map(productCard).join("")}
+            </div>
           </div>
-        </div>
-      `;
-    }).join("");
+        `;
+      }).join("");
+
+      // hook buy + variant change inside home previews
+      previewHost.addEventListener("change", (e) => {
+        const sel = e.target.closest(".js-variant");
+        if(!sel) return;
+        const id = sel.dataset.id;
+        const p = PS.products.find(x => x.id === id) || null;
+        if(!p) return;
+        const priceEl = $(`.js-price[data-id="${CSS.escape(id)}"]`, previewHost);
+        if(priceEl) priceEl.textContent = money(variantPrice(p, sel.value));
+      });
+
+      previewHost.addEventListener("click", (e) => {
+        const btn = e.target.closest(".js-buy");
+        if(!btn) return;
+        const id = btn.dataset.id;
+        const sel = $(`.js-variant[data-id="${CSS.escape(id)}"]`, previewHost);
+        if(!sel) return;
+        // ignore placeholder
+        if(id.startsWith("placeholder-")) return;
+        addToCart(id, sel.value);
+      });
+    }
   }
 
-  // ---------- Search ----------
+  // ---------------- Search & Sort ----------------
   const state = { q: "", sort: "price_desc" };
 
   function applyFilters(baseList){
     let list = baseList.slice();
-
     const q = state.q.trim().toLowerCase();
     if(q){
       list = list.filter(p =>
@@ -379,15 +586,9 @@
         String(p.type||"").toLowerCase().includes(q)
       );
     }
-
-    if(state.sort === "price_desc"){
-      list.sort((a,b) => basePrice(b) - basePrice(a));
-    } else if(state.sort === "price_asc"){
-      list.sort((a,b) => basePrice(a) - basePrice(b));
-    } else if(state.sort === "rating_desc"){
-      list.sort((a,b) => Number(b.rating||0) - Number(a.rating||0));
-    }
-
+    if(state.sort === "price_desc") list.sort((a,b) => basePrice(b) - basePrice(a));
+    if(state.sort === "price_asc") list.sort((a,b) => basePrice(a) - basePrice(b));
+    if(state.sort === "rating_desc") list.sort((a,b) => Number(b.rating||0) - Number(a.rating||0));
     return list;
   }
 
@@ -404,19 +605,16 @@
       state.q = q.value;
       onUpdate(applyFilters(baseList));
     });
-
     sort.addEventListener("change", () => {
       state.sort = sort.value;
       onUpdate(applyFilters(baseList));
     });
-
     clearBtn.addEventListener("click", () => {
       q.value = "";
       state.q = "";
       onUpdate(applyFilters(baseList));
     });
 
-    // auto-open if ?search=1
     const open = getParam("search");
     const toggle = $("#searchToggle");
     if(open === "1" && toggle){
@@ -425,7 +623,7 @@
     }
   }
 
-  // ---------- Pages ----------
+  // ---------------- Pages ----------------
   function initShopPage(){
     renderDrawerCategories(null);
     initCategoryDropdown(null);
@@ -439,8 +637,9 @@
 
   function initCategoryPage(){
     const category = getParam("c") || "";
-    $("#topbarTitle") && ($("#topbarTitle").textContent = category || "Category");
-    $("#catTitle") && ($("#catTitle").textContent = category || "Category");
+    const title = category || "Category";
+    $("#topbarTitle") && ($("#topbarTitle").textContent = title);
+    $("#catTitle") && ($("#catTitle").textContent = title);
 
     renderDrawerCategories(category);
     initCategoryDropdown(category);
@@ -449,11 +648,10 @@
 
     const base = PS.products.filter(p => String(p.category) === String(category));
     if(!base.length){
-      showNotice(`No products found for "${category}". Make sure catalog.json uses the exact same category name.`);
+      showNotice(`No products found for "${category}". Check that catalog.json uses the exact same category name.`);
       renderGrid([]);
       return;
     }
-
     hideNotice();
     const list = applyFilters(base);
     renderGrid(list);
@@ -468,7 +666,7 @@
       return;
     }
 
-    renderDrawerCategories(p.category || null);
+    renderDrawerCategories(p.category);
 
     const root = $("#productRoot");
     const selected = defaultVariantLabel(p);
@@ -477,16 +675,18 @@
     root.innerHTML = `
       <div class="detail">
         <div class="media-square">
-          <img src="${escapeHtml(p.image||"")}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async">
+          <img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async">
         </div>
 
         <div>
           <h1>${escapeHtml(p.name)}</h1>
-          <p>${escapeHtml(p.short || "Premium product, space-store quality.")}</p>
+          <p>${escapeHtml(p.short)}</p>
 
           <div class="rating" style="margin-top:12px;">
             <div class="stars">${stars(p.rating)}</div>
-            <div class="reviews">${Number(p.reviews||0)} reviews</div>
+            <button class="reviews-link js-open-reviews" type="button" data-id="${escapeHtml(p.id)}">
+              ${Number(p.reviews)} reviews
+            </button>
           </div>
 
           <div class="price" style="margin-top:10px;">
@@ -505,8 +705,7 @@
             </div>
 
             <button class="btn btn--solid" id="detailBuy">Buy</button>
-
-            <p class="muted">${escapeHtml(p.description || "")}</p>
+            <p class="muted">${escapeHtml(p.description)}</p>
           </div>
         </div>
       </div>
@@ -517,237 +716,12 @@
     sel.addEventListener("change", () => {
       priceEl.textContent = money(variantPrice(p, sel.value));
     });
-
-    $("#detailBuy").addEventListener("click", () => {
-      addToCart(p.id, sel.value);
-    });
+    $("#detailBuy").addEventListener("click", () => addToCart(p.id, sel.value));
   }
 
-  function cartTotals(cart){
-    const rules = PS.config?.store?.rules || {};
-    const minOrder = Number(rules.minimumOrder ?? 75);
-    const freeShip = Number(rules.freeShippingThreshold ?? 250);
-    const shipFlat = Number(rules.standardShippingFlat ?? 20);
-
-    let subtotal = 0;
-    for(const it of cart){
-      const p = PS.products.find(x => x.id === it.id);
-      if(!p) continue;
-      const unit = variantPrice(p, it.variant);
-      subtotal += unit * (Number(it.qty)||0);
-    }
-
-    const shipping = subtotal >= freeShip ? 0 : (subtotal > 0 ? shipFlat : 0);
-    const total = subtotal + shipping;
-    return { subtotal, shipping, total, minOrder, freeShip };
-  }
-
-  function initCartPage(){
-    const root = $("#cartRoot");
-    const cart = getCart();
-
-    if(!cart.length){
-      root.innerHTML = `
-        <div class="notice">Your cart is empty.</div>
-        <a class="btn btn--solid" href="shop.html">Back to shop</a>
-      `;
-      return;
-    }
-
-    const t = cartTotals(cart);
-    const minMissing = Math.max(0, t.minOrder - t.subtotal);
-
-    root.innerHTML = `
-      ${minMissing > 0 ? `<div class="notice" style="border-color: rgba(255,77,77,.35);">
-        Minimum order is $${t.minOrder}. Add ${money(minMissing)} more to checkout.
-      </div>` : ""}
-
-      <div class="notice">
-        <strong>Free shipping</strong> on orders $${t.freeShip}+.
-      </div>
-
-      <div class="surface" style="margin-top:12px;">
-        ${cart.map(it => {
-          const p = PS.products.find(x => x.id === it.id);
-          if(!p) return "";
-          const unit = variantPrice(p, it.variant);
-          const line = unit * it.qty;
-          return `
-            <div class="notice" style="display:grid; gap:10px;">
-              <div style="display:flex; justify-content:space-between; gap:10px;">
-                <div style="min-width:0;">
-                  <div style="font-weight:1200;">${escapeHtml(p.name)}</div>
-                  <div class="muted" style="margin-top:2px;">Quantity: ${escapeHtml(it.variant)}</div>
-                </div>
-                <div style="text-align:right; font-weight:1200;">
-                  ${money(line)}
-                  <div class="muted" style="font-weight:1000;">${money(unit)} each</div>
-                </div>
-              </div>
-
-              <div style="display:flex; gap:10px; align-items:center; justify-content:space-between;">
-                <div style="display:flex; gap:10px; align-items:center;">
-                  <button class="btn" data-dec="${escapeHtml(it.id)}||${escapeHtml(it.variant)}">-</button>
-                  <div style="min-width:40px; text-align:center; font-weight:1200;">${it.qty}</div>
-                  <button class="btn" data-inc="${escapeHtml(it.id)}||${escapeHtml(it.variant)}">+</button>
-                </div>
-                <button class="btn" data-rm="${escapeHtml(it.id)}||${escapeHtml(it.variant)}">Remove</button>
-              </div>
-            </div>
-          `;
-        }).join("")}
-      </div>
-
-      <div class="notice" style="margin-top:12px;">
-        <div style="display:flex; justify-content:space-between;"><span>Subtotal</span><strong>${money(t.subtotal)}</strong></div>
-        <div style="display:flex; justify-content:space-between; margin-top:6px;"><span>Shipping</span><strong>${t.shipping === 0 ? "FREE" : money(t.shipping)}</strong></div>
-        <div style="display:flex; justify-content:space-between; margin-top:10px; font-size:18px;"><span>Total</span><strong>${money(t.total)}</strong></div>
-      </div>
-
-      <a class="btn btn--solid" href="checkout.html" ${minMissing>0 ? 'style="opacity:.6; pointer-events:none;"' : ""}>Checkout</a>
-      <a class="btn" href="shop.html" style="margin-top:10px;">Continue shopping</a>
-    `;
-
-    root.addEventListener("click", (e) => {
-      const btn = e.target.closest("button");
-      if(!btn) return;
-
-      const cart = getCart();
-      const inc = btn.getAttribute("data-inc");
-      const dec = btn.getAttribute("data-dec");
-      const rm  = btn.getAttribute("data-rm");
-
-      function splitKey(k){ const [id, variant] = k.split("||"); return {id, variant}; }
-
-      if(inc){
-        const {id, variant} = splitKey(inc);
-        const hit = cart.find(x => x.id===id && x.variant===variant);
-        if(hit) hit.qty += 1;
-        setCart(cart);
-        location.reload();
-      }
-      if(dec){
-        const {id, variant} = splitKey(dec);
-        const hit = cart.find(x => x.id===id && x.variant===variant);
-        if(hit){
-          hit.qty -= 1;
-          if(hit.qty <= 0) cart.splice(cart.indexOf(hit), 1);
-        }
-        setCart(cart);
-        location.reload();
-      }
-      if(rm){
-        const {id, variant} = splitKey(rm);
-        const idx = cart.findIndex(x => x.id===id && x.variant===variant);
-        if(idx >= 0) cart.splice(idx, 1);
-        setCart(cart);
-        location.reload();
-      }
-    });
-  }
-
-  function initCheckoutPage(){
-    const root = $("#checkoutRoot");
-    const cart = getCart();
-    if(!cart.length){
-      root.innerHTML = `
-        <div class="notice">Your cart is empty.</div>
-        <a class="btn btn--solid" href="shop.html">Back to shop</a>
-      `;
-      return;
-    }
-
-    const t = cartTotals(cart);
-    if(t.subtotal < t.minOrder){
-      root.innerHTML = `
-        <div class="notice" style="border-color: rgba(255,77,77,.35);">
-          Minimum order is $${t.minOrder}. Your subtotal is ${money(t.subtotal)}.
-        </div>
-        <a class="btn btn--solid" href="cart.html">Back to cart</a>
-      `;
-      return;
-    }
-
-    const pay = PS.config?.store?.payment || {};
-    const payEmail = pay.email || "payments@premium-supply.ca";
-    const payLabel = pay.methodLabel || "Interac e‑Transfer";
-
-    root.innerHTML = `
-      <div class="notice">
-        <strong>Payment method:</strong> ${escapeHtml(payLabel)}<br>
-        Send payment to: <strong>${escapeHtml(payEmail)}</strong><br>
-        <span class="muted">You’ll receive an Order ID after placing the order.</span>
-      </div>
-
-      <div class="notice" style="border-color: rgba(255,77,77,.35);">
-        <strong style="color: var(--danger);">IMPORTANT:</strong>
-        If you don't pay in the next 24 hours for the order your account will be closed in 48 hours.
-      </div>
-
-      <div class="notice">
-        <div style="display:flex; justify-content:space-between;"><span>Subtotal</span><strong>${money(t.subtotal)}</strong></div>
-        <div style="display:flex; justify-content:space-between; margin-top:6px;"><span>Shipping</span><strong>${t.shipping === 0 ? "FREE" : money(t.shipping)}</strong></div>
-        <div style="display:flex; justify-content:space-between; margin-top:10px; font-size:18px;"><span>Total</span><strong>${money(t.total)}</strong></div>
-      </div>
-
-      <div class="notice">
-        <strong>Customer details</strong>
-        <div style="display:grid; gap:10px; margin-top:10px;">
-          <input id="cName" class="variant-select" style="background:rgba(0,0,0,.22); border:1px solid rgba(255,255,255,.14);" placeholder="Full name">
-          <input id="cEmail" class="variant-select" style="background:rgba(0,0,0,.22); border:1px solid rgba(255,255,255,.14);" placeholder="Email">
-          <input id="cPhone" class="variant-select" style="background:rgba(0,0,0,.22); border:1px solid rgba(255,255,255,.14);" placeholder="Phone">
-          <input id="cAddr" class="variant-select" style="background:rgba(0,0,0,.22); border:1px solid rgba(255,255,255,.14);" placeholder="Address">
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-            <input id="cCity" class="variant-select" style="background:rgba(0,0,0,.22); border:1px solid rgba(255,255,255,.14);" placeholder="City">
-            <input id="cProv" class="variant-select" style="background:rgba(0,0,0,.22); border:1px solid rgba(255,255,255,.14);" placeholder="Province">
-          </div>
-          <input id="cPostal" class="variant-select" style="background:rgba(0,0,0,.22); border:1px solid rgba(255,255,255,.14);" placeholder="Postal code">
-        </div>
-      </div>
-
-      <button class="btn btn--solid" id="placeOrder">Place order</button>
-      <a class="btn" href="cart.html" style="margin-top:10px;">Back to cart</a>
-
-      <div id="orderResult" style="margin-top:12px;"></div>
-    `;
-
-    $("#placeOrder").addEventListener("click", () => {
-      const name = ($("#cName").value || "").trim();
-      const email = ($("#cEmail").value || "").trim();
-      const phone = ($("#cPhone").value || "").trim();
-      const addr = ($("#cAddr").value || "").trim();
-
-      if(!name || !email || !phone || !addr){
-        $("#orderResult").innerHTML = `<div class="notice" style="border-color: rgba(255,77,77,.35);">Please fill all required fields.</div>`;
-        return;
-      }
-
-      const orderId = `PS-${Math.random().toString(36).slice(2,7).toUpperCase()}-${Date.now().toString().slice(-5)}`;
-      const order = {
-        orderId,
-        createdAt: new Date().toISOString(),
-        customer: { name, email, phone, addr },
-        items: getCart()
-      };
-
-      localStorage.setItem("ps_last_order", JSON.stringify(order));
-      localStorage.setItem("ps_last_order_total", String(t.total));
-
-      $("#orderResult").innerHTML = `
-        <div class="notice">
-          <strong>Order placed!</strong><br>
-          Order ID: <strong>${orderId}</strong><br>
-          Total: <strong>${money(t.total)}</strong><br><br>
-          Send ${escapeHtml(payLabel)} to: <strong>${escapeHtml(payEmail)}</strong><br>
-          Include your Order ID in the message: <strong>${orderId}</strong>
-        </div>
-      `;
-    });
-  }
-
-  // ---------- promo modal + age gate ----------
-  function initPromo(){
-    const promo = PS.config?.store?.promo;
+  // ---------------- Promo popup & age gate ----------------
+  function initPromoPopup(){
+    const promo = PS.config?.store?.promoPopup;
     if(!promo || !promo.enabled) return;
 
     const dismissed = localStorage.getItem("ps_promo_dismissed") === "1";
@@ -763,7 +737,6 @@
     const close = () => modal.classList.remove("show");
     $("#promoClose")?.addEventListener("click", close);
     $("#promoContinue")?.addEventListener("click", close);
-
     $("#promoDontShow")?.addEventListener("click", () => {
       localStorage.setItem("ps_promo_dismissed", "1");
       close();
@@ -794,33 +767,32 @@
     });
   }
 
-  // ---------- boot ----------
+  // ---------------- Boot ----------------
   async function boot(){
     updateCartBadge();
+    initReviewsModal();
 
     try{
       PS.config = await loadJSON("site-config.json");
-      PS.products = await loadJSON("catalog.json");
+      const rawCatalog = await loadJSON("catalog.json");
+      if(!Array.isArray(rawCatalog)) throw new Error("catalog.json must be an array []");
 
-      if(!Array.isArray(PS.products)) throw new Error("catalog.json must be an array []");
+      PS.products = rawCatalog.map(normalizeProduct);
 
       applyBrand();
       initPromoStrip();
-      initPromo();
+      initPromoPopup();
       initAgeGate();
 
       const page = document.body.dataset.page || "home";
-
       if(page === "home") renderHome();
       if(page === "shop") initShopPage();
       if(page === "category") initCategoryPage();
       if(page === "product") initProductPage();
-      if(page === "cart") initCartPage();
-      if(page === "checkout") initCheckoutPage();
 
     }catch(err){
       console.error(err);
-      showNotice(`ERROR: ${err.message}. Make sure site-config.json and catalog.json are in the same folder as your HTML files.`);
+      showNotice(`ERROR: ${err.message}. Ensure site-config.json and catalog.json are in the SAME folder as your HTML files.`);
       const grid = $("#grid");
       if(grid) grid.innerHTML = "";
     }
