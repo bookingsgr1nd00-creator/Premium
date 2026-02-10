@@ -6,24 +6,38 @@
     "currency": "CAD",
     "payment": {
       "methodLabel": "Interac e‑Transfer",
-      "email": "payments@premium-supply.ca"
+      "email": "-"
     },
     "rules": {
-      "Order": 75,
-      "Free Express Shipping Over": 250,
-      "Express Shipping": 25
+      "minimumOrder": 75,
+      "freeShippingThreshold": 250,
+      "standardShippingFlat": 25
     },
+
+    "promoStrip": {
+      "enabled": true,
+      "text": "Min order $75 • Free shipping $250+ • Easy Interac E‑Transfer Payments",
+      "ctaLabel": "Shop",
+      "ctaHref": "shop.html"
+    },
+
     "promo": {
       "enabled": true,
       "title": "Welcome to Premium Supply",
-      "message": "Minimum order $75 • Free shipping $250+ • Premium Quality.",
+      "message": "Minimum order $75 • Free shipping $250+ • Premium Supply.",
       "cta": "Shop now"
     },
+
     "ageGate": {
       "enabled": true,
       "text": "Please confirm you are of legal age in your province/territory to enter."
+    },
+
+    "home": {
+      "carouselCount": 10
     }
   },
+
   "categories": [
     "Flower",
     "Concentrates",
@@ -34,5 +48,6 @@
     "Oils",
     "Male Enhancers"
   ],
+
   "sortDefault": "price_desc"
 }
