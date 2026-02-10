@@ -1,14 +1,24 @@
 (() => {
   const CANONICAL_KEY = "ps_cart_v2";
 
-  // ✅ We read a bunch of possible keys so your cart still shows even if older pages used a different key
-  const LEGACY_KEYS = [
+  // We scan a LOT of possible keys (old + common tutorial keys).
+  const KEY_CANDIDATES = [
     CANONICAL_KEY,
     "ps_cart_v1",
     "ps_cart",
+    "psCart",
     "premiumSupplyCart",
     "premium_supply_cart",
     "premium-supply-cart",
+    "cartItems",
+    "cart_items",
+    "cart-items",
+    "shoppingCart",
+    "shopping_cart",
+    "basket",
+    "basketItems",
+    "cartData",
+    "cart_data",
     "cart",
     "Cart",
     "SHOPPING_CART"
@@ -23,13 +33,51 @@
     try { return JSON.parse(str); } catch { return null; }
   }
 
+  function toNumber(v) {
+    if (typeof v === "number" && isFinite(v)) return v;
+    if (typeof v === "string") {
+      const cleaned = v.replace(/[^0-9.\-]/g, "");
+      const n = parseFloat(cleaned);
+      return isFinite(n) ? n : 0;
+    }
+    return 0;
+  }
+
   function extractItems(obj) {
     if (!obj) return [];
+
+    // If already an array → it's probably the cart
     if (Array.isArray(obj)) return obj;
-    if (Array.isArray(obj.items)) return obj.items;
-    if (Array.isArray(obj.cart)) return obj.cart;
-    if (Array.isArray(obj.lines)) return obj.lines;
-    if (Array.isArray(obj.products)) return obj.products;
+
+    // Common shapes
+    const candidates = [
+      obj.items,
+      obj.cart,
+      obj.lines,
+      obj.products,
+      obj.cartItems,
+      obj.cart_items,
+      obj.cartitems,
+      obj.cartItemsFromStorage,
+      obj.cartItemsFromLocalStorage
+    ];
+
+    for (const c of candidates) {
+      if (Array.isArray(c)) return c;
+    }
+
+    // Some people store as { id: itemObj, id2: itemObj }
+    if (typeof obj === "object") {
+      const vals = Object.values(obj);
+      if (vals.length && vals.every(v => typeof v === "object")) {
+        // Heuristic: looks like items if at least one has price/name/qty
+        const looksLikeItems = vals.some(v =>
+          v && (v.price != null || v.unitPrice != null || v.name || v.title || v.qty || v.quantity)
+        );
+        if (looksLikeItems) return vals;
+      }
+    }
+
     return [];
   }
 
@@ -49,14 +97,12 @@
     ).trim();
 
     const variant = String(
-      it.variantLabel ?? it.variant ?? it.size ?? it.weight ?? it.option ?? it.qtyLabel ?? it.unit ?? "Default"
+      it.variantLabel ?? it.variant ?? it.size ?? it.weight ?? it.option ?? it.unit ?? "Default"
     ).trim();
 
-    const unitPrice = Number(
-      it.unitPrice ?? it.price ?? it.amount ?? it.cost ?? it.unit ?? it.variantPrice ?? it.money ?? 0
-    ) || 0;
+    const unitPrice = toNumber(it.unitPrice ?? it.price ?? it.amount ?? it.cost ?? it.money ?? 0);
 
-    const qtyRaw = Number(it.qty ?? it.quantity ?? it.count ?? it.units ?? 1);
+    const qtyRaw = toNumber(it.qty ?? it.quantity ?? it.count ?? it.units ?? 1);
     const qty = Math.max(1, Math.round(isFinite(qtyRaw) ? qtyRaw : 1));
 
     const image = String(
@@ -79,19 +125,45 @@
     return Array.from(map.values());
   }
 
-  function loadCart() {
-    for (const key of LEGACY_KEYS) {
-      const raw = localStorage.getItem(key);
+  function readFromStorage(storage) {
+    for (const key of KEY_CANDIDATES) {
+      const raw = storage.getItem(key);
       if (!raw) continue;
 
       const parsed = safeParse(raw);
-      const items = mergeLines(extractItems(parsed));
 
-      if (items.length) {
-        localStorage.setItem(CANONICAL_KEY, JSON.stringify({ items, updatedAt: Date.now() }));
-        return items;
-      }
+      // Some carts are saved as plain arrays or objects; parsed may be null if not JSON.
+      if (!parsed) continue;
+
+      const items = mergeLines(extractItems(parsed));
+      if (items.length) return { keyFound: key, items };
     }
+    return null;
+  }
+
+  function loadCart() {
+    // 1) canonical localStorage first
+    const canonRaw = localStorage.getItem(CANONICAL_KEY);
+    if (canonRaw) {
+      const parsed = safeParse(canonRaw);
+      const items = mergeLines(extractItems(parsed));
+      if (items.length) return items;
+    }
+
+    // 2) scan localStorage
+    const ls = readFromStorage(localStorage);
+    if (ls?.items?.length) {
+      localStorage.setItem(CANONICAL_KEY, JSON.stringify({ items: ls.items, updatedAt: Date.now(), migratedFrom: `localStorage:${ls.keyFound}` }));
+      return ls.items;
+    }
+
+    // 3) scan sessionStorage
+    const ss = readFromStorage(sessionStorage);
+    if (ss?.items?.length) {
+      localStorage.setItem(CANONICAL_KEY, JSON.stringify({ items: ss.items, updatedAt: Date.now(), migratedFrom: `sessionStorage:${ss.keyFound}` }));
+      return ss.items;
+    }
+
     return [];
   }
 
@@ -112,7 +184,7 @@
   }
 
   function subtotal(items) {
-    return items.reduce((sum, it) => sum + it.unitPrice * it.qty, 0);
+    return items.reduce((sum, it) => sum + (it.unitPrice * it.qty), 0);
   }
 
   function setBadge(items) {
@@ -126,46 +198,48 @@
 
   function updateSummary(items) {
     const sub = subtotal(items);
-    const total = sub; // shipping not priced; we only display qualification
+    const total = sub;
 
-    $("cartSubtotal").textContent = money(sub);
-    $("cartTotal").textContent = money(total);
+    const elSub = $("cartSubtotal");
+    const elTotal = $("cartTotal");
+    const elShip = $("cartShipping");
 
-    // Shipping display
-    $("cartShipping").textContent = sub >= FREE_SHIP ? "FREE" : "—";
-
-    // Min order enforcement
-    const meetsMin = sub >= MIN_ORDER && sub > 0;
+    if (elSub) elSub.textContent = money(sub);
+    if (elTotal) elTotal.textContent = money(total);
+    if (elShip) elShip.textContent = sub >= FREE_SHIP ? "FREE" : "—";
 
     const minNote = $("minOrderNote");
-    if (sub > 0 && sub < MIN_ORDER) {
-      minNote.hidden = false;
-      minNote.textContent = `Minimum order is $75 CAD. Add ${money(MIN_ORDER - sub)} more to checkout.`;
-    } else {
-      minNote.hidden = true;
-      minNote.textContent = "";
+    if (minNote) {
+      if (sub > 0 && sub < MIN_ORDER) {
+        minNote.hidden = false;
+        minNote.textContent = `Minimum order is $75 CAD. Add ${money(MIN_ORDER - sub)} more to checkout.`;
+      } else {
+        minNote.hidden = true;
+        minNote.textContent = "";
+      }
     }
 
-    // Free shipping note
     const freeNote = $("freeShipNote");
-    if (sub > 0) {
-      freeNote.hidden = false;
-      freeNote.textContent =
-        sub >= FREE_SHIP
-          ? `You qualify for FREE shipping (250+).`
-          : `Add ${money(FREE_SHIP - sub)} more to qualify for FREE shipping (250+).`;
-    } else {
-      freeNote.hidden = true;
-      freeNote.textContent = "";
+    if (freeNote) {
+      if (sub > 0) {
+        freeNote.hidden = false;
+        freeNote.textContent =
+          sub >= FREE_SHIP
+            ? `You qualify for FREE shipping (250+).`
+            : `Add ${money(FREE_SHIP - sub)} more to qualify for FREE shipping (250+).`;
+      } else {
+        freeNote.hidden = true;
+        freeNote.textContent = "";
+      }
     }
 
-    // Disable checkout if needed
     const checkoutBtn = $("checkoutBtn");
-    const disabled = !meetsMin;
-
-    checkoutBtn.style.pointerEvents = disabled ? "none" : "auto";
-    checkoutBtn.style.opacity = disabled ? ".55" : "1";
-    checkoutBtn.setAttribute("aria-disabled", String(disabled));
+    if (checkoutBtn) {
+      const canCheckout = (sub >= MIN_ORDER && sub > 0);
+      checkoutBtn.style.pointerEvents = canCheckout ? "auto" : "none";
+      checkoutBtn.style.opacity = canCheckout ? "1" : ".55";
+      checkoutBtn.setAttribute("aria-disabled", String(!canCheckout));
+    }
   }
 
   function updateQty(lineKey, qty) {
@@ -182,11 +256,24 @@
     render(items);
   }
 
+  function clearAllKeys() {
+    // Clear canonical + all legacy keys from BOTH storages
+    for (const k of KEY_CANDIDATES) {
+      localStorage.removeItem(k);
+      sessionStorage.removeItem(k);
+    }
+  }
+
   function render(items = loadCart()) {
     setBadge(items);
 
     const list = $("cartItems");
     const empty = $("cartEmpty");
+
+    if (!list || !empty) {
+      // This script is loaded but page doesn't have cart DOM; no-op safely.
+      return;
+    }
 
     if (!items.length) {
       empty.hidden = false;
@@ -205,6 +292,7 @@
 
       const imgWrap = document.createElement("div");
       imgWrap.className = "cart-row__img";
+
       const img = document.createElement("img");
       img.loading = "lazy";
       img.alt = item.name;
@@ -300,12 +388,10 @@
     const clearBtn = $("clearCartBtn");
     if (clearBtn) {
       clearBtn.addEventListener("click", () => {
-        // Clear canonical + legacy keys (prevents “ghost carts” from older tests)
-        for (const k of LEGACY_KEYS) localStorage.removeItem(k);
+        clearAllKeys();
         render([]);
       });
     }
-
     render();
   });
 })();
