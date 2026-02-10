@@ -5,7 +5,7 @@
     config: null,
     products: [],
     cacheBuster: Date.now(),
-    cartKey: "ps_cart_v3"
+    cartKey: "ps_cart_v4"
   };
 
   // ---------- utils ----------
@@ -31,9 +31,7 @@
   async function loadJSON(file){
     const url = `${file}?v=${PS.cacheBuster}`;
     const res = await fetch(url, { cache: "no-store" });
-    if(!res.ok){
-      throw new Error(`Failed to load ${file} (${res.status})`);
-    }
+    if(!res.ok) throw new Error(`Failed to load ${file} (${res.status})`);
     return await res.json();
   }
 
@@ -101,7 +99,8 @@
     const full = Math.floor(r);
     const half = (r - full) >= 0.5 ? 1 : 0;
     const empty = 5 - full - half;
-    return "★".repeat(full) + (half ? "★" : "") + "☆".repeat(empty);
+    // We keep it simple visually (no half glyph), still looks good
+    return "★".repeat(full + half) + "☆".repeat(empty);
   }
 
   // ---------- config apply ----------
@@ -119,13 +118,33 @@
     const year = $("#year"); if(year) year.textContent = String(new Date().getFullYear());
     const brandNameFoot = $("#brandNameFoot"); if(brandNameFoot) brandNameFoot.textContent = name;
 
-    // hero pills
+    // rules pills
     const rules = s.rules || {};
     const min = rules.minimumOrder ?? 75;
     const free = rules.freeShippingThreshold ?? 250;
 
     const minP = $("#minOrderPill"); if(minP) minP.textContent = `Min order $${min}`;
     const freeP = $("#freeShipPill"); if(freeP) freeP.textContent = `Free shipping $${free}+`;
+  }
+
+  // ---------- promo strip (single banner under header) ----------
+  function initPromoStrip(){
+    const strip = $("#promoStrip");
+    const textEl = $("#promoStripText");
+    const ctaEl = $("#promoStripCta");
+
+    if(!strip || !textEl || !ctaEl) return;
+
+    const ps = PS.config?.store?.promoStrip;
+    if(!ps || ps.enabled === false){
+      strip.hidden = true;
+      return;
+    }
+
+    textEl.textContent = ps.text || "";
+    ctaEl.textContent = ps.ctaLabel || "Shop";
+    ctaEl.href = ps.ctaHref || "shop.html";
+    strip.hidden = false;
   }
 
   // ---------- sidebar categories ----------
@@ -142,13 +161,12 @@
     }).join("");
   }
 
-  // ---------- category dropdown under title ----------
+  // ---------- category dropdown ----------
   function initCategoryDropdown(currentCategory){
     const sel = $("#categorySelect");
     if(!sel) return;
 
     const cats = (PS.config?.categories || []).filter(Boolean);
-
     sel.innerHTML =
       `<option value="__all__">All Products</option>` +
       cats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
@@ -158,7 +176,7 @@
 
     sel.addEventListener("change", () => {
       const val = sel.value;
-      if(val === "__all__") location.href = "index.html";
+      if(val === "__all__") location.href = "shop.html";
       else location.href = `category.html?c=${encodeURIComponent(val)}`;
     });
   }
@@ -175,7 +193,11 @@
     return hit ? Number(hit.price) : Number(v[0]?.price || 0);
   }
 
-  // ---------- product card ----------
+  function basePrice(p){
+    return variantPrice(p, defaultVariantLabel(p));
+  }
+
+  // ---------- product card for GRID pages ----------
   function productCard(p){
     const list = Array.isArray(p.variants) ? p.variants : [];
     const selected = defaultVariantLabel(p);
@@ -258,13 +280,93 @@
     });
   }
 
-  // ---------- search ----------
-  const state = { q: "", sort: "price_desc" };
+  // ---------- HOME mini card + carousels ----------
+  function miniCard(p){
+    const price = basePrice(p);
+    return `
+      <div class="carousel__item">
+        <a class="mini-card" href="product.html?id=${encodeURIComponent(p.id)}" aria-label="View ${escapeHtml(p.name)}">
+          <div class="mini-card__media">
+            <div class="mini-card__frame">
+              <img src="${escapeHtml(p.image||"")}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async">
+            </div>
+            <div class="mini-card__tag">${escapeHtml(p.type || "—")}</div>
+          </div>
 
-  function getPriceForSort(p){
-    const first = defaultVariantLabel(p);
-    return variantPrice(p, first);
+          <div class="mini-card__body">
+            <div class="mini-card__name">${escapeHtml(p.name)}</div>
+
+            <div class="mini-card__meta">
+              <div class="mini-stars">${stars(p.rating)}</div>
+              <div class="mini-reviews">${Number(p.reviews||0)} reviews</div>
+            </div>
+
+            <div class="mini-card__price">
+              <span class="mini-money">${money(price)}</span>
+              <span class="muted">${escapeHtml(PS.config?.store?.currency || "CAD")}</span>
+            </div>
+          </div>
+        </a>
+      </div>
+    `;
   }
+
+  function renderHome(){
+    renderDrawerCategories(null);
+
+    // category chips
+    const chipHost = $("#homeCatChips");
+    const cats = (PS.config?.categories || []).filter(Boolean);
+
+    if(chipHost){
+      chipHost.innerHTML = cats.map(c => {
+        const icon = ({
+          "Flower":"fa-seedling",
+          "Concentrates":"fa-droplet",
+          "Edibles":"fa-cookie-bite",
+          "Vapes":"fa-wind",
+          "CBD":"fa-leaf",
+          "Mushrooms":"fa-mug-hot",
+          "Oils":"fa-bottle-droplet",
+          "Male Enhancers":"fa-bolt"
+        })[c] || "fa-star";
+
+        return `<a class="cat-chip" href="category.html?c=${encodeURIComponent(c)}">
+          <i class="fa-solid ${icon}"></i> ${escapeHtml(c)}
+        </a>`;
+      }).join("");
+    }
+
+    // carousels by category
+    const host = $("#homeCarousels");
+    if(!host) return;
+
+    const count = Number(PS.config?.store?.home?.carouselCount ?? 10);
+
+    host.innerHTML = cats.map(cat => {
+      const items = PS.products
+        .filter(p => String(p.category) === String(cat))
+        .slice()
+        .sort((a,b) => (Number(b.rating||0) - Number(a.rating||0)) || (basePrice(b) - basePrice(a)))
+        .slice(0, count);
+
+      return `
+        <div class="home-row">
+          <div class="home-row__head">
+            <h3 class="home-row__title">${escapeHtml(cat)}</h3>
+            <a class="link" href="category.html?c=${encodeURIComponent(cat)}">View all</a>
+          </div>
+
+          <div class="carousel" aria-label="${escapeHtml(cat)} products">
+            ${items.map(miniCard).join("")}
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  // ---------- Search ----------
+  const state = { q: "", sort: "price_desc" };
 
   function applyFilters(baseList){
     let list = baseList.slice();
@@ -279,12 +381,13 @@
     }
 
     if(state.sort === "price_desc"){
-      list.sort((a,b) => getPriceForSort(b) - getPriceForSort(a));
+      list.sort((a,b) => basePrice(b) - basePrice(a));
     } else if(state.sort === "price_asc"){
-      list.sort((a,b) => getPriceForSort(a) - getPriceForSort(b));
+      list.sort((a,b) => basePrice(a) - basePrice(b));
     } else if(state.sort === "rating_desc"){
       list.sort((a,b) => Number(b.rating||0) - Number(a.rating||0));
     }
+
     return list;
   }
 
@@ -312,13 +415,22 @@
       state.q = "";
       onUpdate(applyFilters(baseList));
     });
+
+    // auto-open if ?search=1
+    const open = getParam("search");
+    const toggle = $("#searchToggle");
+    if(open === "1" && toggle){
+      toggle.checked = true;
+      q.focus();
+    }
   }
 
-  // ---------- pages ----------
-  function initProductsPage(){
-    $("#topbarTitle") && ($("#topbarTitle").textContent = "All Products");
+  // ---------- Pages ----------
+  function initShopPage(){
     renderDrawerCategories(null);
     initCategoryDropdown(null);
+
+    state.sort = PS.config?.sortDefault || "price_desc";
 
     const list = applyFilters(PS.products);
     renderGrid(list);
@@ -333,9 +445,11 @@
     renderDrawerCategories(category);
     initCategoryDropdown(category);
 
+    state.sort = PS.config?.sortDefault || "price_desc";
+
     const base = PS.products.filter(p => String(p.category) === String(category));
     if(!base.length){
-      showNotice(`No products found for "${category}". Check that catalog.json uses the exact same category name.`);
+      showNotice(`No products found for "${category}". Make sure catalog.json uses the exact same category name.`);
       renderGrid([]);
       return;
     }
@@ -354,7 +468,6 @@
       return;
     }
 
-    $("#topbarTitle") && ($("#topbarTitle").textContent = "Product");
     renderDrawerCategories(p.category || null);
 
     const root = $("#productRoot");
@@ -436,7 +549,7 @@
     if(!cart.length){
       root.innerHTML = `
         <div class="notice">Your cart is empty.</div>
-        <a class="btn btn--solid" href="index.html">Back to shop</a>
+        <a class="btn btn--solid" href="shop.html">Back to shop</a>
       `;
       return;
     }
@@ -453,7 +566,7 @@
         <strong>Free shipping</strong> on orders $${t.freeShip}+.
       </div>
 
-      <div class="block" style="margin-top:12px;">
+      <div class="surface" style="margin-top:12px;">
         ${cart.map(it => {
           const p = PS.products.find(x => x.id === it.id);
           if(!p) return "";
@@ -463,19 +576,19 @@
             <div class="notice" style="display:grid; gap:10px;">
               <div style="display:flex; justify-content:space-between; gap:10px;">
                 <div style="min-width:0;">
-                  <div style="font-weight:1000;">${escapeHtml(p.name)}</div>
+                  <div style="font-weight:1200;">${escapeHtml(p.name)}</div>
                   <div class="muted" style="margin-top:2px;">Quantity: ${escapeHtml(it.variant)}</div>
                 </div>
-                <div style="text-align:right; font-weight:1000;">
+                <div style="text-align:right; font-weight:1200;">
                   ${money(line)}
-                  <div class="muted" style="font-weight:900;">${money(unit)} each</div>
+                  <div class="muted" style="font-weight:1000;">${money(unit)} each</div>
                 </div>
               </div>
 
               <div style="display:flex; gap:10px; align-items:center; justify-content:space-between;">
                 <div style="display:flex; gap:10px; align-items:center;">
                   <button class="btn" data-dec="${escapeHtml(it.id)}||${escapeHtml(it.variant)}">-</button>
-                  <div style="min-width:40px; text-align:center; font-weight:1000;">${it.qty}</div>
+                  <div style="min-width:40px; text-align:center; font-weight:1200;">${it.qty}</div>
                   <button class="btn" data-inc="${escapeHtml(it.id)}||${escapeHtml(it.variant)}">+</button>
                 </div>
                 <button class="btn" data-rm="${escapeHtml(it.id)}||${escapeHtml(it.variant)}">Remove</button>
@@ -492,7 +605,7 @@
       </div>
 
       <a class="btn btn--solid" href="checkout.html" ${minMissing>0 ? 'style="opacity:.6; pointer-events:none;"' : ""}>Checkout</a>
-      <a class="btn" href="index.html" style="margin-top:10px;">Continue shopping</a>
+      <a class="btn" href="shop.html" style="margin-top:10px;">Continue shopping</a>
     `;
 
     root.addEventListener("click", (e) => {
@@ -500,7 +613,6 @@
       if(!btn) return;
 
       const cart = getCart();
-
       const inc = btn.getAttribute("data-inc");
       const dec = btn.getAttribute("data-dec");
       const rm  = btn.getAttribute("data-rm");
@@ -540,7 +652,7 @@
     if(!cart.length){
       root.innerHTML = `
         <div class="notice">Your cart is empty.</div>
-        <a class="btn btn--solid" href="index.html">Back to shop</a>
+        <a class="btn btn--solid" href="shop.html">Back to shop</a>
       `;
       return;
     }
@@ -564,10 +676,10 @@
       <div class="notice">
         <strong>Payment method:</strong> ${escapeHtml(payLabel)}<br>
         Send payment to: <strong>${escapeHtml(payEmail)}</strong><br>
-        <span class="muted">You will receive an Order ID after placing the order.</span>
+        <span class="muted">You’ll receive an Order ID after placing the order.</span>
       </div>
 
-      <div class="notice" style="border-color: rgba(255,77,77,.35); color: rgba(255,255,255,.92);">
+      <div class="notice" style="border-color: rgba(255,77,77,.35);">
         <strong style="color: var(--danger);">IMPORTANT:</strong>
         If you don't pay in the next 24 hours for the order your account will be closed in 48 hours.
       </div>
@@ -633,7 +745,7 @@
     });
   }
 
-  // ---------- promo + age gate ----------
+  // ---------- promo modal + age gate ----------
   function initPromo(){
     const promo = PS.config?.store?.promo;
     if(!promo || !promo.enabled) return;
@@ -649,10 +761,10 @@
     modal.classList.add("show");
 
     const close = () => modal.classList.remove("show");
-    $("#promoClose").addEventListener("click", close);
-    $("#promoContinue").addEventListener("click", close);
+    $("#promoClose")?.addEventListener("click", close);
+    $("#promoContinue")?.addEventListener("click", close);
 
-    $("#promoDontShow").addEventListener("click", () => {
+    $("#promoDontShow")?.addEventListener("click", () => {
       localStorage.setItem("ps_promo_dismissed", "1");
       close();
     });
@@ -676,7 +788,7 @@
     if(text) $("#ageGateText").textContent = text;
 
     modal.classList.add("show");
-    $("#ageYes").addEventListener("click", () => {
+    $("#ageYes")?.addEventListener("click", () => {
       localStorage.setItem("ps_age_ok", "1");
       modal.classList.remove("show");
     });
@@ -691,12 +803,16 @@
       PS.products = await loadJSON("catalog.json");
 
       if(!Array.isArray(PS.products)) throw new Error("catalog.json must be an array []");
+
       applyBrand();
+      initPromoStrip();
       initPromo();
       initAgeGate();
 
-      const page = document.body.dataset.page || "products";
-      if(page === "products") initProductsPage();
+      const page = document.body.dataset.page || "home";
+
+      if(page === "home") renderHome();
+      if(page === "shop") initShopPage();
       if(page === "category") initCategoryPage();
       if(page === "product") initProductPage();
       if(page === "cart") initCartPage();
@@ -705,7 +821,6 @@
     }catch(err){
       console.error(err);
       showNotice(`ERROR: ${err.message}. Make sure site-config.json and catalog.json are in the same folder as your HTML files.`);
-      // Also show an empty grid so layout doesn't break
       const grid = $("#grid");
       if(grid) grid.innerHTML = "";
     }
