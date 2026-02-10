@@ -1,4 +1,4 @@
-/* Premium Supply — Cart cleanup (mobile neat) */
+/* Premium Supply — Cart (Luxury Light Theme) */
 
 .cart-wrap{ padding: 18px 0 44px; }
 .cart-list{ display:grid; gap:12px; }
@@ -9,19 +9,19 @@
   gap: 12px;
   align-items:start;
   padding:12px;
-  border:1px solid rgba(255,255,255,.10);
-  background: rgba(0,0,0,.18);
-  border-radius:18px;
-  box-shadow: 0 14px 40px rgba(0,0,0,.35);
+  border:1px solid rgba(11,11,11,.28);
+  background: rgba(255,255,255,.92);
+  border-radius: 22px;
+  box-shadow: 0 16px 40px rgba(11,11,11,.10);
 }
 
 .cart-row__img{
   width:84px;
   height:84px;
-  border-radius:16px;
+  border-radius: 18px;
   overflow:hidden;
-  border:1px solid rgba(255,255,255,.12);
-  background: rgba(155,92,246,.10);
+  border:1px solid rgba(11,11,11,.22);
+  background: #fff;
 }
 
 .cart-row__img img{
@@ -35,10 +35,10 @@
 
 .cart-row__name{
   display:block;
-  font-weight:1250;
+  font-weight: 1250;
   text-decoration: underline;
   text-underline-offset: 4px;
-  color: rgba(255,255,255,.92);
+  color: rgba(11,11,11,.92);
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
@@ -46,8 +46,8 @@
 
 .cart-row__meta{
   margin-top:4px;
-  color: rgba(255,255,255,.70);
-  font-weight:950;
+  color: rgba(11,11,11,.62);
+  font-weight: 950;
   font-size:13px;
   line-height: 1.25;
 }
@@ -67,11 +67,12 @@
   align-items:center;
   justify-content:space-between;
   gap:8px;
-  border:1px solid rgba(255,255,255,.12);
-  border-radius:14px;
+  border:1px solid rgba(11,11,11,.22);
+  border-radius: 18px;
   padding:6px;
-  background: rgba(0,0,0,.16);
+  background: rgba(255,255,255,.96);
   flex: 1 1 170px;
+  box-shadow: 0 10px 24px rgba(11,11,11,.08);
 }
 
 .stepper input{
@@ -80,7 +81,7 @@
   border:0;
   outline:0;
   background:transparent;
-  color: rgba(255,255,255,.92);
+  color: rgba(11,11,11,.92);
   font-weight:1200;
   font-size:14px;
 }
@@ -88,21 +89,22 @@
 .stepper .btn{
   height:36px;
   width:36px;
-  border-radius:12px;
+  border-radius: 14px;
   padding:0;
 }
 
 .cart-row__right .btn{
   flex: 1 1 140px;
-  border-radius: 14px;
+  border-radius: 18px;
 }
 
 .summary{
   margin-top:12px;
   padding:12px 14px;
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,.10);
-  background: rgba(0,0,0,.18);
+  border-radius: 20px;
+  border:1px solid rgba(11,11,11,.24);
+  background: rgba(255,255,255,.92);
+  box-shadow: 0 14px 36px rgba(11,11,11,.08);
 }
 
 .summary-row{
@@ -110,7 +112,7 @@
   justify-content:space-between;
   gap:10px;
   padding:8px 0;
-  border-bottom:1px solid rgba(255,255,255,.08);
+  border-bottom:1px solid rgba(11,11,11,.10);
   font-weight:1100;
 }
 
@@ -118,16 +120,14 @@
 
 .note{
   margin-top:10px;
-  padding:10px 12px;
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,.10);
-  background: rgba(0,0,0,.18);
-  color: rgba(255,255,255,.86);
+  padding:12px 12px;
+  border-radius: 18px;
+  border:1px solid rgba(11,11,11,.22);
+  background: rgba(255,255,255,.92);
+  color: rgba(11,11,11,.78);
   font-weight:1000;
 }
 
 .note.warn{
-  border:1px solid rgba(255,77,77,.35);
-  background: rgba(255,77,77,.10);
-  color: rgba(255,220,220,.94);
+  border:1px solid rgba(11,11,11,.32);
 }
