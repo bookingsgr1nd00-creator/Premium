@@ -2,39 +2,64 @@
   "store": {
     "name": "Premium Supply",
     "tagline": "Space Store",
-    "countryBadge": "🇨🇦",
+    "countryBadge": "100% Canadian",
     "currency": "CAD",
-    "payment": {
-      "methodLabel": "Interac e‑Transfer",
-      "email": "-"
-    },
+
     "rules": {
       "minimumOrder": 75,
-      "freeShippingThreshold": 250,
-      "standardShippingFlat": 25
+      "Free Shipping Over": 250,
+      "Express Shipping": 25
+    },
+
+    "payment": {
+      "methodLabel": "Interac e‑Transfer",
+      "email": "payments@premium-supply.ca"
     },
 
     "promoStrip": {
       "enabled": true,
-      "text": "Min order $75 • Free shipping $250+ • Easy Interac E‑Transfer Payments",
+      "text": "Min order $75 • Free shipping $250+ • Easy Interac E‑Transfer/Crypto Payments",
       "ctaLabel": "Shop",
       "ctaHref": "shop.html"
     },
 
-    "promo": {
+    "home": {
+      "categoryPreviewCount": 3,
+      "banners": [
+        {
+          "title": "Weekly Drop",
+          "text": "Fresh restocks with space‑store vibes. Browse what’s new.",
+          "ctaLabel": "Shop all",
+          "href": "shop.html",
+          "image": "assets/promo/banner-1.jpg"
+        },
+        {
+          "title": "Top‑Rated Picks",
+          "text": "Customer favorites across categories — rated & reviewed.",
+          "ctaLabel": "Explore",
+          "href": "shop.html?search=1",
+          "image": "assets/promo/banner-2.jpg"
+        },
+        {
+          "title": "Free Shipping Zone",
+          "text": "Free shipping automatically applies at $250+.",
+          "ctaLabel": "Start cart",
+          "href": "shop.html",
+          "image": "assets/promo/banner-3.jpg"
+        }
+      ]
+    },
+
+    "promoPopup": {
       "enabled": true,
       "title": "Welcome to Premium Supply",
-      "message": "Minimum order $75 • Free shipping $250+ • Premium Supply.",
+      "message": "Min order $75 • Free shipping $250+ • Proudly Canadian.",
       "cta": "Shop now"
     },
 
     "ageGate": {
       "enabled": true,
       "text": "Please confirm you are of legal age in your province/territory to enter."
-    },
-
-    "home": {
-      "carouselCount": 10
     }
   },
 
