@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
+
 <body data-page="cart">
   <div class="topbar">
     <div class="container topbar__inner">
@@ -18,7 +19,8 @@
 
   <header class="header">
     <div class="container header__inner">
-      <a class="icon-btn" href="index.html" aria-label="Back to shop"><i class="fa-solid fa-arrow-left"></i></a>
+      <a class="icon-btn" href="shop.html" aria-label="Back to shop"><i class="fa-solid fa-arrow-left"></i></a>
+
       <a class="brand" href="index.html">
         <img class="brand__logo-img" src="assets/brand/logo-planet.png" alt="Premium Supply">
         <span class="brand__text">
@@ -26,13 +28,23 @@
           <span class="brand__tag" id="brandTag">Space Store</span>
         </span>
       </a>
-      <span class="icon-btn" style="opacity:.0; pointer-events:none;"><i class="fa-solid fa-bag-shopping"></i></span>
+
+      <span class="icon-btn" style="opacity:0; pointer-events:none;"><i class="fa-solid fa-bag-shopping"></i></span>
     </div>
   </header>
 
+  <!-- ✅ Promo banner ONCE under header -->
+  <div class="promo-strip" id="promoStrip" hidden>
+    <div class="container promo-strip__inner">
+      <span class="promo-strip__spark">✨</span>
+      <span class="promo-strip__text" id="promoStripText"></span>
+      <a class="promo-strip__cta" id="promoStripCta" href="shop.html">Shop</a>
+    </div>
+  </div>
+
   <main class="section">
     <div class="container">
-      <section class="block">
+      <section class="surface">
         <div id="cartRoot"></div>
       </section>
     </div>
