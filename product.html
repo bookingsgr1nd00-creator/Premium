@@ -5,98 +5,101 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Premium Supply — Product</title>
   <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="store.js" defer></script>
 </head>
 
 <body data-page="product">
-  <input class="toggle" type="checkbox" id="catDrawerToggle">
 
-  <div class="topbar">
-    <div class="container topbar__inner">
-      <span class="topbar__badge" id="topbarLeft">100% Canadian</span>
-      <p class="topbar__text">Product</p>
-      <a class="topbar__link" href="cart.html">Cart</a>
+  <div class="ps-topbar">
+    <div class="container ps-topbar__inner">
+      <a class="ps-pill" href="shop.html">← Back</a>
+      <div class="ps-pill">Product</div>
+      <a class="ps-pill" href="cart.html">Cart <span data-cart-count class="ps-cartbadge">0</span></a>
     </div>
   </div>
 
-  <header class="header">
-    <div class="container header__inner">
-      <label class="icon-btn" for="catDrawerToggle" aria-label="Open categories"><i class="fa-solid fa-bars"></i></label>
+  <header class="ps-header">
+    <div class="container ps-header__inner">
+      <button class="ps-iconbtn" data-open-menu aria-label="Open menu">
+        <svg class="ps-icon" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/></svg>
+      </button>
 
-      <a class="brand" href="index.html">
-        <img class="brand__logo-img" src="assets/brand/logo-planet.png" alt="Premium Supply">
-        <span class="brand__text">
-          <span class="brand__name" id="brandName">Premium Supply</span>
-          <span class="brand__tag" id="brandTag">Space Store</span>
-        </span>
+      <a class="ps-brand" href="index.html">
+        <img src="assets/brand/logo.png" alt="Premium Supply logo">
+        <div class="ps-brand__txt">
+          <div class="ps-brand__name">Premium Supply</div>
+          <div class="ps-brand__tag">Premium Quality</div>
+        </div>
       </a>
 
-      <a class="icon-btn cart-btn" href="cart.html" aria-label="Cart">
-        <i class="fa-solid fa-bag-shopping"></i>
-        <span class="cart-badge" id="cartCount">0</span>
-      </a>
+      <div class="ps-actions">
+        <a class="ps-iconbtn" href="cart.html" aria-label="Cart" style="position:relative;">
+          <svg class="ps-icon" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zM7.2 6l.94 2h9.45c.75 0 1.3.7 1.1 1.42l-1.2 4.2c-.15.54-.64.9-1.2.9H9.1c-.55 0-1.04-.35-1.2-.88L5.1 4H2V2h4.1l1.1 4z"/></svg>
+          <span data-cart-count class="ps-cartbadge">0</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="ps-promo-strip">
+      <div class="container">
+        <div class="ps-promo-strip__text" data-promo-strip></div>
+      </div>
     </div>
   </header>
 
-  <div class="promo-strip" id="promoStrip" hidden>
-    <div class="container promo-strip__inner">
-      <span class="promo-strip__spark">✨</span>
-      <span class="promo-strip__text" id="promoStripText"></span>
-      <a class="promo-strip__cta" id="promoStripCta" href="shop.html">Shop</a>
-    </div>
-  </div>
-
-  <label for="catDrawerToggle" class="drawer-backdrop" aria-hidden="true"></label>
-  <aside class="drawer" aria-label="Shop by category">
-    <div class="drawer__head">
-      <div class="drawer__title"><i class="fa-solid fa-list"></i> Shop by category</div>
-      <label class="icon-btn" for="catDrawerToggle" aria-label="Close"><i class="fa-solid fa-xmark"></i></label>
-    </div>
-
-    <nav class="cat-nav">
-      <a class="cat-link" href="shop.html">All Products</a>
-      <div class="cat-sep"></div>
-      <div id="drawerCats"></div>
-      <div class="cat-sep"></div>
-      <a class="cat-link" href="cart.html">Cart</a>
-      <a class="cat-link" href="checkout.html">Checkout</a>
-    </nav>
-  </aside>
-
-  <main class="section">
-    <div class="container">
-      <section class="surface">
-        <div class="notice" id="loadNotice" style="display:none;"></div>
-        <div id="productRoot"></div>
-      </section>
-    </div>
-  </main>
-
-  <div class="toast" id="toast" role="status" aria-live="polite">
-    <span id="toastText">Added to cart.</span>
-    <a href="cart.html">View cart</a>
-  </div>
-
-  <div class="reviews-modal" id="reviewsModal" aria-hidden="true">
-    <div class="reviews-modal__overlay" data-close></div>
-    <div class="reviews-modal__panel" role="dialog" aria-modal="true">
-      <div class="reviews-head">
-        <div>
-          <div class="reviews-title" id="reviewsTitle">Reviews</div>
-          <div class="reviews-sub" id="reviewsSub">Verified-style feedback</div>
-        </div>
-        <button class="icon-btn" type="button" id="reviewsClose" aria-label="Close reviews">
-          <i class="fa-solid fa-xmark"></i>
+  <div class="ps-menu" data-menu>
+    <div class="ps-menu__sheet">
+      <div class="ps-menu__head">
+        <div>Shop by category</div>
+        <button class="ps-iconbtn" data-close-menu aria-label="Close menu">
+          <svg class="ps-icon" viewBox="0 0 24 24"><path d="M18.3 5.71L12 12l6.3 6.29-1.41 1.42L12 13.41l-6.89 6.3-1.42-1.41L10.59 12 3.69 5.71l1.42-1.42L12 10.59l6.89-6.3 1.41 1.42z"/></svg>
         </button>
       </div>
-
-      <div class="reviews-summary" id="reviewsSummary"></div>
-      <div class="reviews-list" id="reviewsList"></div>
-
-      <button class="btn btn--solid" type="button" id="reviewsMore">Load more reviews</button>
+      <div class="ps-menu__links" data-category-links></div>
     </div>
   </div>
 
-  <script defer src="app.js"></script>
+  <main class="container ps-section" data-product-page>
+
+    <div class="ps-breadcrumb" data-breadcrumb></div>
+
+    <div class="ps-productpage">
+      <div class="ps-heroimg">
+        <img data-product-img src="assets/products/placeholder.jpg" alt="Product image">
+      </div>
+
+      <div class="ps-surface">
+        <h1 class="ps-h2" data-product-title>Product</h1>
+
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin:8px 0;" data-product-badges></div>
+
+        <div data-product-rating></div>
+
+        <p class="ps-desc" data-product-desc></p>
+
+        <div class="ps-buy" style="margin-top:14px;">
+          <div class="ps-select">
+            <label>Quantity</label>
+            <select data-product-variant></select>
+          </div>
+
+          <div class="ps-stepper">
+            <button class="ps-step" data-units-dec>−</button>
+            <input class="ps-stepper__val" data-product-units type="number" value="1" min="1" inputmode="numeric" />
+            <button class="ps-step" data-units-inc>+</button>
+          </div>
+
+          <button class="ps-btn ps-btn--buy" data-product-buy>Buy</button>
+        </div>
+
+        <div class="ps-reviews" id="reviews">
+          <h2 class="ps-h2" style="font-size:22px;">Reviews</h2>
+          <div data-review-list></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ps-footer">© 2026 Premium Supply • Canada</div>
+  </main>
 </body>
 </html>
