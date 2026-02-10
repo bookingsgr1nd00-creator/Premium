@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
+
 <body data-page="category">
   <input class="toggle" type="checkbox" id="catDrawerToggle">
   <input class="toggle" type="checkbox" id="searchToggle">
@@ -67,6 +68,15 @@
     </div>
   </header>
 
+  <!-- ✅ Promo banner ONCE under header -->
+  <div class="promo-strip" id="promoStrip" hidden>
+    <div class="container promo-strip__inner">
+      <span class="promo-strip__spark">✨</span>
+      <span class="promo-strip__text" id="promoStripText"></span>
+      <a class="promo-strip__cta" id="promoStripCta" href="shop.html">Shop</a>
+    </div>
+  </div>
+
   <label for="catDrawerToggle" class="drawer-backdrop" aria-hidden="true"></label>
   <aside class="drawer" aria-label="Shop by category">
     <div class="drawer__head">
@@ -75,7 +85,7 @@
     </div>
 
     <nav class="cat-nav">
-      <a class="cat-link" href="index.html">All Products</a>
+      <a class="cat-link" href="shop.html">All Products</a>
       <div class="cat-sep"></div>
       <div id="drawerCats"></div>
       <div class="cat-sep"></div>
@@ -86,10 +96,10 @@
 
   <main class="section">
     <div class="container">
-      <section class="block">
-        <div class="block__head block__head--filters">
+      <section class="surface">
+        <div class="surface__head surface__head--filters">
           <div>
-            <h2 class="block__title" id="catTitle">Category</h2>
+            <h2 class="surface__title" id="catTitle">Category</h2>
             <p class="muted" style="margin:.35rem 0 0;">Pick a quantity • Buy • Checkout</p>
           </div>
 
