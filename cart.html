@@ -3,101 +3,61 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Cart • Premium Supply</title>
-
+  <title>Premium Supply — Cart</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="cart.css" />
-
-  <script defer src="assets/js/cart.js"></script>
+  <script src="store.js" defer></script>
 </head>
 
-<body class="ps-sky">
+<body data-page="cart">
 
-  <div class="topbar">
-    <div class="container topbar__inner">
-      <div class="topbar__badge" title="100% Canadian">🇨🇦 <span>100% Canadian</span></div>
-      <p class="topbar__text">Cart</p>
-      <a class="topbar__link" href="checkout.html">Checkout</a>
+  <div class="ps-topbar">
+    <div class="container ps-topbar__inner">
+      <a class="ps-pill" href="shop.html">← Shop</a>
+      <div class="ps-pill">Cart</div>
+      <a class="ps-pill" href="checkout.html">Checkout</a>
     </div>
   </div>
 
-  <header class="header">
-    <div class="container header__inner">
-      <a class="icon-btn" href="products.html" aria-label="Back to shop" title="Back">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <path d="M14.5 5.5L8 12l6.5 6.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+  <header class="ps-header">
+    <div class="container ps-header__inner">
+      <a class="ps-brand" href="index.html">
+        <img src="assets/brand/logo.png" alt="Premium Supply logo">
+        <div class="ps-brand__txt">
+          <div class="ps-brand__name">Premium Supply</div>
+          <div class="ps-brand__tag">Premium Quality</div>
+        </div>
       </a>
 
-      <a class="brand" href="index.html">
-        <img class="brand__logo-img" src="assets/images/brand/logo.png" alt="Premium Supply Logo"
-             onerror="this.style.display='none'">
-        <span class="brand__text">
-          <span class="brand__name">Premium Supply</span>
-          <span class="brand__tag">Premium Quality</span>
-        </span>
-      </a>
+      <div class="ps-actions">
+        <button class="ps-btn ps-btn--ghost" data-clear-cart>Clear cart</button>
+      </div>
+    </div>
 
-      <div class="header__right">
-        <a class="icon-btn cart-btn" href="cart.html" aria-label="Cart" title="Cart">
-          🛒 <span class="cart-badge js-cart-count">0</span>
-        </a>
+    <div class="ps-promo-strip">
+      <div class="container">
+        <div class="ps-promo-strip__text" data-promo-strip></div>
       </div>
     </div>
   </header>
 
-  <div class="promo-strip">
-    <div class="container promo-strip__inner">
-      <span class="promo-strip__spark">✨</span>
-      <div class="promo-strip__text">
-        Min order $75 • Free shipping $250+ • Easy Interac E‑Transfer / Crypto
-      </div>
-      <a class="promo-strip__cta" href="products.html">Shop</a>
+  <main class="container ps-section" data-cart>
+    <div class="ps-cart" data-cart-list></div>
+
+    <div class="ps-summary">
+      <div class="ps-summary-row"><span>Subtotal</span><strong data-cart-subtotal>$0.00</strong></div>
+      <div class="ps-summary-row"><span>Shipping</span><strong data-cart-shipping>—</strong></div>
+      <div class="ps-summary-row"><span>Total</span><strong data-cart-total>$0.00</strong></div>
     </div>
-  </div>
 
-  <main class="container cart-wrap">
-    <section class="surface">
-      <div class="surface__head">
-        <h2 class="surface__title">Your Cart</h2>
-        <button class="link" id="clearCartBtn" type="button">Clear cart</button>
-      </div>
+    <div class="ps-note" data-cart-note></div>
 
-      <div id="cartEmpty" class="note" hidden>
-        Your cart is empty. Go to <a class="link" href="products.html">All Products</a> and tap <strong>Buy</strong>.
-      </div>
+    <div class="ps-row" style="margin-top:12px;">
+      <a class="ps-btn" href="shop.html">Continue shopping</a>
+      <button class="ps-btn ps-btn--buy" data-cart-checkout onclick="location.href='checkout.html'">Checkout</button>
+    </div>
 
-      <div id="cartItems" class="cart-list"></div>
-
-      <div class="summary" aria-label="Order summary">
-        <div class="summary-row">
-          <span>Subtotal</span>
-          <strong id="cartSubtotal">$0.00</strong>
-        </div>
-        <div class="summary-row">
-          <span>Shipping</span>
-          <strong id="cartShipping">—</strong>
-        </div>
-        <div class="summary-row">
-          <span>Total</span>
-          <strong id="cartTotal">$0.00</strong>
-        </div>
-      </div>
-
-      <div id="minOrderNote" class="note warn" hidden></div>
-      <div id="freeShipNote" class="note" hidden></div>
-
-      <div class="cart-actions" style="display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap; margin-top:12px;">
-        <a class="btn" href="products.html">Continue shopping</a>
-        <a class="btn btn--solid" id="checkoutBtn" href="checkout.html">Checkout</a>
-      </div>
-    </section>
-
-    <p class="footer">© <span id="year"></span> Premium Supply • Canada</p>
+    <div class="ps-footer">© 2026 Premium Supply • Canada</div>
   </main>
-
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
 </body>
 </html>
