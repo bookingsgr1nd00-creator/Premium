@@ -11,16 +11,14 @@
 <body data-page="home">
   <input class="toggle" type="checkbox" id="catDrawerToggle">
 
-  <!-- Topbar -->
   <div class="topbar">
     <div class="container topbar__inner">
       <span class="topbar__badge" id="topbarLeft">100% Canadian</span>
-      <p class="topbar__text" id="topbarTitle">Home</p>
+      <p class="topbar__text">Home</p>
       <a class="topbar__link" href="cart.html">Cart</a>
     </div>
   </div>
 
-  <!-- Header -->
   <header class="header">
     <div class="container header__inner">
       <label class="icon-btn" for="catDrawerToggle" aria-label="Open categories">
@@ -28,7 +26,7 @@
       </label>
 
       <a class="brand" href="index.html" aria-label="Premium Supply home">
-        <img class="brand__logo-img" id="brandLogo" src="assets/brand/logo-planet.png" alt="Premium Supply">
+        <img class="brand__logo-img" src="assets/brand/logo-planet.png" alt="Premium Supply">
         <span class="brand__text">
           <span class="brand__name" id="brandName">Premium Supply</span>
           <span class="brand__tag" id="brandTag">Space Store</span>
@@ -36,7 +34,6 @@
       </a>
 
       <div class="header__right">
-        <!-- On home, search sends to shop and opens search -->
         <a class="icon-btn" href="shop.html?search=1" aria-label="Search">
           <i class="fa-solid fa-magnifying-glass"></i>
         </a>
@@ -49,7 +46,7 @@
     </div>
   </header>
 
-  <!-- ✅ Promo banner ONCE under header (all pages) -->
+  <!-- ✅ Promo strip ONCE under header (every page) -->
   <div class="promo-strip" id="promoStrip" hidden>
     <div class="container promo-strip__inner">
       <span class="promo-strip__spark">✨</span>
@@ -70,6 +67,7 @@
       <a class="cat-link" href="shop.html">All Products</a>
       <div class="cat-sep"></div>
 
+      <!-- Categories injected here -->
       <div id="drawerCats"></div>
 
       <div class="cat-sep"></div>
@@ -81,7 +79,7 @@
   <main class="section">
     <div class="container">
 
-      <!-- Hero / advertising -->
+      <!-- Hero -->
       <section class="hero hero--home">
         <div class="hero__inner hero__inner--home">
           <div class="hero__badge-row">
@@ -89,9 +87,9 @@
             <span class="pill pill--gold" id="freeShipPill">Free shipping $250+</span>
           </div>
 
-          <h1 class="hero__title hero__title--big" id="heroTitle">Premium Supply</h1>
-          <p class="hero__sub hero__sub--big" id="heroSubtitle">
-            Space‑store selection • Neon quality • Proudly Canadian
+          <h1 class="hero__title hero__title--big">Premium Supply</h1>
+          <p class="hero__sub hero__sub--big">
+            Neon space‑store selection • Proudly Canadian • Rated & reviewed
           </p>
 
           <div class="hero__cta">
@@ -103,52 +101,34 @@
         </div>
       </section>
 
-      <!-- Promotions (home only) -->
+      <!-- ✅ Promo banner slots (edit in site-config.json + replace images in assets/promo/) -->
       <section class="surface">
         <div class="surface__head">
-          <h2 class="surface__title">Promotions & perks</h2>
+          <h2 class="surface__title">Promotions</h2>
           <a class="link" href="shop.html">Browse all</a>
         </div>
 
-        <div class="promo-cards">
-          <article class="promo-card">
-            <div class="promo-card__icon"><i class="fa-solid fa-sparkles"></i></div>
-            <h3 class="promo-card__title">New drops</h3>
-            <p class="promo-card__text">Fresh inventory added regularly — check back for the latest.</p>
-          </article>
-
-          <article class="promo-card">
-            <div class="promo-card__icon"><i class="fa-solid fa-truck-fast"></i></div>
-            <h3 class="promo-card__title">Free shipping</h3>
-            <p class="promo-card__text">Free shipping automatically applied at $250+.</p>
-          </article>
-
-          <article class="promo-card">
-            <div class="promo-card__icon"><i class="fa-solid fa-shield-heart"></i></div>
-            <h3 class="promo-card__title">Rated & reviewed</h3>
-            <p class="promo-card__text">Ratings + reviews shown on every item for confidence.</p>
-          </article>
-        </div>
+        <div class="banner-grid" id="homeBanners"></div>
       </section>
 
-      <!-- Category quick links -->
+      <!-- ✅ Categories visible on landing page -->
       <section class="surface" id="homeCategories">
         <div class="surface__head">
-          <h2 class="surface__title">Shop by category</h2>
+          <h2 class="surface__title">Categories</h2>
           <span class="muted">Tap a category to browse</span>
         </div>
 
-        <div class="cat-chips" id="homeCatChips"></div>
+        <div class="category-grid" id="homeCategoryGrid"></div>
       </section>
 
-      <!-- Horizontal scrollers by category -->
+      <!-- ✅ At least 3 products per category on landing -->
       <section class="surface">
         <div class="surface__head">
-          <h2 class="surface__title">Trending by category</h2>
-          <span class="muted">Swipe sideways</span>
+          <h2 class="surface__title">Featured by category</h2>
+          <span class="muted">3 top items per category</span>
         </div>
 
-        <div id="homeCarousels"></div>
+        <div id="homeCategoryPreviews"></div>
       </section>
 
       <footer class="footer">
@@ -157,13 +137,34 @@
     </div>
   </main>
 
-  <!-- Toast (used across site) -->
+  <!-- Toast -->
   <div class="toast" id="toast" role="status" aria-live="polite">
     <span id="toastText">Added to cart.</span>
     <a href="cart.html">View cart</a>
   </div>
 
-  <!-- Promo modal (optional popup at entry) -->
+  <!-- ✅ Reviews modal (click reviews anywhere) -->
+  <div class="reviews-modal" id="reviewsModal" aria-hidden="true">
+    <div class="reviews-modal__overlay" data-close></div>
+    <div class="reviews-modal__panel" role="dialog" aria-modal="true">
+      <div class="reviews-head">
+        <div>
+          <div class="reviews-title" id="reviewsTitle">Reviews</div>
+          <div class="reviews-sub" id="reviewsSub">Verified-style feedback</div>
+        </div>
+        <button class="icon-btn" type="button" id="reviewsClose" aria-label="Close reviews">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="reviews-summary" id="reviewsSummary"></div>
+      <div class="reviews-list" id="reviewsList"></div>
+
+      <button class="btn btn--solid" type="button" id="reviewsMore">Load more reviews</button>
+    </div>
+  </div>
+
+  <!-- Promo popup -->
   <div class="promo-modal" id="promoModal" aria-hidden="true">
     <div class="promo-modal__overlay" data-close></div>
     <div class="promo-modal__panel">
@@ -188,9 +189,7 @@
       <div class="promo-head">
         <h3 class="promo-title">Age confirmation</h3>
       </div>
-      <p class="muted" id="ageGateText" style="margin:10px 0 0;">
-        Please confirm you are of legal age in your province/territory to enter.
-      </p>
+      <p class="muted" id="ageGateText" style="margin:10px 0 0;"></p>
       <div class="promo-actions">
         <button class="btn btn--solid" type="button" id="ageYes">I’m of legal age</button>
         <a class="btn" href="https://www.google.com">Leave</a>
