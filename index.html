@@ -3,51 +3,29 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Premium Supply — Store</title>
+  <title>Premium Supply — Space Store</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
-<body data-page="products">
-  <!-- Toggles -->
+
+<body data-page="home">
   <input class="toggle" type="checkbox" id="catDrawerToggle">
-  <input class="toggle" type="checkbox" id="searchToggle">
 
-  <!-- Search modal -->
-  <div class="search-modal" role="dialog" aria-modal="true" aria-labelledby="searchTitle">
-    <label for="searchToggle" class="search-modal__overlay" aria-hidden="true"></label>
-    <div class="search-modal__panel">
-      <div class="search-modal__head">
-        <h2 class="search-modal__title" id="searchTitle">Search & sort</h2>
-        <label class="icon-btn" for="searchToggle" aria-label="Close search"><i class="fa-solid fa-xmark"></i></label>
-      </div>
-
-      <div class="search-box">
-        <input id="q" type="search" placeholder="Search products…" autocomplete="off">
-        <button class="btn" type="button" id="clearBtn">Clear</button>
-      </div>
-
-      <div class="search-box" style="margin-top:10px;">
-        <span class="pill"><i class="fa-solid fa-arrow-down-wide-short"></i> Sort</span>
-        <select id="sort" class="btn" style="flex:1; justify-content:flex-start;">
-          <option value="price_desc" selected>Price: High → Low</option>
-          <option value="price_asc">Price: Low → High</option>
-          <option value="rating_desc">Rating: High → Low</option>
-        </select>
-      </div>
-    </div>
-  </div>
-
+  <!-- Topbar -->
   <div class="topbar">
     <div class="container topbar__inner">
       <span class="topbar__badge" id="topbarLeft">100% Canadian</span>
-      <p class="topbar__text" id="topbarTitle">All Products</p>
+      <p class="topbar__text" id="topbarTitle">Home</p>
       <a class="topbar__link" href="cart.html">Cart</a>
     </div>
   </div>
 
+  <!-- Header -->
   <header class="header">
     <div class="container header__inner">
-      <label class="icon-btn" for="catDrawerToggle" aria-label="Open categories"><i class="fa-solid fa-bars"></i></label>
+      <label class="icon-btn" for="catDrawerToggle" aria-label="Open categories">
+        <i class="fa-solid fa-bars"></i>
+      </label>
 
       <a class="brand" href="index.html" aria-label="Premium Supply home">
         <img class="brand__logo-img" id="brandLogo" src="assets/brand/logo-planet.png" alt="Premium Supply">
@@ -58,7 +36,10 @@
       </a>
 
       <div class="header__right">
-        <label class="icon-btn" for="searchToggle" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></label>
+        <!-- On home, search sends to shop and opens search -->
+        <a class="icon-btn" href="shop.html?search=1" aria-label="Search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </a>
 
         <a class="icon-btn cart-btn" href="cart.html" aria-label="Cart">
           <i class="fa-solid fa-bag-shopping"></i>
@@ -67,6 +48,15 @@
       </div>
     </div>
   </header>
+
+  <!-- ✅ Promo banner ONCE under header (all pages) -->
+  <div class="promo-strip" id="promoStrip" hidden>
+    <div class="container promo-strip__inner">
+      <span class="promo-strip__spark">✨</span>
+      <span class="promo-strip__text" id="promoStripText"></span>
+      <a class="promo-strip__cta" id="promoStripCta" href="shop.html">Shop</a>
+    </div>
+  </div>
 
   <!-- Drawer -->
   <label for="catDrawerToggle" class="drawer-backdrop" aria-hidden="true"></label>
@@ -77,7 +67,7 @@
     </div>
 
     <nav class="cat-nav">
-      <a class="cat-link" href="products.html">All Products</a>
+      <a class="cat-link" href="shop.html">All Products</a>
       <div class="cat-sep"></div>
 
       <div id="drawerCats"></div>
@@ -91,32 +81,74 @@
   <main class="section">
     <div class="container">
 
-      <section class="hero">
-        <div class="hero__inner">
-          <h1 class="hero__title" id="heroTitle">Premium Supply</h1>
-          <p class="hero__sub" id="heroSubtitle">Pick a quantity • Buy • Checkout</p>
-
-          <div class="hero__meta">
-            <span class="pill pill--gold" id="freeShipPill">Free shipping $250+</span>
+      <!-- Hero / advertising -->
+      <section class="hero hero--home">
+        <div class="hero__inner hero__inner--home">
+          <div class="hero__badge-row">
             <span class="pill pill--mint" id="minOrderPill">Min order $75</span>
+            <span class="pill pill--gold" id="freeShipPill">Free shipping $250+</span>
           </div>
+
+          <h1 class="hero__title hero__title--big" id="heroTitle">Premium Supply</h1>
+          <p class="hero__sub hero__sub--big" id="heroSubtitle">
+            Space‑store selection • Neon quality • Proudly Canadian
+          </p>
+
+          <div class="hero__cta">
+            <a class="btn btn--solid" href="shop.html">Shop all products</a>
+            <a class="btn" href="#homeCategories">Shop by category</a>
+          </div>
+
+          <div class="hero__glow" aria-hidden="true"></div>
         </div>
       </section>
 
-      <section class="block">
-        <div class="block__head block__head--filters">
-          <div>
-            <h2 class="block__title">All Products</h2>
-            <p class="muted" style="margin:.35rem 0 0;">Pick a quantity • Buy • Checkout</p>
-          </div>
-
-          <div class="category-jump">
-            <select id="categorySelect" class="category-select" aria-label="Shop by category"></select>
-          </div>
+      <!-- Promotions (home only) -->
+      <section class="surface">
+        <div class="surface__head">
+          <h2 class="surface__title">Promotions & perks</h2>
+          <a class="link" href="shop.html">Browse all</a>
         </div>
 
-        <div class="notice" id="loadNotice" style="display:none;"></div>
-        <div class="products-grid" id="grid" aria-live="polite"></div>
+        <div class="promo-cards">
+          <article class="promo-card">
+            <div class="promo-card__icon"><i class="fa-solid fa-sparkles"></i></div>
+            <h3 class="promo-card__title">New drops</h3>
+            <p class="promo-card__text">Fresh inventory added regularly — check back for the latest.</p>
+          </article>
+
+          <article class="promo-card">
+            <div class="promo-card__icon"><i class="fa-solid fa-truck-fast"></i></div>
+            <h3 class="promo-card__title">Free shipping</h3>
+            <p class="promo-card__text">Free shipping automatically applied at $250+.</p>
+          </article>
+
+          <article class="promo-card">
+            <div class="promo-card__icon"><i class="fa-solid fa-shield-heart"></i></div>
+            <h3 class="promo-card__title">Rated & reviewed</h3>
+            <p class="promo-card__text">Ratings + reviews shown on every item for confidence.</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- Category quick links -->
+      <section class="surface" id="homeCategories">
+        <div class="surface__head">
+          <h2 class="surface__title">Shop by category</h2>
+          <span class="muted">Tap a category to browse</span>
+        </div>
+
+        <div class="cat-chips" id="homeCatChips"></div>
+      </section>
+
+      <!-- Horizontal scrollers by category -->
+      <section class="surface">
+        <div class="surface__head">
+          <h2 class="surface__title">Trending by category</h2>
+          <span class="muted">Swipe sideways</span>
+        </div>
+
+        <div id="homeCarousels"></div>
       </section>
 
       <footer class="footer">
@@ -125,12 +157,13 @@
     </div>
   </main>
 
+  <!-- Toast (used across site) -->
   <div class="toast" id="toast" role="status" aria-live="polite">
     <span id="toastText">Added to cart.</span>
     <a href="cart.html">View cart</a>
   </div>
 
-  <!-- Promo modal -->
+  <!-- Promo modal (optional popup at entry) -->
   <div class="promo-modal" id="promoModal" aria-hidden="true">
     <div class="promo-modal__overlay" data-close></div>
     <div class="promo-modal__panel">
