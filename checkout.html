@@ -3,53 +3,331 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Premium Supply — Checkout</title>
+  <title>Checkout • Premium Supply</title>
+
   <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="checkout.css" />
+
+  <script defer src="assets/js/checkout.js"></script>
 </head>
 
-<body data-page="checkout">
+<body class="ps-sky">
+
+  <!-- Topbar -->
   <div class="topbar">
     <div class="container topbar__inner">
-      <span class="topbar__badge" id="topbarLeft">100% Canadian</span>
-      <p class="topbar__text" id="topbarTitle">Checkout</p>
+      <div class="topbar__badge" title="100% Canadian">🇨🇦 <span>100% Canadian</span></div>
+      <p class="topbar__text">Checkout</p>
       <a class="topbar__link" href="cart.html">Cart</a>
     </div>
   </div>
 
+  <!-- Header -->
   <header class="header">
     <div class="container header__inner">
-      <a class="icon-btn" href="cart.html" aria-label="Back to cart"><i class="fa-solid fa-arrow-left"></i></a>
+      <a class="icon-btn" href="cart.html" aria-label="Back to cart" title="Back">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M14.5 5.5L8 12l6.5 6.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
 
       <a class="brand" href="index.html">
-        <img class="brand__logo-img" src="assets/brand/logo-planet.png" alt="Premium Supply">
+        <img class="brand__logo-img" src="assets/images/brand/logo.png" alt="Premium Supply Logo"
+             onerror="this.style.display='none'">
         <span class="brand__text">
-          <span class="brand__name" id="brandName">Premium Supply</span>
-          <span class="brand__tag" id="brandTag">Space Store</span>
+          <span class="brand__name">Premium Supply</span>
+          <span class="brand__tag">Premium Quality</span>
         </span>
       </a>
 
-      <span class="icon-btn" style="opacity:0; pointer-events:none;"><i class="fa-solid fa-bag-shopping"></i></span>
+      <div class="header__right">
+        <a class="icon-btn cart-btn" href="cart.html" aria-label="Cart" title="Cart">
+          🛒 <span class="cart-badge js-cart-count">0</span>
+        </a>
+      </div>
     </div>
   </header>
 
-  <!-- ✅ Promo banner ONCE under header -->
-  <div class="promo-strip" id="promoStrip" hidden>
+  <!-- ONE promo strip -->
+  <div class="promo-strip">
     <div class="container promo-strip__inner">
       <span class="promo-strip__spark">✨</span>
-      <span class="promo-strip__text" id="promoStripText"></span>
-      <a class="promo-strip__cta" id="promoStripCta" href="shop.html">Shop</a>
+      <div class="promo-strip__text">
+        Min order $75 • Free shipping $250+ • Easy Interac E‑Transfer / Crypto
+      </div>
+      <a class="promo-strip__cta" href="products.html">Shop</a>
     </div>
   </div>
 
-  <main class="section">
-    <div class="container">
-      <section class="surface">
-        <div id="checkoutRoot"></div>
+  <main class="container section checkout">
+
+    <!-- Stepper -->
+    <section class="surface wizard">
+      <div class="wizard__head">
+        <div>
+          <h2 class="surface__title">Secure Checkout</h2>
+          <div class="muted">Enter details • Review • Pay</div>
+        </div>
+
+        <div class="wizard__meta">
+          <span class="pill">CAD</span>
+          <span class="pill">Canada</span>
+        </div>
+      </div>
+
+      <div class="steps" aria-label="Checkout steps">
+        <button class="step is-active" type="button" data-goto="1">
+          <span class="step__dot">1</span>
+          <span class="step__label">Shipping</span>
+        </button>
+        <button class="step" type="button" data-goto="2">
+          <span class="step__dot">2</span>
+          <span class="step__label">Payment</span>
+        </button>
+        <button class="step" type="button" data-goto="3">
+          <span class="step__dot">3</span>
+          <span class="step__label">Review</span>
+        </button>
+        <button class="step" type="button" data-goto="4">
+          <span class="step__dot">4</span>
+          <span class="step__label">Instructions</span>
+        </button>
+      </div>
+
+      <!-- Alerts -->
+      <div id="checkoutAlert" class="note warn" hidden></div>
+
+      <!-- STEP 1: Shipping -->
+      <section class="wizard-step" data-step="1">
+        <div class="grid2">
+          <div class="field">
+            <label for="fullName">Full name</label>
+            <input id="fullName" type="text" placeholder="John Doe" autocomplete="name" />
+          </div>
+
+          <div class="field">
+            <label for="phone">Phone number</label>
+            <input id="phone" type="tel" placeholder="+1 (___) ___‑____" autocomplete="tel" />
+          </div>
+
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" type="email" placeholder="you@email.com" autocomplete="email" />
+          </div>
+
+          <div class="field">
+            <label for="province">Province</label>
+            <select id="province">
+              <option value="">Select province</option>
+              <option>Alberta</option><option>British Columbia</option><option>Manitoba</option>
+              <option>New Brunswick</option><option>Newfoundland and Labrador</option><option>Northwest Territories</option>
+              <option>Nova Scotia</option><option>Nunavut</option><option>Ontario</option>
+              <option>Prince Edward Island</option><option>Quebec</option><option>Saskatchewan</option>
+              <option>Yukon</option>
+            </select>
+          </div>
+
+          <div class="field span2">
+            <label for="addr1">Address line 1</label>
+            <input id="addr1" type="text" placeholder="123 Space St" autocomplete="address-line1" />
+          </div>
+
+          <div class="field span2">
+            <label for="addr2">Address line 2 (optional)</label>
+            <input id="addr2" type="text" placeholder="Apt / Unit" autocomplete="address-line2" />
+          </div>
+
+          <div class="field">
+            <label for="city">City</label>
+            <input id="city" type="text" placeholder="Montreal" autocomplete="address-level2" />
+          </div>
+
+          <div class="field">
+            <label for="postal">Postal code</label>
+            <input id="postal" type="text" placeholder="A1A 1A1" autocomplete="postal-code" />
+          </div>
+
+          <div class="field span2">
+            <label for="notes">Delivery notes (optional)</label>
+            <textarea id="notes" rows="3" placeholder="Buzzer, safe drop spot, etc."></textarea>
+          </div>
+        </div>
+
+        <div class="actions">
+          <a class="btn" href="products.html">Continue shopping</a>
+          <button class="btn btn--solid" id="toStep2" type="button">Next</button>
+        </div>
       </section>
-    </div>
+
+      <!-- STEP 2: Payment method -->
+      <section class="wizard-step" data-step="2" hidden>
+        <div class="pay-grid">
+
+          <label class="pay-card">
+            <input type="radio" name="payMethod" value="interac" checked />
+            <div class="pay-card__content">
+              <div class="pay-card__title">Interac E‑Transfer</div>
+              <div class="muted">Canadian checkout classic. You’ll receive a unique order # + Q/A.</div>
+              <div class="pay-card__tag">Recommended</div>
+            </div>
+          </label>
+
+          <label class="pay-card">
+            <input type="radio" name="payMethod" value="crypto" />
+            <div class="pay-card__content">
+              <div class="pay-card__title">Crypto</div>
+              <div class="muted">BTC / ETH / LTC / USDT / DOGE. Wallets shown after order review.</div>
+              <div class="pay-card__tag">Fast</div>
+            </div>
+          </label>
+
+        </div>
+
+        <div id="cryptoPick" class="field" style="margin-top:14px" hidden>
+          <label for="cryptoCurrency">Choose currency</label>
+          <select id="cryptoCurrency">
+            <option value="BTC">BTC</option>
+            <option value="ETH">ETH</option>
+            <option value="LTC">LTC</option>
+            <option value="USDT">USDT</option>
+            <option value="DOGE">DOGE</option>
+          </select>
+          <div class="muted" style="margin-top:8px">
+            You’ll see the wallet address + copy buttons after you place the order.
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn" id="backTo1" type="button">Back</button>
+          <button class="btn btn--solid" id="toStep3" type="button">Next</button>
+        </div>
+      </section>
+
+      <!-- STEP 3: Review + Agreement -->
+      <section class="wizard-step" data-step="3" hidden>
+        <div class="review-grid">
+          <div class="review-card">
+            <div class="review-card__head">
+              <div class="review-card__title">Shipping</div>
+              <button class="link" id="editShippingBtn" type="button">Edit</button>
+            </div>
+            <div id="shipSummary" class="review-card__body"></div>
+          </div>
+
+          <div class="review-card">
+            <div class="review-card__head">
+              <div class="review-card__title">Cart</div>
+              <a class="link" href="cart.html">Edit cart</a>
+            </div>
+            <div id="cartSummary" class="review-card__body"></div>
+          </div>
+        </div>
+
+        <div class="summary">
+          <div class="summary-row"><span>Subtotal</span><strong id="sumSubtotal">$0.00</strong></div>
+          <div class="summary-row"><span>Shipping</span><strong id="sumShipping">—</strong></div>
+          <div class="summary-row"><span>Total</span><strong id="sumTotal">$0.00</strong></div>
+        </div>
+
+        <div class="danger-box">
+          <strong>Important:</strong> If you don’t pay within <strong>24 hours</strong>, access may be removed.
+          If unpaid after <strong>48 hours</strong>, your account may be blocked.
+          <div class="muted" style="margin-top:6px">
+            (On a static demo site this is a policy notice. Enforcing real account blocking requires a server.)
+          </div>
+        </div>
+
+        <label class="agree">
+          <input id="agreePolicy" type="checkbox" />
+          <span>I agree to the payment policy and confirm my shipping details are correct.</span>
+        </label>
+
+        <div class="actions">
+          <button class="btn" id="backTo2" type="button">Back</button>
+          <button class="btn btn--solid" id="placeOrderBtn" type="button">Place order</button>
+        </div>
+      </section>
+
+      <!-- STEP 4: Payment Instructions -->
+      <section class="wizard-step" data-step="4" hidden>
+        <div class="order-hero">
+          <div>
+            <div class="muted">Order number</div>
+            <div class="order-no" id="orderNo">—</div>
+          </div>
+          <div class="order-total">
+            <div class="muted">Total (CAD)</div>
+            <div class="order-amount" id="orderAmount">$0.00</div>
+          </div>
+        </div>
+
+        <div class="note" id="payMethodLine">Payment method: —</div>
+
+        <!-- Interac -->
+        <section class="pay-panel" id="panelInterac" hidden>
+          <h3 class="pay-panel__title">Interac E‑Transfer Instructions</h3>
+
+          <div class="pay-kv">
+            <div class="kv">
+              <div class="muted">Send to</div>
+              <div class="kv__value" id="interacEmail">payments@premiumsupply.ca</div>
+            </div>
+            <div class="kv">
+              <div class="muted">Amount</div>
+              <div class="kv__value" id="interacAmount">$0.00</div>
+            </div>
+          </div>
+
+          <div class="note warn">
+            In the <strong>message</strong> field of your transfer, write:
+            <strong id="interacMessage">PS-ORDER-XXXX</strong>
+          </div>
+
+          <div class="qa">
+            <div class="qa__q">
+              <div class="muted">Security Question</div>
+              <div id="interacQ">—</div>
+            </div>
+            <div class="qa__a">
+              <div class="muted">Answer</div>
+              <div id="interacA">—</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Crypto -->
+        <section class="pay-panel" id="panelCrypto" hidden>
+          <h3 class="pay-panel__title">Crypto Payment Instructions</h3>
+          <div class="note">
+            Send the exact amount in CAD-equivalent (your wallet/app will convert). Use your order number as the memo/message when possible.
+          </div>
+
+          <div class="wallets" id="wallets"></div>
+
+          <div class="note warn" style="margin-top:12px">
+            Always double‑check the network before sending (especially USDT). Sending to the wrong network can permanently lose funds.
+          </div>
+        </section>
+
+        <div class="actions">
+          <button class="btn" id="copyOrderBtn" type="button">Copy order summary</button>
+          <a class="btn btn--solid" id="emailOrderBtn" href="#">Email order summary</a>
+        </div>
+
+        <div class="actions" style="margin-top:10px">
+          <a class="btn" href="products.html">Back to shop</a>
+          <a class="btn" href="index.html">Home</a>
+        </div>
+      </section>
+
+    </section>
+
+    <p class="footer">© <span id="year"></span> Premium Supply • Canada</p>
   </main>
 
-  <script defer src="app.js"></script>
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+
 </body>
 </html>
