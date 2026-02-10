@@ -3,9 +3,172 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Redirecting…</title>
+  <title>All Products • Premium Supply</title>
+
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Main storefront JS (loads products, categories, search, reviews, add-to-cart) -->
+  <script defer src="assets/js/storefront.js"></script>
 </head>
+
 <body>
-  <script>location.replace("shop.html");</script>
+
+  <!-- Drawer toggle -->
+  <input class="toggle" type="checkbox" id="catDrawerToggle" />
+
+  <!-- Drawer backdrop -->
+  <label class="drawer-backdrop" for="catDrawerToggle" aria-label="Close menu"></label>
+
+  <!-- Category Drawer -->
+  <aside class="drawer" aria-label="Shop by category">
+    <div class="drawer__head">
+      <div class="drawer__title">☰ <span>Shop by category</span></div>
+      <label class="icon-btn" for="catDrawerToggle" aria-label="Close menu" title="Close">✕</label>
+    </div>
+
+    <nav class="cat-nav" id="drawerCats">
+      <!-- populated by JS -->
+    </nav>
+
+    <div class="cat-sep"></div>
+
+    <nav class="cat-nav" style="margin-top:14px">
+      <a class="cat-link" href="cart.html">Cart</a>
+      <a class="cat-link" href="checkout.html">Checkout</a>
+    </nav>
+  </aside>
+
+  <!-- Search toggle -->
+  <input class="toggle" type="checkbox" id="searchToggle" />
+
+  <!-- Search Modal -->
+  <div class="search-modal" aria-label="Search">
+    <label class="search-modal__overlay" for="searchToggle" aria-label="Close search"></label>
+    <div class="search-modal__panel" role="dialog" aria-modal="true">
+      <div class="search-modal__head">
+        <h3 class="search-modal__title">Search</h3>
+        <label class="icon-btn" for="searchToggle" aria-label="Close search" title="Close">✕</label>
+      </div>
+
+      <div class="search-box">
+        <input id="searchInput" type="search" placeholder="Search products (name, category)..." autocomplete="off" />
+        <button class="btn" id="searchClearBtn" type="button">Clear</button>
+      </div>
+
+      <p class="muted" style="margin:10px 2px 0">
+        Tip: Search works across all categories.
+      </p>
+    </div>
+  </div>
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="container topbar__inner">
+      <div class="topbar__badge" title="100% Canadian">🇨🇦 <span>100% Canadian</span></div>
+      <p class="topbar__text" id="pageTitle">All Products</p>
+      <a class="topbar__link" href="cart.html">Cart</a>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container header__inner">
+
+      <label class="icon-btn" for="catDrawerToggle" aria-label="Open menu" title="Menu">
+        <!-- burger -->
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+      </label>
+
+      <a class="brand" href="index.html">
+        <img class="brand__logo-img" src="assets/images/brand/logo.png" alt="Premium Supply Logo"
+             onerror="this.src='assets/images/brand/logo-placeholder.png'">
+        <span class="brand__text">
+          <span class="brand__name">Premium Supply</span>
+          <span class="brand__tag">Premium Quality</span>
+        </span>
+      </a>
+
+      <div class="header__right">
+        <label class="icon-btn" for="searchToggle" aria-label="Search" title="Search">
+          <!-- magnifying glass -->
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="currentColor" stroke-width="2.2"/>
+            <path d="M16.5 16.5 21 21" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+          </svg>
+        </label>
+
+        <a class="icon-btn cart-btn" href="cart.html" aria-label="Cart" title="Cart">
+          🛒
+          <span class="cart-badge js-cart-count">0</span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ONE promo strip (present on every page) -->
+  <div class="promo-strip">
+    <div class="container promo-strip__inner">
+      <span class="promo-strip__spark">✨</span>
+      <div class="promo-strip__text">
+        Min order $75 • Free shipping $250+ • Easy Interac E‑Transfer / Crypto
+      </div>
+      <a class="promo-strip__cta" href="checkout.html">Checkout</a>
+    </div>
+  </div>
+
+  <main class="container section">
+
+    <section class="surface">
+      <div class="surface__head surface__head--filters">
+        <div>
+          <h2 class="surface__title" id="gridTitle">Products</h2>
+          <div class="muted" id="gridHint">Pick a quantity • Buy • Checkout</div>
+        </div>
+
+        <!-- dropdown under "All Products" -->
+        <div class="category-jump">
+          <select class="category-select" id="categorySelect" aria-label="Shop category">
+            <!-- populated by JS -->
+          </select>
+        </div>
+      </div>
+
+      <div class="products-grid" id="productsGrid">
+        <!-- populated by JS -->
+      </div>
+    </section>
+
+    <p class="footer">© <span id="year"></span> Premium Supply • Canada</p>
+  </main>
+
+  <!-- Reviews modal -->
+  <div class="reviews-modal" id="reviewsModal" aria-label="Reviews">
+    <div class="reviews-modal__overlay" id="reviewsCloseOverlay"></div>
+    <div class="reviews-modal__panel" role="dialog" aria-modal="true">
+      <div class="reviews-head">
+        <div>
+          <div class="reviews-title" id="reviewsTitle">Reviews</div>
+          <div class="reviews-sub" id="reviewsSub">Verified customer feedback</div>
+        </div>
+        <button class="btn" id="reviewsCloseBtn" type="button">Close</button>
+      </div>
+
+      <div class="reviews-summary" id="reviewsSummary"></div>
+      <div class="reviews-list" id="reviewsList"></div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <div id="toastMsg">Added to cart</div>
+    <a href="cart.html">View cart</a>
+  </div>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>
