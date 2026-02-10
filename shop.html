@@ -12,12 +12,11 @@
   <input class="toggle" type="checkbox" id="catDrawerToggle">
   <input class="toggle" type="checkbox" id="searchToggle">
 
-  <!-- Search modal -->
-  <div class="search-modal" role="dialog" aria-modal="true" aria-labelledby="searchTitle">
+  <div class="search-modal" role="dialog" aria-modal="true">
     <label for="searchToggle" class="search-modal__overlay" aria-hidden="true"></label>
     <div class="search-modal__panel">
       <div class="search-modal__head">
-        <h2 class="search-modal__title" id="searchTitle">Search & sort</h2>
+        <h2 class="search-modal__title">Search & sort</h2>
         <label class="icon-btn" for="searchToggle" aria-label="Close search"><i class="fa-solid fa-xmark"></i></label>
       </div>
 
@@ -40,7 +39,7 @@
   <div class="topbar">
     <div class="container topbar__inner">
       <span class="topbar__badge" id="topbarLeft">100% Canadian</span>
-      <p class="topbar__text" id="topbarTitle">All Products</p>
+      <p class="topbar__text">All Products</p>
       <a class="topbar__link" href="cart.html">Cart</a>
     </div>
   </div>
@@ -49,8 +48,8 @@
     <div class="container header__inner">
       <label class="icon-btn" for="catDrawerToggle" aria-label="Open categories"><i class="fa-solid fa-bars"></i></label>
 
-      <a class="brand" href="index.html" aria-label="Premium Supply home">
-        <img class="brand__logo-img" id="brandLogo" src="assets/brand/logo-planet.png" alt="Premium Supply">
+      <a class="brand" href="index.html">
+        <img class="brand__logo-img" src="assets/brand/logo-planet.png" alt="Premium Supply">
         <span class="brand__text">
           <span class="brand__name" id="brandName">Premium Supply</span>
           <span class="brand__tag" id="brandTag">Space Store</span>
@@ -59,7 +58,6 @@
 
       <div class="header__right">
         <label class="icon-btn" for="searchToggle" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></label>
-
         <a class="icon-btn cart-btn" href="cart.html" aria-label="Cart">
           <i class="fa-solid fa-bag-shopping"></i>
           <span class="cart-badge" id="cartCount">0</span>
@@ -68,7 +66,6 @@
     </div>
   </header>
 
-  <!-- ✅ Promo banner ONCE under header -->
   <div class="promo-strip" id="promoStrip" hidden>
     <div class="container promo-strip__inner">
       <span class="promo-strip__spark">✨</span>
@@ -112,7 +109,7 @@
         <div class="surface__head surface__head--filters">
           <div>
             <h2 class="surface__title">Browse</h2>
-            <p class="muted" style="margin:.35rem 0 0;">Sorted high → low by default</p>
+            <p class="muted" style="margin:.35rem 0 0;">Tap reviews to see real feedback</p>
           </div>
 
           <div class="category-jump">
@@ -121,18 +118,35 @@
         </div>
 
         <div class="notice" id="loadNotice" style="display:none;"></div>
-        <div class="products-grid" id="grid" aria-live="polite"></div>
+        <div class="products-grid" id="grid"></div>
       </section>
-
-      <footer class="footer">
-        <p>© <span id="year"></span> <span id="brandNameFoot">Premium Supply</span> • Proudly Canadian</p>
-      </footer>
     </div>
   </main>
 
   <div class="toast" id="toast" role="status" aria-live="polite">
     <span id="toastText">Added to cart.</span>
     <a href="cart.html">View cart</a>
+  </div>
+
+  <!-- Reviews modal -->
+  <div class="reviews-modal" id="reviewsModal" aria-hidden="true">
+    <div class="reviews-modal__overlay" data-close></div>
+    <div class="reviews-modal__panel" role="dialog" aria-modal="true">
+      <div class="reviews-head">
+        <div>
+          <div class="reviews-title" id="reviewsTitle">Reviews</div>
+          <div class="reviews-sub" id="reviewsSub">Verified-style feedback</div>
+        </div>
+        <button class="icon-btn" type="button" id="reviewsClose" aria-label="Close reviews">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="reviews-summary" id="reviewsSummary"></div>
+      <div class="reviews-list" id="reviewsList"></div>
+
+      <button class="btn btn--solid" type="button" id="reviewsMore">Load more reviews</button>
+    </div>
   </div>
 
   <script defer src="app.js"></script>
