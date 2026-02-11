@@ -100,9 +100,7 @@ const PS = (() => {
     const full = Math.floor(r);
     const half = (r - full) >= 0.5 ? 1 : 0;
     const empty = Math.max(0, 5 - full - half);
-    return {
-      full, half, empty
-    };
+    return { full, half, empty };
   }
 
   function starHTML(rating) {
@@ -137,7 +135,7 @@ const PS = (() => {
 
   function randomDate(rand) {
     const now = new Date();
-    const daysAgo = Math.floor(rand() * 180); // within last ~6 months
+    const daysAgo = Math.floor(rand() * 180);
     const d = new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000);
     return d.toLocaleDateString("en-CA", { year: "numeric", month: "short", day: "numeric" });
   }
@@ -175,7 +173,6 @@ const PS = (() => {
       }
     });
 
-    // Search toggle
     const searchBtn = $("[data-open-search]");
     const searchBar = $("[data-searchbar]");
     const searchInput = $("[data-searchinput]");
@@ -183,15 +180,13 @@ const PS = (() => {
     searchBtn?.addEventListener("click", () => {
       if (!searchBar || !searchInput) return;
       searchBar.classList.toggle("is-open");
-      if (searchBar.classList.contains("is-open")) {
-        searchInput.focus();
-      }
+      if (searchBar.classList.contains("is-open")) searchInput.focus();
     });
 
-    // Promo strip (once per page)
     const promo = $("[data-promo-strip]");
     if (promo && catalog?.rules) {
-      promo.textContent = `Min order $${catalog.rules.minOrder} • Free shipping $${catalog.rules.freeShipping}+ • Interac E‑Transfer / Crypto payments`;
+      promo.textContent =
+        `Min order $${catalog.rules.minOrder} • Free shipping $${catalog.rules.freeShipping}+ • Interac E‑Transfer / Crypto payments`;
     }
   }
 
@@ -213,7 +208,6 @@ const PS = (() => {
   }
 
   function renderHome(catalog) {
-    // Promotions
     const promoWrap = $("[data-home-promos]");
     if (promoWrap) {
       promoWrap.innerHTML = (catalog.promotions || []).map(p => `
@@ -230,7 +224,6 @@ const PS = (() => {
       `).join("");
     }
 
-    // Categories preview (3 products each)
     const catWrap = $("[data-home-categories]");
     if (catWrap) {
       const byCat = new Map();
@@ -275,7 +268,6 @@ const PS = (() => {
     const sortSelect = $("[data-sort-select]");
     const searchInput = $("[data-searchinput]");
 
-    // Build category dropdown
     if (categorySelect) {
       categorySelect.innerHTML = [
         `<option value="all">All Products</option>`,
@@ -300,13 +292,16 @@ const PS = (() => {
       });
     }
 
+    function minPrice(p) {
+      const prices = (p.variants || []).map(v => v.price).filter(n => typeof n === "number");
+      return prices.length ? Math.min(...prices) : 0;
+    }
+
     function getList() {
       const q = (searchInput?.value || "").trim().toLowerCase();
       let list = catalog.products.slice();
 
-      if (category !== "all") {
-        list = list.filter(p => p.categoryId === category);
-      }
+      if (category !== "all") list = list.filter(p => p.categoryId === category);
 
       if (q) {
         list = list.filter(p =>
@@ -316,20 +311,11 @@ const PS = (() => {
         );
       }
 
-      // Sorting
-      if (sort === "price-low") {
-        list.sort((a, b) => minPrice(a) - minPrice(b));
-      } else if (sort === "price-high") {
-        list.sort((a, b) => minPrice(b) - minPrice(a));
-      } else if (sort === "rating") {
-        list.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-      }
-      return list;
-    }
+      if (sort === "price-low") list.sort((a, b) => minPrice(a) - minPrice(b));
+      else if (sort === "price-high") list.sort((a, b) => minPrice(b) - minPrice(a));
+      else if (sort === "rating") list.sort((a, b) => (b.rating || 0) - (a.rating || 0));
 
-    function minPrice(p) {
-      const prices = (p.variants || []).map(v => v.price).filter(n => typeof n === "number");
-      return prices.length ? Math.min(...prices) : 0;
+      return list;
     }
 
     function cardHTML(p) {
@@ -361,7 +347,9 @@ const PS = (() => {
               <div class="ps-select">
                 <label>Quantity</label>
                 <select data-variant>
-                  ${(p.variants || []).map(v => `<option value="${escapeHtml(v.label)}">${escapeHtml(v.label)} • ${money(v.price, currency)}</option>`).join("")}
+                  ${(p.variants || []).map(v =>
+                    `<option value="${escapeHtml(v.label)}">${escapeHtml(v.label)} • ${money(v.price, currency)}</option>`
+                  ).join("")}
                 </select>
               </div>
 
@@ -371,9 +359,7 @@ const PS = (() => {
                 <button class="ps-step" data-inc aria-label="Increase">+</button>
               </div>
 
-              <button class="ps-btn ps-btn--buy" data-buy>
-                Buy
-              </button>
+              <button class="ps-btn ps-btn--buy" data-buy>Buy</button>
             </div>
           </div>
         </article>
@@ -384,22 +370,25 @@ const PS = (() => {
       const list = getList();
       grid.innerHTML = list.map(cardHTML).join("");
 
-      // Wire events (buy + stepper)
       $$("article.ps-product").forEach(card => {
         const buyBtn = $("[data-buy]", card);
         const variantSel = $("[data-variant]", card);
         const stepper = $("[data-stepper]", card);
         const val = $(".ps-stepper__val", card);
 
-        const productName = $(".ps-product__name", card)?.textContent || "";
-        const product = catalog.products.find(x => x.name === productName) || null;
+        const name = $(".ps-product__name", card)?.textContent || "";
+        const product = catalog.products.find(x => x.name === name);
         if (!product) return;
 
         const inc = $("[data-inc]", stepper);
         const dec = $("[data-dec]", stepper);
 
-        inc?.addEventListener("click", () => val.value = String(clamp(Number(val.value || 1) + 1, 1, 999)));
-        dec?.addEventListener("click", () => val.value = String(clamp(Number(val.value || 1) - 1, 1, 999)));
+        inc?.addEventListener("click", () => {
+          val.value = String(clamp(Number(val.value || 1) + 1, 1, 999));
+        });
+        dec?.addEventListener("click", () => {
+          val.value = String(clamp(Number(val.value || 1) - 1, 1, 999));
+        });
 
         buyBtn?.addEventListener("click", () => {
           const variantLabel = variantSel?.value || (product.variants?.[0]?.label ?? "");
@@ -428,19 +417,20 @@ const PS = (() => {
     const p = catalog.products.find(x => x.id === id) || catalog.products[0];
     if (!p) return;
 
-    // Title + main
     $("[data-product-title]") && ($("[data-product-title]").textContent = p.name);
     $("[data-product-img]") && ($("[data-product-img]").src = p.image);
     $("[data-product-img]") && ($("[data-product-img]").alt = p.name);
 
     const cat = catalog.categories.find(c => c.id === p.categoryId);
     $("[data-breadcrumb]") && ($("[data-breadcrumb]").innerHTML = `
-      <a href="index.html">Home</a> / 
+      <a href="index.html">Home</a> /
       <a href="shop.html?category=${encodeURIComponent(p.categoryId)}">${cat ? cat.name : "Category"}</a> /
       <span>${escapeHtml(p.name)}</span>
     `);
 
-    $("[data-product-badges]") && ($("[data-product-badges]").innerHTML = (p.badges || []).map(b => `<span class="ps-badge">${b}</span>`).join(""));
+    $("[data-product-badges]") &&
+      ($("[data-product-badges]").innerHTML = (p.badges || []).map(b => `<span class="ps-badge">${b}</span>`).join(""));
+
     $("[data-product-rating]") && ($("[data-product-rating]").innerHTML = `
       <div class="ps-stars">${starHTML(p.rating)}</div>
       <a class="ps-reviews-link" href="#reviews">${p.reviewsCount} reviews</a>
@@ -448,7 +438,6 @@ const PS = (() => {
 
     $("[data-product-desc]") && ($("[data-product-desc]").textContent = p.description || "");
 
-    // Variant select
     const currency = catalog.rules.currency || "CAD";
     const variantSel = $("[data-product-variant]");
     if (variantSel) {
@@ -457,19 +446,18 @@ const PS = (() => {
       ).join("");
     }
 
-    // Stepper
     const stepVal = $("[data-product-units]");
     const inc = $("[data-units-inc]");
     const dec = $("[data-units-dec]");
     inc?.addEventListener("click", () => stepVal.value = String(clamp(Number(stepVal.value || 1) + 1, 1, 999)));
     dec?.addEventListener("click", () => stepVal.value = String(clamp(Number(stepVal.value || 1) - 1, 1, 999)));
 
-    // Buy
     const buy = $("[data-product-buy]");
     buy?.addEventListener("click", () => {
       const variantLabel = variantSel?.value || (p.variants?.[0]?.label ?? "");
       const units = clamp(Number(stepVal?.value || 1), 1, 999);
       addToCart({ productId: p.id, variantLabel, units });
+
       buy.classList.add("is-done");
       buy.textContent = "Added ✓";
       setTimeout(() => {
@@ -478,7 +466,6 @@ const PS = (() => {
       }, 1000);
     });
 
-    // Reviews
     const reviewList = $("[data-review-list]");
     if (reviewList) {
       const reviews = pickReviews(catalog, p, 8);
@@ -503,6 +490,7 @@ const PS = (() => {
     const shippingEl = $("[data-cart-shipping]");
     const totalEl = $("[data-cart-total]");
     const noteEl = $("[data-cart-note]");
+    const warningEl = $("[data-cart-warning]");
     const checkoutBtn = $("[data-cart-checkout]");
 
     const currency = catalog.rules.currency || "CAD";
@@ -521,7 +509,7 @@ const PS = (() => {
       }).filter(Boolean);
 
       const freeShip = subtotal >= Number(catalog.rules.freeShipping || 250);
-      const shipping = freeShip ? 0 : 0; // keep 0; you can change later if needed
+      const shipping = 0;
       const total = subtotal + shipping;
 
       return { lines, subtotal, shipping, total, freeShip };
@@ -581,10 +569,19 @@ const PS = (() => {
         ? `You qualify for FREE shipping (${catalog.rules.freeShipping}+).`
         : `Free shipping applies at $${catalog.rules.freeShipping}+`;
 
-      checkoutBtn.disabled = !okMin || lines.length === 0;
-      checkoutBtn.title = okMin ? "" : `Minimum order is $${minOrder}`;
+      // ✅ Visible minimum order warning (this is the fix you asked for)
+      if (warningEl) {
+        const missing = Math.max(0, minOrder - subtotal);
+        const show = lines.length > 0 && !okMin;
+        warningEl.hidden = !show;
+        warningEl.textContent = show
+          ? `Minimum order is $${minOrder}. Add ${money(missing, currency)} more to checkout.`
+          : "";
+      }
 
-      // wire stepper/remove
+      checkoutBtn.disabled = !okMin || lines.length === 0;
+      checkoutBtn.setAttribute("aria-disabled", String(checkoutBtn.disabled));
+
       $$("[data-remove]").forEach(btn => {
         btn.addEventListener("click", () => {
           removeFromCart(Number(btn.getAttribute("data-remove")));
@@ -638,7 +635,6 @@ const PS = (() => {
 
     const currency = catalog.rules.currency || "CAD";
 
-    // Build order summary
     const lines = cart.map(line => {
       const p = catalog.products.find(x => x.id === line.productId);
       if (!p) return null;
@@ -659,7 +655,6 @@ const PS = (() => {
     const orderNumber = generateOrderNumber();
     const qa = pickEtransferQA(catalog, orderNumber);
 
-    // Step logic
     const steps = $$("[data-step]");
     const panels = $$("[data-panel]");
     let step = 1;
@@ -671,7 +666,20 @@ const PS = (() => {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    // Render review panel
+    // ✅ Visible minimum order warning on checkout step 1
+    const checkoutWarn = $("[data-checkout-warning]");
+    const next1 = $("[data-next-1]");
+    if (checkoutWarn && next1) {
+      const missing = Math.max(0, minOrder - subtotal);
+      const show = !okMin;
+      checkoutWarn.hidden = !show;
+      checkoutWarn.textContent = show
+        ? `Minimum order is $${minOrder}. Add ${money(missing, currency)} more in your cart before checkout.`
+        : "";
+      next1.disabled = show;
+      next1.setAttribute("aria-disabled", String(next1.disabled));
+    }
+
     $("[data-review-cart]").innerHTML = lines.map(l => `
       <div class="ps-review-line">
         <div class="ps-review-line__left">
@@ -688,14 +696,12 @@ const PS = (() => {
       <div class="ps-summary-row"><span>Total</span><strong>${money(total, currency)}</strong></div>
     `;
 
-    // Payment config
     $("[data-order-number]").textContent = orderNumber;
     $("[data-order-total]").textContent = money(total, currency);
     $("[data-etransfer-email]").textContent = catalog.payment.etransferEmail;
     $("[data-etransfer-q]").textContent = qa.q;
     $("[data-etransfer-a]").textContent = qa.a;
 
-    // Crypto wallets
     const walletWrap = $("[data-wallets]");
     if (walletWrap) {
       const w = catalog.payment.cryptoWallets || {};
@@ -707,20 +713,10 @@ const PS = (() => {
       `).join("");
     }
 
-    // Buttons
-    $("[data-next-1]")?.addEventListener("click", () => {
-      if (!okMin) {
-        alert(`Minimum order is $${minOrder}. Please add more items.`);
-        return;
-      }
-      go(2);
-    });
-
     $("[data-next-2]")?.addEventListener("click", () => go(3));
     $("[data-prev-2]")?.addEventListener("click", () => go(1));
     $("[data-prev-3]")?.addEventListener("click", () => go(2));
 
-    // Agreement required
     const agree = $("[data-agree]");
     const place = $("[data-place-order]");
     function syncPlace() {
@@ -730,13 +726,9 @@ const PS = (() => {
     syncPlace();
 
     place.addEventListener("click", () => {
-      // No backend: we keep it as an on-screen confirmation
       go(4);
-      // Optional: clear cart after "placed"
-      // clearCart();
     });
 
-    // Steps click
     steps.forEach(s => s.addEventListener("click", () => go(Number(s.getAttribute("data-step")))));
 
     go(1);
