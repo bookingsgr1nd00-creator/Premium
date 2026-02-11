@@ -91,3 +91,10 @@
   color: rgba(10,10,10,.70);
   font-weight: 1000;
 }
+
+/* ✅ NEW: visible min-order warning (red) */
+.ps-note--warn{
+  border-color: rgba(180, 0, 0, .22);
+  background: rgba(255, 0, 0, .06);
+  color: rgba(120, 0, 0, .92);
+}
