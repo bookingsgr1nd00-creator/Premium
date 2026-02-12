@@ -15,17 +15,16 @@
   const isDemo = !cfg.requireLogin || localStorage.getItem("ps_admin_demo") === "1";
   const token = localStorage.getItem("ps_admin_token") || "";
 
-  $("#modePill").textContent = isDemo ? "Demo mode (browser draft)" : "Secure mode (server)";
+  $("#modePill").textContent = isDemo ? "Demo mode (browser draft)" : "Secure mode (local server)";
 
-  // Basic auth guard for server mode
   if (!isDemo && !token) {
     alert("You are not logged in.");
     location.href = "login.html";
     return;
   }
 
-  // --- Catalog state
   let catalog = null;
+  let orders = [];
 
   const DEFAULT_CATALOG = {
     settings: {
@@ -43,13 +42,7 @@
             { q: "What colour is the maple leaf on the Canadian flag?", a: "Red" }
           ]
         },
-        crypto: {
-          BTC: "",
-          ETH: "",
-          LTC: "",
-          USDT: "",
-          DOGE: ""
-        }
+        crypto: { BTC: "", ETH: "", LTC: "", USDT: "", DOGE: "" }
       }
     },
     promotions: [],
@@ -81,31 +74,25 @@
   }
 
   async function loadCatalog() {
-    // 1) Try server mode
     if (!isDemo) {
-      const res = await apiFetch("/api/catalog");
+      const res = await apiFetch("/api/catalog", { cache: "no-store" });
       if (!res.ok) throw new Error("Failed to load catalog from server");
       return await res.json();
     }
 
-    // 2) Demo mode: load from /catalog.json
-    const url = new URL("../catalog.json", location.href);
+    // Demo mode: load from /catalog.json then overlay draft
     let base = null;
     try {
-      const res = await fetch(url.toString(), { cache: "no-store" });
+      const res = await fetch(new URL("../catalog.json", location.href).toString(), { cache: "no-store" });
       if (res.ok) base = await res.json();
     } catch {}
 
-    // 3) fallback default
     if (!base) base = structuredClone(DEFAULT_CATALOG);
 
-    // 4) overlay draft (if exists)
     const draftRaw = localStorage.getItem(DRAFT_KEY);
     if (draftRaw) {
       try {
-        const draft = JSON.parse(draftRaw);
-        // draft replaces base (most predictable)
-        base = draft;
+        base = JSON.parse(draftRaw);
       } catch {}
     }
     return base;
@@ -121,17 +108,41 @@
         body: JSON.stringify(catalog)
       });
       if (!res.ok) throw new Error("Save failed");
-      toast("Saved to server ✅");
+      toast("Saved ✅ (server)");
       return;
     }
 
-    // demo mode: local draft only
     localStorage.setItem(DRAFT_KEY, JSON.stringify(catalog, null, 2));
-    toast("Draft saved in this browser ✅ (Export to publish)");
+    toast("Draft saved ✅ (browser)");
+  }
+
+  async function loadOrders() {
+    if (isDemo) {
+      orders = [];
+      return;
+    }
+    const res = await apiFetch("/api/orders", { cache: "no-store" });
+    orders = res.ok ? await res.json() : [];
+  }
+
+  async function uploadFile(file, folder) {
+    if (isDemo) {
+      toast("Upload works only in server mode (localhost).");
+      return null;
+    }
+    const fd = new FormData();
+    fd.append("file", file);
+    const res = await apiFetch("/api/upload?folder=" + encodeURIComponent(folder || ""), {
+      method: "POST",
+      body: fd
+    });
+    if (!res.ok) throw new Error("Upload failed");
+    const data = await res.json();
+    return data.path;
   }
 
   function exportCatalog() {
-    if (!catalog) return;
+    pullSettingsFromUI();
     const blob = new Blob([JSON.stringify(catalog, null, 2)], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
@@ -151,6 +162,7 @@
 
   $("#btnReload").addEventListener("click", async () => {
     catalog = await loadCatalog();
+    await loadOrders();
     renderAll();
     toast("Reloaded");
   });
@@ -165,16 +177,13 @@
     }
   });
 
-  $("#btnExport").addEventListener("click", () => {
-    pullSettingsFromUI();
-    exportCatalog();
-  });
+  $("#btnExport").addEventListener("click", exportCatalog);
 
   $("#btnLogout").addEventListener("click", () => {
     localStorage.removeItem("ps_admin_token");
     localStorage.removeItem("ps_admin_demo");
     toast("Logged out");
-    setTimeout(() => (location.href = "login.html"), 400);
+    setTimeout(() => (location.href = "login.html"), 350);
   });
 
   $("#importJson").addEventListener("change", async (e) => {
@@ -182,8 +191,7 @@
     if (!file) return;
     try {
       const text = await file.text();
-      const obj = JSON.parse(text);
-      catalog = obj;
+      catalog = JSON.parse(text);
       localStorage.setItem(DRAFT_KEY, JSON.stringify(catalog, null, 2));
       renderAll();
       toast("Imported");
@@ -194,12 +202,85 @@
     }
   });
 
-  // --- Render
+  $("#ordersRefresh").addEventListener("click", async () => {
+    await loadOrders();
+    renderOrders();
+    toast("Orders refreshed");
+  });
+
+  // ---- render helpers
   function renderStats() {
     $("#statProducts").textContent = String(catalog?.products?.length || 0);
     $("#statCategories").textContent = String(catalog?.categories?.length || 0);
     $("#statPromos").textContent = String(catalog?.promotions?.length || 0);
   }
+
+  function renderHome() {
+    const listEl = $("#hotPickList");
+    const selectedEl = $("#hotPickSelected");
+    listEl.innerHTML = "";
+    selectedEl.innerHTML = "";
+
+    catalog.home = catalog.home || { hotPicks: [] };
+    const picks = new Set(catalog.home.hotPicks || []);
+
+    const q = ($("#hotPickSearch").value || "").trim().toLowerCase();
+    const products = (catalog.products || []).filter((p) => {
+      if (!q) return true;
+      return (p.name || "").toLowerCase().includes(q);
+    });
+
+    products.forEach((p) => {
+      const row = document.createElement("div");
+      row.className = "card";
+      row.style.padding = "10px";
+
+      row.innerHTML = `
+        <div style="display:flex; align-items:center; gap:10px; justify-content:space-between;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div class="brand-mark sm" style="width:34px;height:34px;">★</div>
+            <div>
+              <div style="font-weight:800;">${escapeHtml(p.name || "Untitled")}</div>
+              <div class="muted" style="font-size:12px;">${escapeHtml(p.id || "")}</div>
+            </div>
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;font-weight:800;">
+            <input type="checkbox" ${picks.has(p.id) ? "checked" : ""} />
+            Hot pick
+          </label>
+        </div>
+      `;
+
+      row.querySelector("input").addEventListener("change", (e) => {
+        if (e.target.checked) picks.add(p.id);
+        else picks.delete(p.id);
+        catalog.home.hotPicks = Array.from(picks);
+        renderHomeSelected();
+      });
+
+      listEl.appendChild(row);
+    });
+
+    function renderHomeSelected() {
+      selectedEl.innerHTML = "";
+      const selectedProducts = (catalog.products || []).filter((p) => picks.has(p.id));
+      if (!selectedProducts.length) {
+        selectedEl.innerHTML = `<p class="muted">No hot picks selected.</p>`;
+        return;
+      }
+      selectedProducts.forEach((p) => {
+        const c = document.createElement("div");
+        c.className = "card";
+        c.style.padding = "10px";
+        c.innerHTML = `<strong>${escapeHtml(p.name || "")}</strong><div class="muted" style="font-size:12px;">${escapeHtml(p.id || "")}</div>`;
+        selectedEl.appendChild(c);
+      });
+    }
+
+    renderHomeSelected();
+  }
+
+  $("#hotPickSearch").addEventListener("input", renderHome);
 
   function renderPromotions() {
     const root = $("#promoList");
@@ -212,16 +293,24 @@
       card.innerHTML = `
         <div class="grid2">
           <div>
-            <label class="field"><span>Title</span><input data-k="title" value="${escapeHtml(p.title || "")}"></label>
+            <label class="field"><span>Title</span><input data-k="title" value="${escapeAttr(p.title || "")}"></label>
             <label class="field"><span>Body</span><textarea data-k="body" rows="3">${escapeHtml(p.body || "")}</textarea></label>
             <div class="grid2">
-              <label class="field"><span>CTA text</span><input data-k="ctaText" value="${escapeHtml(p.ctaText || "")}"></label>
-              <label class="field"><span>CTA link</span><input data-k="ctaLink" value="${escapeHtml(p.ctaLink || "")}"></label>
+              <label class="field"><span>CTA text</span><input data-k="ctaText" value="${escapeAttr(p.ctaText || "")}"></label>
+              <label class="field"><span>CTA link</span><input data-k="ctaLink" value="${escapeAttr(p.ctaLink || "")}"></label>
             </div>
           </div>
+
           <div>
-            <label class="field"><span>Image path (optional)</span><input data-k="image" value="${escapeHtml(p.image || "")}" placeholder="assets/promos/promo-1.jpg"></label>
+            <label class="field"><span>Image path (optional)</span><input data-k="image" value="${escapeAttr(p.image || "")}" placeholder="assets/uploads/promos/promo.jpg"></label>
+
+            <label class="btn btn-ghost file-btn" style="margin:6px 0;">
+              Upload image
+              <input type="file" accept="image/*" data-upload="promo">
+            </label>
+
             <div class="pimg">${p.image ? `<img src="../${p.image}" alt="">` : `<span class="muted">No image</span>`}</div>
+
             <div class="row">
               <button class="btn btn-ghost" data-action="remove">Delete</button>
             </div>
@@ -235,12 +324,28 @@
         toast("Promotion deleted");
       });
 
-      // bind inputs
       card.querySelectorAll("[data-k]").forEach((input) => {
         input.addEventListener("input", () => {
-          const key = input.dataset.k;
-          p[key] = input.value;
+          p[input.dataset.k] = input.value;
         });
+      });
+
+      const up = card.querySelector('[data-upload="promo"]');
+      up.addEventListener("change", async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        try {
+          const newPath = await uploadFile(file, "promos");
+          if (newPath) {
+            p.image = newPath;
+            renderPromotions();
+            toast("Promo image uploaded ✅");
+          }
+        } catch (err) {
+          alert("Upload failed: " + String(err.message || err));
+        } finally {
+          e.target.value = "";
+        }
       });
 
       root.appendChild(card);
@@ -260,15 +365,14 @@
       card.innerHTML = `
         <div class="grid2">
           <div>
-            <label class="field"><span>Category name</span><input data-k="name" value="${escapeHtml(c.name || "")}"></label>
+            <label class="field"><span>Category name</span><input data-k="name" value="${escapeAttr(c.name || "")}"></label>
             <label class="field">
               <span>Subcategories (comma separated)</span>
-              <input data-k="subs" value="${escapeHtml(subs)}" placeholder="Indica, Sativa, Hybrid">
+              <input data-k="subs" value="${escapeAttr(subs)}" placeholder="Indica, Sativa, Hybrid">
             </label>
-            <p class="muted">Tip: keep names short so the dropdown stays clean on mobile.</p>
           </div>
           <div>
-            <label class="field"><span>Icon (emoji or short text)</span><input data-k="icon" value="${escapeHtml(c.icon || "")}" placeholder="🌿"></label>
+            <label class="field"><span>Icon (emoji or short text)</span><input data-k="icon" value="${escapeAttr(c.icon || "")}" placeholder="🌿"></label>
             <div class="row">
               <button class="btn btn-ghost" data-action="delete">Delete category</button>
             </div>
@@ -282,7 +386,7 @@
 
       nameInput.addEventListener("input", () => {
         c.name = nameInput.value;
-        if (!c.id) c.id = slugify(c.name) || uid("cat");
+        c.id = c.id || slugify(c.name) || uid("cat");
       });
 
       iconInput.addEventListener("input", () => (c.icon = iconInput.value));
@@ -297,7 +401,6 @@
       });
 
       card.querySelector('[data-action="delete"]').addEventListener("click", () => {
-        // remove products in this category? We'll keep them but unset categoryId (safer)
         catalog.products.forEach((p) => {
           if (p.categoryId === c.id) {
             p.categoryId = "";
@@ -368,7 +471,6 @@
   }
 
   function openProductEditor(p) {
-    // Build modal-like editor using a card inserted at top
     const root = $("#productList");
     const editor = document.createElement("div");
     editor.className = "card";
@@ -429,12 +531,18 @@
         </div>
 
         <div>
-          <label class="field"><span>Image path</span><input id="pImage" value="${escapeAttr(p.image || "")}" placeholder="assets/products/flower/aurora-frost.jpg"></label>
+          <label class="field"><span>Image path</span><input id="pImage" value="${escapeAttr(p.image || "")}" placeholder="assets/uploads/products/my-photo.jpg"></label>
+
+          <label class="btn btn-ghost file-btn" style="margin:6px 0;">
+            Upload image
+            <input type="file" accept="image/*" id="pUpload">
+          </label>
+
           <div class="pimg">${p.image ? `<img src="../${p.image}" alt="">` : `<span class="muted">No image</span>`}</div>
 
           <div class="notice" style="margin-top:10px">
-            <strong>Image workflow:</strong><br/>
-            Demo mode can’t upload to GitHub Pages. Put images in your repo under <code>assets/</code>, then paste the path here.
+            <strong>Tip:</strong> uploads go to <code>assets/uploads/products/</code>.
+            Later, commit/push that folder when you publish.
           </div>
         </div>
       </div>
@@ -450,7 +558,6 @@
       </div>
     `;
 
-    // insert editor at top
     root.prepend(editor);
 
     const pCat = editor.querySelector("#pCat");
@@ -472,6 +579,25 @@
       openProductEditor(p);
     });
 
+    editor.querySelector("#pUpload").addEventListener("change", async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      try {
+        const newPath = await uploadFile(file, "products");
+        if (newPath) {
+          p.image = newPath;
+          editor.querySelector("#pImage").value = newPath;
+          editor.remove();
+          openProductEditor(p);
+          toast("Product image uploaded ✅");
+        }
+      } catch (err) {
+        alert("Upload failed: " + String(err.message || err));
+      } finally {
+        e.target.value = "";
+      }
+    });
+
     editor.querySelector("#applyProduct").addEventListener("click", () => {
       p.name = editor.querySelector("#pName").value.trim();
       p.slug = p.slug || slugify(p.name) || uid("p");
@@ -482,7 +608,6 @@
       p.rating = Number(editor.querySelector("#pRating").value || 0);
       p.reviewCount = Number(editor.querySelector("#pReviewCount").value || 0);
 
-      // variants
       const rows = editor.querySelectorAll(".variant-row");
       const vars = [];
       rows.forEach((row) => {
@@ -495,7 +620,50 @@
 
       editor.remove();
       renderProducts();
+      renderHome();
       toast("Product updated");
+    });
+  }
+
+  function renderOrders() {
+    const root = $("#ordersList");
+    root.innerHTML = "";
+
+    if (!orders.length) {
+      root.innerHTML = `<div class="card"><p class="muted">No orders yet.</p></div>`;
+      return;
+    }
+
+    orders.forEach((o) => {
+      const card = document.createElement("div");
+      card.className = "card";
+
+      const itemsCount = Array.isArray(o.items) ? o.items.reduce((n, it) => n + Number(it.qty || 0), 0) : 0;
+      const pm = o.paymentMethod || "etransfer";
+
+      card.innerHTML = `
+        <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap;">
+          <div>
+            <h3 style="margin:0;">${escapeHtml(o.orderNumber || "Order")}</h3>
+            <div class="muted" style="font-size:12px;">${escapeHtml(o.createdAt || "")}</div>
+          </div>
+          <div class="pill" style="font-weight:900;">${escapeHtml(o.status || "PENDING")}</div>
+        </div>
+
+        <div class="grid2" style="margin-top:10px;">
+          <div class="card" style="background:rgba(255,255,255,.6); box-shadow:none;">
+            <div><strong>Total:</strong> $${Number(o.total || 0).toFixed(2)}</div>
+            <div class="muted" style="font-size:12px;">Items: ${itemsCount} • Payment: ${escapeHtml(pm)}</div>
+          </div>
+
+          <div class="card" style="background:rgba(255,255,255,.6); box-shadow:none;">
+            <div><strong>Customer:</strong> ${escapeHtml(o.customer?.email || "—")}</div>
+            <div class="muted" style="font-size:12px;">${escapeHtml(o.customer?.phone || "")}</div>
+          </div>
+        </div>
+      `;
+
+      root.appendChild(card);
     });
   }
 
@@ -565,23 +733,11 @@
     s.payments.crypto.DOGE = $("#setDOGE").value.trim();
   }
 
-  function escapeHtml(str) {
-    return String(str || "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
-  function escapeAttr(str) {
-    return escapeHtml(str).replaceAll("\n", " ");
-  }
-
-  // Add buttons
+  // ---- Add buttons
   $("#promoAdd").addEventListener("click", () => {
     catalog.promotions.unshift({
       id: uid("promo"),
-      title: "New Drop",
+      title: "Weekly Drop",
       body: "Fresh restocks with a premium edge.",
       ctaText: "Browse",
       ctaLink: "shop.html",
@@ -618,6 +774,7 @@
       variants: [{ label: "3.5g", price: 29.99 }]
     });
     renderProducts();
+    renderHome();
     toast("Product added (edit it)");
   });
 
@@ -625,18 +782,33 @@
 
   function renderAll() {
     renderStats();
+    renderHome();
     renderPromotions();
     renderCategories();
     renderProducts();
+    renderOrders();
     renderSettings();
   }
 
-  // init
+  // ---- utils
+  function escapeHtml(str) {
+    return String(str || "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+  function escapeAttr(str) {
+    return escapeHtml(str).replaceAll("\n", " ");
+  }
+
+  // ---- init
   (async () => {
     try {
       catalog = await loadCatalog();
+      await loadOrders();
 
-      // Normalize missing keys
       catalog.settings = catalog.settings || structuredClone(DEFAULT_CATALOG.settings);
       catalog.promotions = Array.isArray(catalog.promotions) ? catalog.promotions : [];
       catalog.categories = Array.isArray(catalog.categories) ? catalog.categories : [];
@@ -645,7 +817,7 @@
 
       renderAll();
       setTab("dashboard");
-      toast("Admin ready");
+      toast("Admin ready ✅");
     } catch (e) {
       alert("Admin failed to load catalog. Make sure catalog.json exists at repo root.");
       console.error(e);
