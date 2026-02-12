@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Premium Supply • Admin Login</title>
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body class="admin-body">
+
+  <main class="auth-shell">
+    <section class="auth-card">
+      <div class="auth-brand">
+        <div class="brand-mark">PS</div>
+        <div>
+          <h1>Premium Supply</h1>
+          <p class="muted">Admin Panel</p>
+        </div>
+      </div>
+
+      <div class="notice" id="modeNotice">
+        <strong>Loading…</strong>
+      </div>
+
+      <form id="loginForm" class="form">
+        <label class="field">
+          <span>Username</span>
+          <input id="user" autocomplete="username" placeholder="admin" />
+        </label>
+
+        <label class="field">
+          <span>Password</span>
+          <input id="pass" type="password" autocomplete="current-password" placeholder="••••••••" />
+        </label>
+
+        <button class="btn btn-primary" type="submit">Sign in</button>
+
+        <button class="btn btn-ghost" type="button" id="demoBtn" style="display:none;">
+          Enter Demo Mode
+        </button>
+
+        <p class="fineprint">
+          Demo mode saves changes <strong>only in your browser</strong>. Export the updated <code>catalog.json</code> to publish.
+        </p>
+      </form>
+    </section>
+  </main>
+
+  <script src="config.js"></script>
+  <script>
+    const cfg = window.PS_ADMIN_CONFIG || { apiBase: "", requireLogin: false };
+    const $ = (s) => document.querySelector(s);
+
+    const modeNotice = $("#modeNotice");
+    const demoBtn = $("#demoBtn");
+    const loginForm = $("#loginForm");
+
+    // DEMO MODE (GitHub Pages)
+    if (!cfg.requireLogin) {
+      modeNotice.innerHTML = `
+        <strong>Demo mode</strong><br/>
+        No server connected. You can still manage products/promotions and export <code>catalog.json</code>.
+      `;
+      demoBtn.style.display = "inline-flex";
+
+      demoBtn.addEventListener("click", () => {
+        localStorage.setItem("ps_admin_demo", "1");
+        location.href = "admin.html";
+      });
+
+      loginForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        localStorage.setItem("ps_admin_demo", "1");
+        location.href = "admin.html";
+      });
+    } else {
+      // SERVER MODE (later)
+      modeNotice.innerHTML = `
+        <strong>Secure mode</strong><br/>
+        Server detected. Please sign in.
+      `;
+
+      loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const username = $("#user").value.trim();
+        const password = $("#pass").value;
+
+        try {
+          const res = await fetch(cfg.apiBase + "/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password })
+          });
+
+          if (!res.ok) {
+            alert("Login failed. Check username/password.");
+            return;
+          }
+
+          const data = await res.json();
+          localStorage.setItem("ps_admin_token", data.token);
+          localStorage.removeItem("ps_admin_demo");
+          location.href = "admin.html";
+        } catch (err) {
+          alert("Cannot reach server API. If you are testing on GitHub Pages, use Demo Mode.");
+        }
+      });
+    }
+  </script>
+</body>
+</html>
