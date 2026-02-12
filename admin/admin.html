@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Premium Supply • Admin</title>
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body class="admin-body">
+
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="brand-chip">
+        <div class="brand-mark sm">PS</div>
+        <div class="brand-text">
+          <div class="brand-title">Premium Supply</div>
+          <div class="brand-sub">Admin</div>
+        </div>
+      </div>
+
+      <span class="pill" id="modePill">…</span>
+    </div>
+
+    <div class="topbar-right">
+      <button class="btn btn-ghost" id="btnReload">Reload</button>
+      <button class="btn btn-ghost" id="btnExport">Export catalog.json</button>
+      <label class="btn btn-ghost file-btn">
+        Import JSON
+        <input type="file" id="importJson" accept="application/json" />
+      </label>
+      <button class="btn btn-primary" id="btnSave">Save</button>
+      <button class="btn btn-danger" id="btnLogout">Logout</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <button class="nav-item active" data-tab="dashboard">Dashboard</button>
+      <button class="nav-item" data-tab="promotions">Promotions</button>
+      <button class="nav-item" data-tab="categories">Categories</button>
+      <button class="nav-item" data-tab="products">Products</button>
+      <button class="nav-item" data-tab="settings">Store Settings</button>
+    </aside>
+
+    <main class="content">
+      <section class="panel" data-panel="dashboard">
+        <h2>Dashboard</h2>
+        <div class="grid2">
+          <div class="card">
+            <h3>Catalog</h3>
+            <p class="muted">Products, categories, promotions.</p>
+            <div class="stats">
+              <div><span class="k">Products</span><span class="v" id="statProducts">0</span></div>
+              <div><span class="k">Categories</span><span class="v" id="statCategories">0</span></div>
+              <div><span class="k">Promotions</span><span class="v" id="statPromos">0</span></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Quick Tips</h3>
+            <ul class="list">
+              <li>Use <strong>Categories</strong> to add subcategories (Indica / Sativa / Shatter / Gummies…)</li>
+              <li>In <strong>Products</strong>, assign a category + subcategory for clean browsing</li>
+              <li>In demo mode, click <strong>Export catalog.json</strong> to publish changes</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Preview</h3>
+          <p class="muted">Open the storefront in another tab.</p>
+          <a class="btn btn-ghost" href="../index.html" target="_blank" rel="noreferrer">Open Home</a>
+          <a class="btn btn-ghost" href="../shop.html" target="_blank" rel="noreferrer">Open Shop</a>
+        </div>
+      </section>
+
+      <section class="panel hidden" data-panel="promotions">
+        <div class="panel-head">
+          <h2>Promotions</h2>
+          <button class="btn btn-primary" id="promoAdd">+ Add promotion</button>
+        </div>
+        <div id="promoList" class="stack"></div>
+      </section>
+
+      <section class="panel hidden" data-panel="categories">
+        <div class="panel-head">
+          <h2>Categories & Subcategories</h2>
+          <button class="btn btn-primary" id="catAdd">+ Add category</button>
+        </div>
+        <div id="catList" class="stack"></div>
+      </section>
+
+      <section class="panel hidden" data-panel="products">
+        <div class="panel-head">
+          <h2>Products</h2>
+          <div class="panel-actions">
+            <input class="search" id="productSearch" placeholder="Search products…" />
+            <button class="btn btn-primary" id="productAdd">+ Add product</button>
+          </div>
+        </div>
+        <div id="productList" class="product-admin-grid"></div>
+      </section>
+
+      <section class="panel hidden" data-panel="settings">
+        <h2>Store Settings</h2>
+        <div class="grid2">
+          <div class="card">
+            <h3>Rules</h3>
+            <label class="field">
+              <span>Minimum order (CAD)</span>
+              <input id="setMinOrder" type="number" min="0" step="1" />
+            </label>
+            <label class="field">
+              <span>Free shipping threshold (CAD)</span>
+              <input id="setFreeShip" type="number" min="0" step="1" />
+            </label>
+          </div>
+
+          <div class="card">
+            <h3>Brand</h3>
+            <label class="field">
+              <span>Store name</span>
+              <input id="setStoreName" />
+            </label>
+            <label class="field">
+              <span>Tagline</span>
+              <input id="setTagline" />
+            </label>
+            <label class="field">
+              <span>Logo path (example: assets/brand/logo.png)</span>
+              <input id="setLogoPath" />
+            </label>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="card">
+            <h3>Interac E‑Transfer</h3>
+            <label class="field">
+              <span>Payment email</span>
+              <input id="setEtransferEmail" placeholder="payments@premiumsupply.ca" />
+            </label>
+            <label class="field">
+              <span>Recipient name</span>
+              <input id="setEtransferName" placeholder="Premium Supply" />
+            </label>
+            <label class="field">
+              <span>Security questions (one per line: QUESTION | ANSWER)</span>
+              <textarea id="setEtransferQA" rows="6" placeholder="Which Canadian city… | Toronto"></textarea>
+            </label>
+          </div>
+
+          <div class="card">
+            <h3>Crypto wallets</h3>
+            <label class="field"><span>BTC</span><input id="setBTC" placeholder="bc1…" /></label>
+            <label class="field"><span>ETH</span><input id="setETH" placeholder="0x…" /></label>
+            <label class="field"><span>LTC</span><input id="setLTC" placeholder="ltc1…" /></label>
+            <label class="field"><span>USDT (TRC20 or ERC20 — specify)</span><input id="setUSDT" placeholder="…" /></label>
+            <label class="field"><span>DOGE</span><input id="setDOGE" placeholder="D…" /></label>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Checkout Disclaimer</h3>
+          <label class="field">
+            <span>Disclaimer text</span>
+            <textarea id="setDisclaimer" rows="4"></textarea>
+          </label>
+        </div>
+      </section>
+
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    </main>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
