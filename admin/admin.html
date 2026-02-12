@@ -36,15 +36,18 @@
   <div class="layout">
     <aside class="sidebar">
       <button class="nav-item active" data-tab="dashboard">Dashboard</button>
+      <button class="nav-item" data-tab="home">Home Blocks</button>
       <button class="nav-item" data-tab="promotions">Promotions</button>
       <button class="nav-item" data-tab="categories">Categories</button>
       <button class="nav-item" data-tab="products">Products</button>
+      <button class="nav-item" data-tab="orders">Orders</button>
       <button class="nav-item" data-tab="settings">Store Settings</button>
     </aside>
 
     <main class="content">
       <section class="panel" data-panel="dashboard">
         <h2>Dashboard</h2>
+
         <div class="grid2">
           <div class="card">
             <h3>Catalog</h3>
@@ -59,9 +62,9 @@
           <div class="card">
             <h3>Quick Tips</h3>
             <ul class="list">
-              <li>Use <strong>Categories</strong> to add subcategories (Indica / Sativa / Shatter / Gummies…)</li>
-              <li>In <strong>Products</strong>, assign a category + subcategory for clean browsing</li>
-              <li>In demo mode, click <strong>Export catalog.json</strong> to publish changes</li>
+              <li><strong>Server mode</strong> lets you upload images + save changes for real.</li>
+              <li>Use <strong>Categories</strong> for subcategories (Indica / Sativa / Shatter / Gummies…)</li>
+              <li>Use <strong>Home Blocks</strong> to set “Hot Picks”.</li>
             </ul>
           </div>
         </div>
@@ -71,6 +74,27 @@
           <p class="muted">Open the storefront in another tab.</p>
           <a class="btn btn-ghost" href="../index.html" target="_blank" rel="noreferrer">Open Home</a>
           <a class="btn btn-ghost" href="../shop.html" target="_blank" rel="noreferrer">Open Shop</a>
+        </div>
+      </section>
+
+      <section class="panel hidden" data-panel="home">
+        <div class="panel-head">
+          <h2>Home Blocks</h2>
+        </div>
+
+        <div class="grid2">
+          <div class="card">
+            <h3>Hot Picks</h3>
+            <p class="muted">Pick products to feature on the homepage.</p>
+            <input class="search" id="hotPickSearch" placeholder="Search products…" />
+            <div id="hotPickList" class="stack" style="margin-top:10px;"></div>
+          </div>
+
+          <div class="card">
+            <h3>Selected</h3>
+            <p class="muted">This is what the homepage can show.</p>
+            <div id="hotPickSelected" class="stack"></div>
+          </div>
         </div>
       </section>
 
@@ -101,8 +125,22 @@
         <div id="productList" class="product-admin-grid"></div>
       </section>
 
+      <section class="panel hidden" data-panel="orders">
+        <div class="panel-head">
+          <h2>Orders</h2>
+          <button class="btn btn-ghost" id="ordersRefresh">Refresh</button>
+        </div>
+        <div class="card">
+          <p class="muted">
+            Orders appear here when your checkout calls <code>/api/orders</code>. (Local test-ready.)
+          </p>
+        </div>
+        <div id="ordersList" class="stack"></div>
+      </section>
+
       <section class="panel hidden" data-panel="settings">
         <h2>Store Settings</h2>
+
         <div class="grid2">
           <div class="card">
             <h3>Rules</h3>
